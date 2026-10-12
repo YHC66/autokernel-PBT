@@ -146,18 +146,18 @@
 % [M] design spec 6.5 (REPLAY_FAIRNESS passed vacuously through three fixes)
 \newcommand{\fairnessLayers}{3}
 \newcommand{\relabelLoss}{14/14}
-% [M] CLAUDE.md (review standard; module-contract table on branch widen-corpus-coverage)
+% [M] CLAUDE.md on main (review standard; module-contract table, 25 rows as of 2026-10-11)
 \newcommand{\reviewDefects}{20}
-\newcommand{\contractCount}{22}
+\newcommand{\contractCount}{25}
 % [M] docs/measurements/2026-08-17-sanitizer-viability-probe.md
 \newcommand{\sanitizerOverrun}{1\,MB}
 
 % ---------------------------------------------------------------------------
 % The formal track (feature 0009 built; 0010 and 0011 planned)
 % ---------------------------------------------------------------------------
-% [M] branch formal-adherence (commits 82d47d8..9ed8ca9, not yet merged):
-%     specs/features/0009-formal-core/, src/autokernel_pbt/formal/,
-%     tests/unit/formal/. Suite: 641 passed, 1 skipped.
+% [M] merged to main via PR #10 (commits 82d47d8..9ed8ca9, and the pre-merge review fix
+%     423a254): specs/features/0009-formal-core/, src/autokernel_pbt/formal/,
+%     tests/unit/formal/.
 \newcommand{\formalChecks}{6}
 \newcommand{\formalRemovedConditions}{20}   % conditions deleted one at a time, each caught
 % [M] docs/superpowers/specs/2026-10-01-agent-formal-adherence-design.md (on that branch)
@@ -175,6 +175,12 @@
 \newcommand{\leanLines}{367}
 \newcommand{\leanVersion}{4.33.0}
 \newcommand{\expAxioms}{3}            % positive, additive, injective
+
+% [M] docs/measurements/2026-10-02-why3-real-theories-symmetry.md;
+%     proofs/why3-real-theories/, experiments/formal-rigidity/ (committed 2026-10-11)
+\newcommand{\whyExpAxioms}{10}       % axioms of Why3 1.8.2 real.ExpLog
+\newcommand{\whyTheorems}{9}
+\newcommand{\cSixFalseRejectMax}{2.4} % percent of samples, Sin_plus_pi, raw comparison
 
 % ---------------------------------------------------------------------------
 % External numbers (cited, not ours)

@@ -54,6 +54,12 @@ approximate two-column layout and the log warns that the output is not submittab
 - [ ] Record the symmetry probe (the six rolled, reversed, sorted and negated rows of
       Table 3) under `docs/measurements/`, and change its tag in `numbers.tex` from
       `[P]` to `[M]`.
+- [x] Commit the records the draft cites that were untracked:
+      `docs/measurements/2026-10-02-why3-real-theories-symmetry.md`,
+      `proofs/why3-real-theories/`, `experiments/formal-rigidity/` (2026-10-11).
+- [ ] Add the prover-in-the-toolkit results
+      (`docs/measurements/2026-10-02-prover-in-the-toolkit-prereg.md`) once they are appended
+      below that record's line, and not before.
 - [ ] Resolve every `% VERIFY` in `references.bib` against a primary source.
 - [ ] Re-run the prior-art search. The area produces about one competing preprint a
       month (see `reference/PBT-property-based-testing/NOTES.md` §7.3).

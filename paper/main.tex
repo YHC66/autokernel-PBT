@@ -55,6 +55,10 @@
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,calc}
 
+% Narrow columns plus unbreakable math and \texttt: allow a little extra stretch
+% before overfull lines. This changes line breaking only, not the page layout.
+\setlength{\emergencystretch}{1.5em}
+
 % Sections are numbered so that cross-references resolve (the kit permits 1 or 2).
 \setcounter{secnumdepth}{2}
 

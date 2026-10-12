@@ -1,0 +1,1224 @@
+[
+ {
+  "workflow": "wf_49a9863c-ad3",
+  "label": "oracle:softmax-F-r4",
+  "report": {
+   "sandbox": "<scratchpad>/runs/oracle/softmax-F-r4",
+   "task": "softmax",
+   "arm": "F",
+   "claims_complete": true,
+   "claim_grounds": "Machine-checked: proof/SoftmaxComplete.lean, theorem Softmax.completed_bundle_iff (K satisfies old + new laws <-> K = reference, any row length n >= 1, any per-row anchor), with Softmax.completeness showing gibbs_log_odds + ROW_SUMS alone pin the reference using only exp > 0. Compiled with the pinned Lean 4.33.0 binary: exit 0, no warnings, no sorry, no axiom declarations, every #print axioms = [propext, Classical.choice, Quot.sound] (proof/compile.log). Empirically: reference passes 0/9 on both arms with laws on and off; all 6 correct_variants pass 0/9 on old bundle, completed bundle and reference arm (experiments/variants_table.txt); all 12 admitted kernels pass the old bundle 0/9 and are rejected by the completed declarative arm exactly where the reference arm rejects them (7/9, 6/9 for rows_swapped; experiments/admitted_table.txt). Tolerance headroom: max Gibbs ratio 0.115 over 18 cases vs threshold 30 (experiments/tolerance_headroom.txt); sensitivity: temperature error first caught at |T-1| = 2.7e-5, every non-degenerate group at 7.4e-5 (experiments/resolution.txt). The old bundle is characterized exactly (Softmax.oldBundle_iff_factors: old laws <-> K = G(x - x0) with G simplex-valued), and the obstruction is proved (no scale-invariant law can complete it).",
+   "admitted_families": [
+    {
+     "name": "temperature_2",
+     "file": "admitted/temperature_2.py",
+     "description": "softmax(2x): the temperature family softmax(T x), T = 2; every old law holds exactly"
+    },
+    {
+     "name": "exp2_no_log2e",
+     "file": "admitted/exp2_no_log2e.py",
+     "description": "2^(x-max)/sum 2^(x-max) = softmax(x ln 2): the fast-softmax bug of dropping the log2(e) factor (T = ln 2)"
+    },
+    {
+     "name": "argmax_onehot",
+     "file": "admitted/argmax_onehot.py",
+     "description": "one-hot at the row argmax: the T -> infinity limit of the temperature family"
+    },
+    {
+     "name": "uniform",
+     "file": "admitted/uniform.py",
+     "description": "1/n, ignores the input entirely: the T -> 0 limit"
+    },
+    {
+     "name": "cubic_centered",
+     "file": "admitted/cubic_centered.py",
+     "description": "softmax((x - mean)^3): a nonlinear reparametrization of the shift class"
+    },
+    {
+     "name": "label_smoothing",
+     "file": "admitted/label_smoothing.py",
+     "description": "0.9 softmax(x) + 0.1/n: a convex mixture with the uniform distribution"
+    },
+    {
+     "name": "rank_weights",
+     "file": "admitted/rank_weights.py",
+     "description": "within-row rank / sum of ranks (Borda weights): a non-exponential simplex map"
+    },
+    {
+     "name": "sparsemax",
+     "file": "admitted/sparsemax.py",
+     "description": "Euclidean projection of the row onto the simplex: a non-exponential simplex map with zeros"
+    },
+    {
+     "name": "reversed_cols",
+     "file": "admitted/reversed_cols.py",
+     "description": "softmax(x) with the row reversed: a column permutation"
+    },
+    {
+     "name": "rolled_by_one",
+     "file": "admitted/rolled_by_one.py",
+     "description": "softmax(x) rolled by one column: an off-by-one column permutation"
+    },
+    {
+     "name": "rows_swapped",
+     "file": "admitted/rows_swapped.py",
+     "description": "softmax(x) with the rows reversed: cross-row mixing, invisible to per-row laws (6/9 on the reference arm because the (1,64) rung has one row)"
+    },
+    {
+     "name": "ones_m1",
+     "file": "admitted/ones_m1.py",
+     "description": "constant 1.0 of shape (rows, 1): the old bundle never checks the output shape"
+    },
+    {
+     "name": "(whole set, proved)",
+     "file": "proof/SoftmaxComplete.lean",
+     "description": "Softmax.oldBundle_iff_factors: over the reals the old bundle admits exactly K(x) = G(x - x0 * 1) for an arbitrary simplex-valued G, i.e. every simplex-valued function of the row's shift class; at matrix level also arbitrary cross-row dependence and wrong shapes"
+    }
+   ],
+   "added_laws": [
+    {
+     "name": "output_shape_matches_input",
+     "statement": "The output has the input's shape (np.shape(y) == np.shape(x)). Structural, tolerance-free; the Gibbs law defers a shape mismatch to it so one defect is counted once.",
+     "tolerance": "none (exact)"
+    },
+    {
+     "name": "gibbs_log_odds",
+     "statement": "Within every row, for every pair (i, j): y_i * exp(x_j - m) == y_j * exp(x_i - m), m = the row max (any per-row anchor is equivalent in exact arithmetic). Cross-multiplied so zero outputs need no log or division; exp evaluated in float64 from the recorded float32 input; a CASE law needing no partner and no reference, never recomputing the normalizing sum.",
+     "tolerance": "residual_ratio(L, R, dtype=y.dtype, n=row length) < DEFAULT_THRESH = 30 on the (rows, n, n) tensors L_ij = y_i e_j, R_ij = y_j e_i. For a correct kernel L - R = t_i e_j (d_i - d_j) exactly, so ratio ~ 2 max|d| / (eps log2 n) ~ 2 for a kernel spending the whole log2(n) eps budget; measured max 0.082 (reference) and 0.115 (worst correct variant) over 18 cases."
+    }
+   ],
+   "correct_variants_checked": [
+    "correct_variants/exp2_log2e_f32.py (exp2 with the log2(e) factor, float32) -> 0/9 all arms",
+    "correct_variants/mean_subtraction_f64.py (mean- instead of max-subtraction) -> 0/9 all arms",
+    "correct_variants/online_softmax_f32.py (streaming softmax with running-max rescaling, float32) -> 0/9 all arms",
+    "correct_variants/reciprocal_multiply_f32.py (multiply by reciprocal, float32) -> 0/9 all arms",
+    "correct_variants/rsqrt_f32.py (rsqrt(S*S) normalization, float32) -> 0/9 all arms",
+    "correct_variants/sequential_f32_accumulate.py (sequential float32 accumulation) -> 0/9 all arms"
+   ],
+   "lean_file": "<scratchpad>/runs/oracle/softmax-F-r4/proof/SoftmaxComplete.lean",
+   "lean_compiled": true,
+   "lean_main_theorem": "Softmax.completed_bundle_iff : Completed anchor K <-> K = reference anchor (for Kernel F (n+1), any anchor function); core lemma Softmax.completeness : Gibbs m x y -> SumOne y -> y = refRow m x (needs only ExpPos). Also completeness_anchored (n-1 pairs against one column suffice), completeness_matrix (row-by-row for an R x n matrix), oldBundle_iff_factors, oldBundle_incomplete, oldBundle_scaleInvariant, scale_invariant_laws_admit_all_temperatures, completed_not_scaleInvariant. All #print axioms: [propext, Classical.choice, Quot.sound].",
+   "primitive_assumptions": [
+    "ExpPos.exp_pos : forall x : F, 0 < exp x  (the only assumption the completeness direction uses)",
+    "ExpAdd.exp_add : forall x y : F, exp (x + y) = exp x * exp y  (used only for soundness of the reference -- shift invariance and anchor independence -- and for the incompleteness theorems about the old bundle)",
+    "ExpInj.exp_inj : forall x y : F, exp x = exp y -> x = y  (used only to show softmax(T x) differs from softmax(x) for T != 1, i.e. that the old bundle's admitted kernels really differ from the reference)",
+    "Background: F is a Field with IsLinearOrder, LawfulOrderLT and OrderedRing (core Lean's Lean.Grind hierarchy; the reals are a model); core Lean's total division x/0 = 0 is never exercised because the partition function is proved positive before any division is undone",
+    "Consequence (not an extra assumption): the three exp assumptions are satisfied by x -> exp(T x) for every T != 0, so the formal theorem pins the softmax built from whatever positive multiplicative primitive the Gibbs law evaluates; the base e is fixed by laws.py's use of np.exp, not by the proof"
+   ],
+   "statement_vs_laws": "(1) Float tolerance: laws.py accepts residual_ratio < 30 for gibbs_log_odds and rows_sum_to_one; Lean states exact equalities. (2) Anchor: laws.py uses m = row max; Lean proves everything for an arbitrary anchor m (or arbitrary anchor function on rows). (3) Primitive: laws.py evaluates np.exp in float64 on the float32 input; Lean's exp is opaque with the three named assumptions, which cannot see the base of exp. (4) Shape: output_shape_matches_input is the typing Kernel F n = (Fin n -> F) -> (Fin n -> F) in Lean, a run-time check in laws.py. (5) FINITE_OUTPUT is vacuous over a field and omitted in Lean. (6) Granularity: laws.py runs on matrices, Lean laws are per row; completeness_matrix bridges them since the gate pairs output row r with input row r. (7) SHIFT_INVARIANCE: Lean quantifies over all rows and all constants; the gate checks one random per-row shift per group (immaterial: completeness does not use it). (8) completed_bundle_iff is stated for n >= 1 (Fin (n+1)); completeness itself holds for all n (vacuous at n = 0).",
+   "remarks_on_formal_ambiguity": "The three first-order assumptions on the opaque exp are satisfied by x -> exp(T x) for every T != 0 (Lean section 6: scaled_exp_pos/add/inj), so formally the theorem pins softmax(T x) relative to that primitive; it cannot single out base e without a constant or analysis (exp' = exp), neither available over an abstract ordered field in core Lean. In practice laws.py's np.exp fixes the base (exp2_no_log2e rejected with ratio 3.6e5), but a base error inside the law itself would be invisible to the proof. Also: the proof is exact arithmetic over any ordered field for all row lengths; the float claim is only about the gate's 18 fixed cases plus the tolerance argument. Strict minimality is not claimed: two laws added (shape is structural typing the Gibbs law needs); in exact arithmetic the n-1 anchored pairs suffice (completeness_anchored) and after completion UNIT_INTERVAL and SHIFT_INVARIANCE are redundant (gibbs_sum_unitInterval, gibbs_sum_shiftInvariant), so {FINITE, SHAPE, ROW_SUMS, GIBBS} is a complete core. What IS proved about alternatives: any completing law must break invariance under x -> T x (oldBundle_scaleInvariant + scale_invariant_laws_admit_all_temperatures), which rules out permutation equivariance, monotonicity, continuity and difference-only odds as completing candidates.",
+   "inherited_files_used": "Inherited (previous session, cut off before RESULT.md): admitted/ (12 kernels + _ref.py + sitecustomize_note.txt), laws.py (the two completing laws), correct_variants/ (6 rewrites), experiments/ (4 scripts, 3 recorded tables), proof/SoftmaxComplete.lean (draft). Kept and verified: re-ran gate.py on reference (laws on/off), every admitted kernel (incl. README's exact PYTHONPATH=admitted invocation on four of them) and every variant; experiments/admitted_table.txt, variants_table.txt and tolerance_headroom.txt regenerated byte-identically; ran resolution.py and inspect_domain.py (no recorded output before) and saved resolution.txt and inspect_domain.txt. Repaired: the inherited Lean draft did NOT compile (12 errors: `induction n generalizing f` is an error in 4.33, simp cannot close 0 = c*0 over the abstract field, simp double-unfolded fsum (n+2) in fsum_pos, ScaleInvariantLaw used < in a section without LT F, one h.symm in the wrong orientation; every #print axioms listed sorryAx) -- fixed all, silenced all linter warnings with `omit ... in`, added completeness_anchored and completeness_matrix; the inherited draft is kept verbatim as proof/SoftmaxComplete.lean.draft-inherited and the clean compile as proof/compile.log. Fixed admitted/sitecustomize_note.txt (named a nonexistent run_admitted.py) and one laws.py docstring figure (~1e-5 -> measured 2.7e-5). Discarded nothing on its merits. reference.py, bundle.yaml, gate.py, autokernel_pbt/ untouched.",
+   "outside_paths_read": [
+    "~/.elan/toolchains/ (directory listing only, to locate the pinned binary named by proof/README.md)",
+    "~/.elan/toolchains/leanprover--lean4---v4.33.0/bin/lean (executed, not read, as proof/README.md instructs)"
+   ],
+   "elapsed_seconds": 613,
+   "notes": "Sensitivity at the harness threshold (experiments/resolution.txt): completed declarative arm first catches softmax((1+d)x) at |d| = 2.7e-5 and all 7 non-degenerate groups at 7.4e-5 (reference arm 1.1e-5 / 1.5e-5); label smoothing e first at 4.3e-5, all 7 at 5.3e-4 (reference 1.3e-5 / 2.6e-5); old bundle 0/9 at every parameter. Negative findings: no scale-invariant law can complete the bundle (proved); the two single-column rungs are blind for every arm; the pairwise Gibbs form needs (rows, n, n) scratch and is infeasible at softmax_at_scale shapes -- the anchored O(n) form is proved equivalent but is not what laws.py ships. One oversized Bash output was auto-saved by the agent harness to its own tool-results folder outside the sandbox; I did not open it and re-read the sources in chunks instead. The previous session's elapsed time is not recoverable; 613 s is this session only."
+  }
+ },
+ {
+  "workflow": "wf_49a9863c-ad3",
+  "label": "oracle:softmax-T-r4",
+  "report": {
+   "sandbox": "<scratchpad>/runs/oracle/softmax-T-r4",
+   "task": "softmax",
+   "arm": "T",
+   "claims_complete": true,
+   "claim_grounds": "Over the reals in exact arithmetic, the completed bundle (bundle.yaml's four laws + log_linear_rows) characterizes reference.py. Grounds, each demonstrated by a file in the sandbox: (1) Theorem 1: the original bundle never reads x (theory_checks.py part A: replacing x by junk leaves all four laws' verdicts and detail strings byte-identical), so it admits exactly the shift-invariant maps into the simplex; 13 witnesses in admitted/ pass `gate.py --no-laws` 0/9 and fail the reference arm 7/9 (row_roll 6/9) — results_table.txt, regenerated this session. (2) Theorem 2: every law invariant under x -> beta*x that softmax satisfies is satisfied by softmax(beta*x); all four bundle laws are, so an exp-anchor is unavoidable (theory_checks.py part B: only log_linear_rows sees beta != 1, including 0.999 and 1.001). (3) Theorem 3: rows_sum_to_one + log_linear_rows pin y = softmax(x) uniquely; the proof uses only exp > 0 (sharpened this session from the inherited exp_add + exp_pos). Corollary 4: the other three laws become theorems; the characterizing core is exactly {rows_sum_to_one, log_linear_rows}, neither droppable (extras/half_softmax.py fails only rows_sum_to_one). (4) Gate: reference and 8 correct rewrites pass 0/9 with law ratio <= 0.122 against threshold 30; all 13 admitted kernels now fail the declarative arm on exactly the groups the reference arm fails them. Not claimed: float-level equivalence with the reference arm (Prop 5: law is <= ~2x stricter but up to ~(2 + n*max s)x more lenient, attained x1.6-4 on the ladder by extras/adversarial_slack.py and x250 at n=4096 in tail_sensitivity.txt); that a gate run proves a kernel correct (extras/gate_blind_spot.py passes both arms); resolution below the shared rounding budget (extras/temperature_1_plus_1e-6.py passes both arms; floor ~1e-5 in temperature per temperature_resolution.txt); anything on single-column shapes where every arm is structurally blind. The Lean file is NOT among the grounds (unchecked).",
+   "admitted_families": [
+    {
+     "name": "temperature family softmax(beta*x), beta > 0, with its endpoints",
+     "description": "Every rescaling of the input is admitted because no bundle law reads x. beta=0.5 (temperature_2), beta=2 (sharpen_2), beta=ln2 = the realistic exp2-without-log2(e) optimizer bug (exp2_without_log2e), beta->0 uniform 1/n (uniform), beta->inf one-hot argmax (hardmax). Each: bundle-only 0/9, reference 7/9.",
+     "file": "admitted/temperature_2.py, admitted/sharpen_2.py, admitted/exp2_without_log2e.py, admitted/uniform.py, admitted/hardmax.py"
+    },
+    {
+     "name": "g-max family g(x - max x)/sum g(x - max x) for any positive g",
+     "description": "x - rowmax(x) is shift-invariant, so any positive g normalized gives an admitted kernel; nothing in the bundle prefers g = exp. Cauchy kernel g(t)=1/(1+t^2) and a clipped cubic Taylor polynomial of exp (a realistic fast-exp approximation).",
+     "file": "admitted/cauchy_normalization.py, admitted/taylor3_exp.py"
+    },
+    {
+     "name": "convex mixtures (the admitted set is convex)",
+     "description": "Shift invariance is linear in K and the simplex is convex, so convex combinations of admitted kernels are admitted: 0.9*softmax + 0.1*uniform (label smoothing) and 0.5*softmax + 0.5*hardmax.",
+     "file": "admitted/label_smoothing.py, admitted/mix_softmax_hardmax.py"
+    },
+    {
+     "name": "precomposition with shift-equivariant input maps",
+     "description": "K o phi is admitted whenever phi(X + c1^T) = phi(X) + c'1^T. Witness: softmax(x + b) with a fixed per-column bias b_j = 0.1 j (the bundle cannot tell x from x + b for any b in R^n).",
+     "file": "admitted/column_bias.py"
+    },
+    {
+     "name": "postcomposition with simplex-preserving output maps",
+     "description": "psi o K is admitted for any psi mapping the simplex to itself: output column permutation (columns reversed) and left-multiplication by a row-stochastic matrix = row mixing (row i answered from row i-1; passes shift invariance because the relation shifts every row). row_roll coincides with softmax on single-row shapes, so it fails the reference arm only 6/9.",
+     "file": "admitted/reversed_columns.py, admitted/row_roll.py"
+    },
+    {
+     "name": "unrelated shift-invariant simplex maps",
+     "description": "sparsemax (Euclidean projection of each row onto the simplex), a well-known softmax alternative, is shift-invariant and exactly simplex-valued, hence admitted.",
+     "file": "admitted/sparsemax.py"
+    }
+   ],
+   "added_laws": [
+    {
+     "name": "log_linear_rows (class LogLinearRows in laws.py; enabled via EXTRA_CASE_PROPERTIES)",
+     "statement": "Along each row and for all i, j: y_i * exp(x_j) = y_j * exp(x_i); equivalently log(y) - x is a per-row constant; equivalently y_i / y_j = exp(x_i - x_j). Checked against the row argmax pivot p: y == y_p * exp(x - x_p) elementwise (all exponents <= 0, exp evaluated in float64 from the recorded float32 input). A shape mismatch between y and x is a FAIL; non-finite y defers to outputs_are_finite (INCONCLUSIVE); non-finite x or exact dtype is INCONCLUSIVE.",
+     "tolerance": "residual_ratio(y, y_p*exp(x-x_p), dtype=y.dtype, n=row_length) < DEFAULT_THRESH = 30, i.e. ||y - yhat||_inf / (||yhat||_inf * eps * max(log2 n, 1)) — the harness's own LAPACK-style ratio with the pairwise-summation log2(n) budget, as the reference arm uses. Justification (Prop 5a): with d = y - softmax(x), y_i - yhat_i = d_i - d_p*exp(x_i - x_p) and exp(x_i - x_p) <= 1, so the law's ratio is at most ~2x the reference arm's ratio; any kernel the reference arm accepts at ratio <~ 15 passes. Measured: reference <= 0.082, all 8 correct rewrites <= 0.122 (~250x headroom); all 13 admitted kernels >= 7.6e4. Caveat (Prop 5b): law + rows_sum_to_one can be up to ~(2 + n*max s)x more lenient than the reference arm; witnessed by extras/adversarial_slack.py."
+    }
+   ],
+   "correct_variants_checked": [
+    "correct_variants/exp2_log2e_fp32.py (exp2 with float32 log2(e) factor, all fp32)",
+    "correct_variants/reciprocal_multiply_fp32.py (multiply by reciprocal of row sum, fp32)",
+    "correct_variants/fp32_accumulate.py (no float64 anywhere, pairwise fp32 sum)",
+    "correct_variants/sequential_fp32_sum.py (scalar left-to-right fp32 accumulation)",
+    "correct_variants/online_softmax_fp32.py (FlashAttention running-max recurrence, fp32)",
+    "correct_variants/blocked_two_pass_fp32.py (32-column tiles with (max,sum) merge, fp32)",
+    "correct_variants/logsumexp_form.py (exp(x - logsumexp x))",
+    "correct_variants/mean_subtraction.py (subtract row mean instead of max; safe on this domain, overflows if spread > ~88)"
+   ],
+   "elapsed_seconds": 612,
+   "inherited_files_used": "The interrupted session had left: laws.py (LogLinearRows enabled + LogSpaceLinearRows implemented but not enabled), 13 kernels in admitted/, 8 in correct_variants/, 4 in extras/, run_all.py -> results_table.txt, theory_checks.py -> theory_checks_output.txt, temperature_resolution.py -> .txt, tail_sensitivity.py -> .txt, and a RESULT.md complete except for its finish/elapsed placeholders (last write 1790926916, 1121 s after its recorded start 1790925795). KEPT after re-verification: everything. I re-ran gate.py on reference.py (laws on and --no-laws: 0/9 both arms), re-ran run_all.py from scratch (regenerated results_table.txt identical to the inherited table), re-ran all three analysis scripts (outputs regenerated, identical to the printed digit), ran gate.py --no-laws directly on admitted/exp2_without_log2e.py and gate.py on extras/half_softmax.py and extras/adversarial_slack.py (per-law tallies as the text states), and checked every harness fact the write-up cites against the harness source (shift scale 0.5*ln(finfo.max)=44.36, nine ladder shapes, float32 N(0,1) domain, reference arm normalizes by the input's last axis, the four bundle laws read only y). VERIFIED UNTOUCHED: reference.py, bundle.yaml, gate.py, autokernel_pbt/ (mtimes predate all other files). REPAIRED/SHARPENED: RESULT.md — filled the timing, added a Provenance section, corrected the Theorem 3 primitive-fact statement (only exp > 0 is needed in product form; exp_add is needed only to identify the implemented pivot-difference form and for shift invariance), softened Prop 5a's 'ratio < 15' to '<~ 15' with the reason, replaced dead-end 7 and the files table. ADDED: proofs/SoftmaxBundleTheorem3.lean (unchecked). DISCARDED: nothing.",
+   "lean_compiled": false,
+   "lean_file": "<scratchpad>/runs/oracle/softmax-T-r4/proofs/SoftmaxBundleTheorem3.lean",
+   "lean_main_theorem": "SoftmaxBundle.loglinear_and_rowsum_iff_softmax : for e y : Fin n -> K over an abstract field K with rsum n e ≠ 0, ((∀ i j, y i * e j = y j * e i) ∧ rsum n y = 1) ↔ (∀ i, y i = e i / rsum n e). Wrapped with exp as SoftmaxBundle.softmax_characterized (hypothesis exp_pos only, over an ordered field, Fin (n+1)). Also stated: scale_free_law_is_temperature_blind (Theorem 2, pure logic) and softmax_shift_invariant (Corollary 4 shift clause, needs exp_add). NOT ELABORATED: no Lean toolchain in the sandbox and the task forbids reaching outside it; the proof scripts (core Lean 4 >= 4.22 grind algebra classes, no Mathlib, rsum by recursion on Fin n) may contain errors.",
+   "primitive_assumptions": [
+    "exp(t) > 0 for every real t — the ONLY property of exp used in the proof of Theorem 3 (product form y_i*exp(x_j) = y_j*exp(x_i) plus row sums = 1 implies y = softmax(x)); it supplies exp(x_p) ≠ 0 and sum_k exp(x_k) ≠ 0.",
+    "exp(a + b) = exp(a) * exp(b) — used only (i) to identify the implemented pivot-difference form y_i = y_p * exp(x_i - x_p) (laws.py) with the product form, and (ii) for the shift-invariance clause of Corollary 4 (softmax(x + c) = softmax(x)).",
+    "Theorem 3 holds for ANY positive weight function in place of exp; the exponential structure is irrelevant to the characterization once the weights are given. Theorem 2 assumes only that softmax(beta*x) is well defined for beta > 0.",
+    "No continuity, monotonicity, differentiability or injectivity of exp is used anywhere.",
+    "Floating point (tolerance justification only, not the theorem): IEEE exp is relatively accurate (~1 ulp), float64 evaluation of exp from float32 input has relative error ~1e-16, negligible against float32 eps = 1.2e-7; the pairwise-summation log2(n) error budget of the harness is adopted unchanged.",
+    "Over the reals: the bundle's FINITE_OUTPUT law is vacuous and ROW_SUMS / SHIFT_INVARIANCE are read with tolerance zero."
+   ],
+   "statement_vs_laws": "(1) Exact equality in the theorem/Lean statement; laws.py checks the harness's normalized test ratio ||y - yhat||_inf / (||yhat||_inf * eps * max(log2 n,1)) < 30, so in floating point the completed bundle characterizes softmax only up to that budget (Prop 5a: <= ~2x the reference arm's ratio; Prop 5b: up to ~(2 + n*max s)x more lenient, attained by extras/adversarial_slack.py). (2) Pairwise product form y_i*exp(x_j) = y_j*exp(x_i) in the statement; laws.py checks the equivalent pivot-difference form y = y_p*exp(x - x_p) against the row argmax p (equivalent given exp_add and exp_pos; chosen so no exponent is positive and underflow to 0 is the predicted value). (3) The statement is over an abstract (ordered) field / the reals; the gate records float32 inputs and the law evaluates exp in float64 and judges y in y's own dtype. (4) The statement is row-wise over Fin n (n >= 1); the gate's tensors are m x n and the law applies to every row with one global max in the ratio. (5) The law adds structural handling absent from the statement: a shape mismatch is a FAIL, non-finite output defers to outputs_are_finite, non-finite input or exact dtype is INCONCLUSIVE. (6) The Lean statement for Theorem 3 does not mention exp_add at all; laws.py's docstring and RESULT.md explain where exp_add is needed. (7) The unit-interval clause of Corollary 4 (0 <= e_i/sum e <= 1) is proved on paper but was not written in Lean.",
+   "remarks_on_formal_ambiguity": "(a) Domain: the README asks about 'every input in the gate's domain' (float32 N(0,1) rows at nine shapes, plus N(0,44.4)-shifted partners); Theorem 3 is pointwise so it holds on any input set; Theorem 1's description of the admitted set S on a restricted domain reads 'K(X + c1^T) = K(X) whenever both are in the domain'. (b) The bundle does not fix output shape over the reals (ROW_SUMS sums whatever last axis y has; SHIFT_INVARIANCE compares two same-shaped wrong outputs happily); the README's type R^{m x n} -> R^{m x n} is an assumption the bundle does not enforce and the completing law does (shape mismatch = FAIL). (c) SHIFT_INVARIANCE as a law over the domain is read as 'for every per-row constant c'; the gate samples one c ~ N(0, 44.4) per row. (d) Single-column shapes (1,1) and (17,1): softmax is identically 1 for any implementation, so every arm is structurally blind there (2 of 9 groups); 'characterize' is a statement about laws over the domain, not about those rungs. (e) 'Smallest set of additional laws' was read as minimal count: one law added, zero does not suffice; the characterizing core {rows_sum_to_one, log_linear_rows} is minimal in that neither can be dropped (half_softmax witness). (f) 'Characterize' in floating point is only 'up to the shared rounding budget' (temperature error 1e-6 passes both arms). (g) Whether the completing law counts as 'declarative': it carries a tolerance and the constant e; it is the reference computation factored into a ratio law plus the existing normalization law, and Theorem 2 says any completion must carry such an exp-anchor.",
+   "outside_paths_read": [],
+   "notes": "Headline negative finding: for softmax, 'many individually weak laws are jointly constraining' is false in the characterization sense — the four tolerance-free/structural laws jointly constrain output structure only (they never read x), and the completed bundle is one strong, tolerance-bearing, exp-carrying law plus three corollaries. Theorem 2 shows the harness's single metamorphic relation (shift_rows) is not the bottleneck: no scale-free relation vocabulary could complete the bundle. laws.py also contains LogSpaceLinearRows (name log_space_linear_rows, NOT enabled): the same identity measured in nats (relative error per element), which catches tail corruptions the reference arm's inf-norm misses (tail halved below 1e-8*max: reference 0.70 PASS vs log-space 4.9e5 FAIL) and resolves temperature ~14x finer, at the price of demanding relative accuracy in the far tail (exp2_log2e_fp32 reaches 1.83 there vs threshold 30). The choice of norm in the completing law is a genuine design axis. The Lean file is a formal spec with untested proof scripts; it should be compiled with the parent's pinned toolchain before being cited. Reproduce everything with: venv/bin/python run_all.py; venv/bin/python theory_checks.py; venv/bin/python temperature_resolution.py; venv/bin/python tail_sensitivity.py; venv/bin/python gate.py <kernel.py> [--no-laws]. This session's own `date +%s`: start 1790941969, finish 1790942581."
+  }
+ },
+ {
+  "workflow": "wf_49a9863c-ad3",
+  "label": "oracle:softmax-T-r1",
+  "report": {
+   "sandbox": "<scratchpad>/runs/oracle/softmax-T-r1",
+   "task": "softmax",
+   "arm": "T",
+   "claims_complete": true,
+   "claim_grounds": "Over the reals, in exact arithmetic, the completed bundle {FINITE_OUTPUT, UNIT_INTERVAL, ROW_SUMS, SHIFT_INVARIANCE, LOG_ODDS} is satisfied by reference.py's function and by no other kernel R^{m x n} -> R^{m x n}, for every shape. Proof (RESULT.md Proposition 4): LOG_ODDS says y_rj = e^{k_r} e^{x_rj} with y > 0; ROW_SUMS gives e^{k_r} = 1/sum_j e^{x_rj}; so y = softmax(x). Conversely softmax satisfies both. Already {ROW_SUMS, LOG_ODDS} suffices, and one added law is the smallest completion because the frozen bundle alone admits exactly Phi o C (C = row centering, Phi ANY map into the simplex; Proposition 1), a set as large as the set of all functions. Demonstrated: 17 admitted kernels in admitted/ plus 44 random Phi (analysis/random_phi_sweep.py) pass gate.py --no-laws (0/9) and are rejected by the reference arm and by the completed bundle (6-7/9, identical group counts); reference plus 8 correct rewrites pass every arm with log-odds ratio <= 0.56 on the gate and <= 0.85 over 1440 random inputs each (analysis/results.md, analysis/out/false_positive_sweep.txt). Proposition 3 explains why no weaker law could do it: the temperature family softmax(beta x) lies in the admitted set and is exactly the set of kernels definable with an abstract exponential satisfying E(a+b)=E(a)E(b), so the completing law must carry exp's normalization (here via log). Not claimed: floating-point equivalence beyond the stated tolerance; inputs the gate never generates; a tolerance-free completion (conjectured impossible, not proven); a machine-checked proof.",
+   "admitted_families": [
+    {
+     "name": "Phi o C (the whole admitted set)",
+     "description": "Proposition 1: a kernel satisfies the frozen bundle over the reals iff K = Phi o C with C(x) = x - rowmean(x) 1^T and Phi any function from centered matrices into the product of simplices. Constructor admitted(phi); 44 random instances (30 tanh nets, 10 linear maps, |c|, sin 3c, c^2-c, renormalized 1/(1+c^2)) in analysis/random_phi_sweep.py: frozen bundle admits 41/44 (3 fail SHIFT_INVARIANCE only through float32 partner quantization, ratio 0 with an exact partner), completed bundle and reference arm reject 44/44.",
+     "file": "admitted/_family.py"
+    },
+    {
+     "name": "temperature_2",
+     "description": "softmax(x/2): temperature error (a forgotten or doubled 1/sqrt(d) scale). Frozen 0/9, completed 7/9, reference 7/9. Fitted log-linear slope 0.5.",
+     "file": "admitted/temperature_2.py"
+    },
+    {
+     "name": "base2_missing_log2e",
+     "description": "exp2(x - m) without the log2(e) factor = softmax at temperature 1/ln 2; the realistic base-2 optimizer's bug. Fitted slope 0.6931. 0/9 -> 7/9.",
+     "file": "admitted/base2_missing_log2e.py"
+    },
+    {
+     "name": "squared_normalized",
+     "description": "softmax(x)^2 renormalized = softmax(2x): a post-processing bug that is a temperature error in disguise. Fitted slope 2. 0/9 -> 7/9.",
+     "file": "admitted/squared_normalized.py"
+    },
+    {
+     "name": "reversed_sign",
+     "description": "softmax(-x): temperature -1, favours the smallest logit. Fitted slope -1. 0/9 -> 7/9.",
+     "file": "admitted/reversed_sign.py"
+    },
+    {
+     "name": "uniform",
+     "description": "1/n everywhere, ignores the input (temperature 0 / E = 1). 0/9 -> 7/9.",
+     "file": "admitted/uniform.py"
+    },
+    {
+     "name": "hardmax",
+     "description": "one-hot at the row argmax (temperature -> 0 limit); produces exact zeros. 0/9 -> 7/9 (caught by the zero-where-normal FAIL of LOG_ODDS).",
+     "file": "admitted/hardmax.py"
+    },
+    {
+     "name": "sparsemax",
+     "description": "Euclidean projection of each row onto the simplex (Martins & Astudillo 2016), a genuine literature alternative; shift-invariant, exact zeros. 0/9 -> 7/9.",
+     "file": "admitted/sparsemax.py"
+    },
+    {
+     "name": "first_column_onehot",
+     "description": "one-hot at column 0 regardless of input (uninitialized-buffer style). 0/9 -> 7/9.",
+     "file": "admitted/first_column_onehot.py"
+    },
+    {
+     "name": "label_smoothing",
+     "description": "0.9 softmax(x) + 0.1/n: a fused smoothed softmax that was meant to be plain. 0/9 -> 7/9.",
+     "file": "admitted/label_smoothing.py"
+    },
+    {
+     "name": "prior_weighted",
+     "description": "softmax(x + log w) for a fixed non-uniform column prior w: the family even full tilt equivariance admits (Proposition 6); only the base point K(0) = uniform separates it. 0/9 -> 7/9.",
+     "file": "admitted/prior_weighted.py"
+    },
+    {
+     "name": "fast_exp_squaring",
+     "description": "exp approximated by (1 + t/256)^256: up to 7% relative error at t = -6, yet positive, renormalized and a function of x - rowmax. 0/9 -> 7/9.",
+     "file": "admitted/fast_exp_squaring.py"
+    },
+    {
+     "name": "rational_phi",
+     "description": "phi(t) = 1/(1 - t) in place of exp(t), t = x - rowmax: any positive phi renormalized is admitted. 0/9 -> 7/9.",
+     "file": "admitted/rational_phi.py"
+    },
+    {
+     "name": "cubic_centered",
+     "description": "softmax of the cube of the centered input: non-monotone, not a temperature. 0/9 -> 7/9.",
+     "file": "admitted/cubic_centered.py"
+    },
+    {
+     "name": "random_phi",
+     "description": "a fixed random two-layer tanh map of the centered input pushed into the simplex: an arbitrary function. 0/9 -> 7/9.",
+     "file": "admitted/random_phi.py"
+    },
+    {
+     "name": "rank_based",
+     "description": "output proportional to the within-row rank of each entry. 0/9 -> 7/9.",
+     "file": "admitted/rank_based.py"
+    },
+    {
+     "name": "columns_reversed",
+     "description": "correct softmax values stored in reversed column order (reversed store index in a tiled kernel): multiset per row is right. 0/9 -> 7/9.",
+     "file": "admitted/columns_reversed.py"
+    },
+    {
+     "name": "row_rotated",
+     "description": "output row i is softmax of input row i+1 (off-by-one row index): each row is a softmax of some row, and every row was shifted by a constant. 0/9 -> 6/9 (identity on the three single-row groups).",
+     "file": "admitted/row_rotated.py"
+    }
+   ],
+   "added_laws": [
+    {
+     "name": "LOG_ODDS (log_odds_match_input_differences, laws.py)",
+     "statement": "For every input and every row r there is a constant k_r such that y_rj > 0 and log y_rj - x_rj = k_r for all j; equivalently log(y_ri / y_rj) = x_ri - x_rj for every pair (the output's log-odds equal the input's differences). Case property, tier portable, not tolerance-free, defers non-finite output to outputs_are_finite and negative output to values_in_unit_interval; FAILs on an output shape different from the input's and on a zero output where the exact softmax value is a normal number of y's dtype.",
+     "tolerance": "Residual r_rj = (log y_rj - x_rj) - (log y_r* - x_r*) anchored at the row argmax r* (t = 0 there), in float64. Per-entry budget eps(y.dtype) * (L + |t_rj|), L = max(log2 n, 1), t_rj = x_rj - max_r x: the L term is the harness's usual O(log2 n) eps arithmetic-rounding budget (exp ulps + pairwise sum + division, doubled for the difference of two relative errors), the |t| term is the half-ulp argument rounding of x - max (and of a base-2 rescaling) in the kernel's working precision, which is absolute in the exponent hence relative in y. Computed through the harness's own residual_ratio on r / (1 + |t|/L) against a zero reference (documented unit-scale fallback = absolute deviation in units of eps log2 n), judged with within_threshold at the LAPACK constant 30. Entries with t < log(tiny) + log(n) (exact value cannot be a normal float) are not judged; none occur in the gate's domain. Measured ratio: reference 0.20, correct variants 0.31-0.551 on the gate; zero failures and max 0.85 over 9 correct kernels x 1440 random inputs at scales sigma = 0.3..10 (analysis/out/false_positive_sweep.txt). Temperature error detected from delta ~ 7.5e-6..1e-5 (reference arm: 1.8e-5), matching the prediction 30 eps (L + ptp)/ptp within one grid step."
+    }
+   ],
+   "elapsed_seconds": 650,
+   "outside_paths_read": [],
+   "inherited_files_used": "The interrupted session left: 17 admitted kernels plus the Phi o C constructor (admitted/), 7 correct variants, the complete LOG_ODDS law in laws.py, 7 analysis scripts with saved outputs and a master table (analysis/), and no RESULT.md although laws.py, _family.py and the analysis scripts cited \"Proposition N (RESULT.md)\" by number. I inventoried everything and re-ran every claim. KEPT after verification: all 17 admitted kernels (each re-verified frozen 0/9, completed 6-7/9, reference 6-7/9), all 7 correct variants (0/9 on every arm), laws.py (reviewed line by line; logic sound), all analysis scripts (hierarchy, tilt_equivariance, random_phi_sweep reproduced their saved outputs byte for byte). REPAIRED: laws.py's docstring cited measured ratios from an older version of the law (<= 1.4; sweep 'flat') -> corrected to current measurements (<= 0.56; <= 0.85); analysis/sensitivity.py's predicted threshold ignored the |t| rescaling (predicted 2.3e-6 vs measured 7.5e-6) -> corrected to 30 eps (L+ptp)/ptp, now within one grid step of every measurement. REGENERATED (stale): analysis/out/dead_ends.txt, sensitivity.txt, false_positive_sweep.txt and results.md/json carried pre-rescaling numbers (worst gate ratio 1.37 vs 0.551 now; sweep at sigma=10 read 12.7 vs 0.85 now); run_all.txt showed a garbled first-law column '8)' that the current code does not produce (stale output, not a live bug); shift_law_margin.txt was missing and was created. ADDED: correct_variants/polynomial_exp.py (hand-rolled range-reduced degree-7 polynomial exp in float32; passes every arm, ratio 0.334), analysis/kernels/small_entry_perturbed.py (probe showing the per-entry relative law catches a 1e-4 tail error on 6/9 groups where the reference arm catches 1/9), RESULT.md with Propositions 1-7 written out and proved. DISCARDED: nothing; everything inherited stood on its merits after re-verification. reference.py, bundle.yaml, gate.py and autokernel_pbt/ were read only.",
+   "lean_compiled": false,
+   "lean_file": "",
+   "lean_main_theorem": "",
+   "primitive_assumptions": [
+    "exp : R -> (0, inf) is strictly positive on all of R (used for y > 0 in Proposition 4 and for the zero-where-normal FAIL)",
+    "exp(a + b) = exp(a) exp(b), hence exp(0) = 1 (used in Propositions 3, 4, 5, 6: factoring e^{k_r} e^{x_rj}, and tilt_v o tilt_x = tilt_{x+v})",
+    "log is the inverse of exp on (0, inf): log(exp(a)) = a and exp(log(p)) = p for p > 0 (used to pass between LOG_ODDS and y_rj = e^{k_r} e^{x_rj}; this is the property that pins the base of the exponential and that the abstract-exponential axioms lack)",
+    "the continuous solutions of E(a + b) = E(a)E(b) with E > 0 are exactly E(a) = exp(beta a), beta in R (Cauchy's exponential equation; used only in Proposition 3)",
+    "a row sum equal to one determines the positive normalizing constant uniquely (division in an ordered field)",
+    "max and argmax of a finite real row exist and x_rj - max_r x <= 0 with equality at the argmax (used for the anchor and for the non-judged region)",
+    "floating point only (tolerance argument, not the characterization): np.exp / np.exp2 / np.log are accurate to a few ulps; IEEE binary32 has eps = 2^-23 and tiny = 2^-126; x - max is computed with at most half an ulp of error; pairwise summation of n terms accrues O(log2 n) ulps and sequential at most n - 1; np.log in float64 on float32 data has relative error ~2^-53",
+    "np.sqrt and rsqrt-style reciprocals are correctly rounded or within a few ulps (used only to argue the rsqrt_squared variant is correct; it was also checked empirically)"
+   ],
+   "remarks_on_formal_ambiguity": "(1) 'Characterize on every input in the gate's domain': the gate's domain is float32 N(0,1) matrices of nine fixed shapes plus one shifted partner each; I read the question as being over all real matrices of each shape (the propositions hold for every m, n >= 1) and treated the gate's 18 cases as the demonstration, not the quantifier. (2) 'Kernel' is taken as any map R^{m x n} -> R^{m x n}; an output of a different shape is treated as breaking the signature (LOG_ODDS FAILs it; ROW_SUMS and the reference arm also react). (3) For n = 1 the admitted set is already {softmax} (Delta_1 = {1}), so the two single-column rungs are blind for every arm and every kernel's 7/9 is 7 of the 7 groups with n >= 2; this is a property of the task, not a gap. (4) FINITE_OUTPUT is vacuous over the reals and UNIT_INTERVAL's upper bound follows from the lower bound plus ROW_SUMS, so the frozen bundle's real content is {rows in the simplex, invariance under per-row translation}. (5) LOG_ODDS is stated existentially (there exists k_r per row); the implementation realizes the existential by anchoring at the row argmax, which is equivalent in exact arithmetic. (6) SHIFT_INVARIANCE is kept in the completed bundle although it is redundant over the reals, because its floating-point job (the overflowing no-max-subtraction kernel, which over the reals IS softmax) is real; the characterization question and the floating-point detection question are different questions and RESULT.md keeps them apart. (7) 'Smallest set of additional laws' is read as cardinality: one law, since zero cannot suffice; {ROW_SUMS, LOG_ODDS} is also a minimal characterizing subset of the completed bundle.",
+   "statement_vs_laws": "The exact statement is: for all x, for all r, there is k_r with y_rj > 0 and log y_rj - x_rj = k_r for all j. laws.py checks a tolerant, partially abstaining version: (a) equality is replaced by max_rj |r_rj| / (eps (L + |t_rj|)) < 30 with r anchored at the row argmax, so any kernel whose log-odds residual is within that budget passes (temperature errors below ~7e-6, exp approximations with relative error below ~3e-5 per entry) — the same kind of slack the reference arm has at 30 eps log2(n) max|y|, measured per entry relatively rather than in max-norm absolutely (which is why the probe small_entry_perturbed is caught 6/9 by the law and 1/9 by the reference arm); (b) entries whose exact value cannot be a normal float (t < log(tiny) + log n) are not judged at all, whereas the real statement constrains them; none occur in the gate's domain; (c) non-finite or negative outputs are INCONCLUSIVE for this law (deferred to outputs_are_finite / values_in_unit_interval) rather than violations, so the completed bundle as a whole, not this law alone, is what rejects them; (d) an exact dtype is INCONCLUSIVE; (e) the law is evaluated on the gate's 18 fixed cases, not on all inputs. The characterization claim is about the real functions the laws define (Proposition 4); the gate results are the demonstration that the implemented laws agree with those definitions on every kernel in the directory.",
+   "correct_variants_checked": [
+    "reference.py (ratio 0.200; passes every arm)",
+    "correct_variants/exp2_log2e.py — base-2 exponentiation with a log2(e) factor, float32 (ratio 0.551)",
+    "correct_variants/reciprocal_multiply.py — one reciprocal per row, multiply instead of divide (0.310)",
+    "correct_variants/float32_sequential.py — all float32 with a sequential (cumsum) row sum, the worst case for the log2 n budget (0.334)",
+    "correct_variants/rsqrt_squared.py — 1/s = rsqrt(s)^2 (0.313)",
+    "correct_variants/log_domain.py — via log-softmax, exp((x - m) - log sum exp) (0.527)",
+    "correct_variants/online_softmax.py — streaming/flash-attention online softmax with running max and rescaled sum, block 8 (0.334)",
+    "correct_variants/lane_split_exp.py — even columns np.exp, odd columns exp2(t log2e): a vector loop plus scalar tail rounding differently (0.396)",
+    "correct_variants/polynomial_exp.py — hand-rolled range-reduced degree-7 polynomial exp in float32 with ldexp (0.334; added this session)",
+    "analysis/kernels/naive_f64.py — no max-subtraction in float64: correct on this domain, passes every arm (0.200); same real function in float32 (naive_f32.py) fails 2/9 by overflow on the shifted partners, the frozen bundle's only genuine detection",
+    "all nine correct kernels also pass the false-positive sweep (12 shapes up to (2, 4096) x 30 seeds x sigma in {0.3, 1, 3, 10}: zero failures, max ratio 0.85) and the out-of-harness tilt-equivariance test (ratio <= 0.66)"
+   ],
+   "notes": "Key files: laws.py (the completion), RESULT.md (Propositions 1-7 with proofs, inherited-files account, claim and non-claims), analysis/results.md (master table: 29 kernels x {frozen, completed, reduced, reference}), analysis/out/*.txt (one per analysis). Additional findings recorded in RESULT.md section 5: the frozen bundle's only real detection (naive float32 overflow) is a floating-point fact with no counterpart over the reals; SHIFT_INVARIANCE in float32 is a Lipschitz test on the partner's quantization (|fl32(x+c) - c - x| up to 4.5e-4) with a 2.5-6x margin for the reference itself (gate ratios up to 4.1, max 11.7 over 400 random groups) and it rejects 3 of 44 exactly invariant random Phi; dead ends: a ptp-scaled log-odds formulation false-positives on near-constant rows (ratio 350 at spread 1e-4), a tolerance-free tie law is not backend-safe (lane_split_exp violates it on 16/64 tied rows), and no group law on the shift_rows partner can complete the bundle since the partner's output equals the base's on the whole admitted set (Proposition 7); the metamorphic completion the harness cannot express (tilt equivariance + base point, Proposition 6) is demonstrated outside gate.py and admits exactly the prior-weighted softmaxes without the base point. Hygiene note: two oversized cat outputs were auto-persisted by the tool harness to its own tool-results folder outside the sandbox; I did not open those files and re-read the same content from inside the sandbox in smaller pieces, so no outside path was read. No Lean or other proof assistant exists inside the sandbox, so the proofs are paper proofs; lean fields are empty accordingly."
+  }
+ },
+ {
+  "workflow": "wf_49a9863c-ad3",
+  "label": "oracle:softmax-F-r3",
+  "report": {
+   "sandbox": "<scratchpad>/runs/oracle/softmax-F-r3",
+   "task": "softmax",
+   "arm": "F",
+   "claims_complete": true,
+   "claim_grounds": "Over the reals in exact arithmetic the completed bundle {ROW_SUMS, boltzmann_ratio} (UNIT_INTERVAL, SHIFT_INVARIANCE, FINITE_OUTPUT become redundant) characterizes reference.py. Grounds: Lean 4 proof proof/Softmax.lean, compiled with the pinned v4.33.0 binary, exit 0, no warnings, no sorry, no axiom declarations; `Softmax.completed_bundle_characterizes` (row level: BoltzmannRatio with M the row max + RowSumOne => ys = exp(x-M)/sum exp(x-M), needs only exp>0) and `Softmax.matrix_characterizes` (matrix level, output row i vs input row i => Y = X.map softmax, additionally needs exp(a+b)=exp a*exp b); both #print axioms show only propext, Classical.choice, Quot.sound. Redundancy proved by `unitInterval_of_laws`, `shiftInvariant_of_laws`. The old bundle's admitted set is characterized exactly as {G o canon : G simplex-valued} by `oldBundle_iff_factors` (row) and `mOldBundle_iff_factors` (matrix), and its temperature blindness by `oldBundle_scaleCovariant` / `scaleCovariant_admits_all_temperatures`. Empirically (experiments/results/*.txt): reference and 6 correct rewrites pass both arms (worst Boltzmann ratio 0.144 vs threshold 30); all 15 admitted kernels pass the bare bundle 0/9 and are rejected by laws.py with the same group counts as the reference arm; 100 random G o pi members: old bundle admits 99/100 (the 1 exception is a float-conditioning shift_invariance rejection, exactly invariant in float64), laws reject 100/100, reference rejects 100/100; a minimal 3-law oracle agrees with the full set and the reference arm on all 22 named kernels. NOT claimed: float-level uniqueness (softmax(x/T) with |T-1| < ~3e-5 passes; reference arm passes up to 1.8e-5), which exponential base (Lean exp is opaque), dtype, completeness of the fixed 18-case set, strict minimality beyond \"one law\".",
+   "admitted_families": [
+    {
+     "name": "temperature2",
+     "description": "softmax(x/2): the temperature family softmax(lambda x), admitted for every lambda (Lean temperature_family_in_oldBundle)",
+     "file": "admitted/temperature2.py"
+    },
+    {
+     "name": "base2_unscaled",
+     "description": "exp2 without the log2(e) factor = softmax(x ln 2); the realistic optimizing-author bug",
+     "file": "admitted/base2_unscaled.py"
+    },
+    {
+     "name": "softmin",
+     "description": "softmax(-x): lambda = -1 member, monotone the wrong way",
+     "file": "admitted/softmin.py"
+    },
+    {
+     "name": "uniform",
+     "description": "constant 1/n: ignores the input (lambda = 0)",
+     "file": "admitted/uniform.py"
+    },
+    {
+     "name": "hardmax",
+     "description": "one-hot at the argmax (lambda -> infinity)",
+     "file": "admitted/hardmax.py"
+    },
+    {
+     "name": "label_smoothed",
+     "description": "0.9 softmax + 0.1/n, convex mixture with uniform",
+     "file": "admitted/label_smoothed.py"
+    },
+    {
+     "name": "taylor2",
+     "description": "exp replaced by 1+z+z^2/2 then normalized",
+     "file": "admitted/taylor2.py"
+    },
+    {
+     "name": "sparsemax",
+     "description": "Euclidean projection of the shifted row onto the simplex",
+     "file": "admitted/sparsemax.py"
+    },
+    {
+     "name": "rank_based",
+     "description": "normalized within-row ranks",
+     "file": "admitted/rank_based.py"
+    },
+    {
+     "name": "abs_centered",
+     "description": "softmax(|x - rowmean|): non-monotone function of the shift class",
+     "file": "admitted/abs_centered.py"
+    },
+    {
+     "name": "rounded_input",
+     "description": "softmax(round(x - rowmax)): discontinuous member",
+     "file": "admitted/rounded_input.py"
+    },
+    {
+     "name": "rolled_columns",
+     "description": "correct softmax written to the wrong column",
+     "file": "admitted/rolled_columns.py"
+    },
+    {
+     "name": "rolled_rows",
+     "description": "correct softmax written to the wrong row (6/9 reference failures: single-row rung is blind)",
+     "file": "admitted/rolled_rows.py"
+    },
+    {
+     "name": "cross_row",
+     "description": "average of softmax of row i and row i-1: rows leak into each other",
+     "file": "admitted/cross_row.py"
+    },
+    {
+     "name": "wrong_shape",
+     "description": "ones((m,1)): no shape law in the bundle",
+     "file": "admitted/wrong_shape.py"
+    },
+    {
+     "name": "random G o pi family",
+     "description": "100 random simplex-valued functions of x - rowmax(x) (positive feature combinations, optional column permutation and row-stochastic mixing); old float gate admits 99/100, the whole set {G o canon} is the admitted set by Lean oldBundle_iff_factors / mOldBundle_iff_factors",
+     "file": "experiments/random_family.py"
+    }
+   ],
+   "added_laws": [
+    {
+     "name": "boltzmann_ratio",
+     "statement": "Per row, with M = max_j x_j and k = argmax_j x_j (so exp(x_k - M) = 1): y_j = y_k * exp(x_j - M) for every j; i.e. the output row is proportional to the Boltzmann weights exp(x - M). With ROW_SUMS this forces y = exp(x-M)/sum exp(x-M), the reference formula. Fails on a shape mismatch; defers non-finite output to outputs_are_finite; exact-dtype output INCONCLUSIVE.",
+     "tolerance": "residual_ratio(y, y_k*exp(x-M), dtype=y.dtype, n=n_cols) < DEFAULT_THRESH = 30, i.e. max_j |y_j - y_k w_j| < 30 * eps(dtype) * max(log2 n, 1) * |y_k| (weights and anchor in float64). Justification: for a correct kernel y_j = p_j(1+delta_j), |delta_j| <= k eps, the residual is p_j|delta_j - delta_k| <= 2k eps p_k and the scale is |y_k| ~ p_k, so the ratio is <= 2k/log2 n, the reference arm's own normalization with at most 2x its residual. Measured worst ratio over reference + 6 rewrites + 18 cases: 0.144 (reference arm 0.363). Resolves softmax(x/T) at |T-1| >= 3.2e-5 vs reference arm 1.8e-5."
+    },
+    {
+     "name": "output_shape_matches_input",
+     "statement": "np.shape(y) == np.shape(x). Structural placeholder; redundant for verdicts because boltzmann_ratio fails on shape mismatch, kept for tolerance-free attribution of shape defects.",
+     "tolerance": "tolerance-free (exact)"
+    }
+   ],
+   "elapsed_seconds": 752,
+   "outside_paths_read": [
+    "~/.elan/toolchains/leanprover--lean4---v4.33.0/bin/lean (EXECUTED, not read, as proof/README.md instructs; no other outside path was opened and no network was used)"
+   ],
+   "inherited_files_used": "Inherited from the interrupted session: laws.py (boltzmann_ratio + shape law), 15 admitted kernels + _shared.py, 6 correct variants, 5 experiment scripts + 2 not_admitted negatives, and a 24 KB proof/Softmax.lean; no RESULT.md. Everything was re-run with venv/bin/python gate.py and the experiment scripts. KEPT unchanged after verification: laws.py, admitted/, correct_variants/, run_admitted.py, run_variants.py, minimal_bundle.py, temperature_resolution.py (their outputs are now recorded in experiments/results/). REPAIRED: proof/Softmax.lean did not compile (a `grind` after a goal-closing `simp` at line 123; `Preorder.ne_of_gt` used in exp_zero and softmaxRow_M_indep whose `omit` removed `LE F`, breaking two more theorems downstream; four theorems depended on sorryAx although the main theorem was already clean). Fixed the three errors, made every omit precise so there are no warnings, and EXTENDED it with matrix-level theorems mOldBundle_iff_factors and matrix_characterizes (the row-at-a-time model cannot express cross_row/rolled_rows); the inherited file is preserved verbatim at scratch/Softmax.lean.inherited. REWRITTEN: experiments/random_family.py had a sign bug (feature 1/(1+a z^2) with a<0 is not positive, so 23/100 'members' were not in the admitted set) and a law-name parser that mis-split on 'shape=(5, 33)'; fixed, and float-conditioning rejections are now separated and checked exactly in float64. CORRECTED: the docstring of experiments/not_admitted/float64_leak.py claimed only the reference arm rejects it; measured, the old bundle also rejects it 7/9 via shift_invariance measured in eps64. Nothing else discarded; reference.py, bundle.yaml, gate.py, autokernel_pbt/ untouched.",
+   "lean_compiled": true,
+   "lean_file": "<scratchpad>/runs/oracle/softmax-F-r3/proof/Softmax.lean",
+   "lean_main_theorem": "Softmax.completed_bundle_characterizes (M : F) (xs ys : List F) (hM : IsRowMax xs M) (hB : BoltzmannRatio M xs ys) (hS : RowSumOne ys) : IsReferenceOutput xs ys  — i.e. ys = xs.map (fun a => exp (a - M) / (xs.map (fun a => exp (a - M))).sum) with M the row max; matrix-level corollary Softmax.matrix_characterizes : Y = X.map softmaxK. Both depend only on [propext, Classical.choice, Quot.sound]; the file ends with #print axioms Softmax.completed_bundle_characterizes.",
+   "primitive_assumptions": [
+    "Ambient: F is a Field with LE, LT, LawfulOrderLT, IsLinearOrder and OrderedRing (core Lean classes; the reals are a model). Division is total (x/0 = 0); every division used is guarded by an explicit nonzero fact.",
+    "E1 ExpPos.exp_pos : ∀ x : F, 0 < exp x — the ONLY assumption the main row theorem completed_bundle_characterizes (and characterizes_any_M, unitInterval_of_laws, soundness of the reference row) needs.",
+    "E2 ExpAdd.exp_add : ∀ x y : F, exp (x + y) = exp x * exp y — used only to show the reference row is independent of its stabilizer M (softmaxRow_M_indep, exp_zero, softmaxK_shiftInvariant, reference_satisfies_completed_bundle, shiftInvariant_of_laws, matrix_characterizes, temperature_family_in_oldBundle).",
+    "E3 (explicit hypothesis, not a class) : ∀ a b : F, exp a = exp b → a = b (injectivity) — used only by temperature_family_ne_reference and completedBundle_not_scaleCovariant to show softmin differs from softmax.",
+    "No assumption about continuity, monotonicity, a base, or exp 1 = e is made; exp is otherwise opaque (HasExp.exp)."
+   ],
+   "statement_vs_laws": "Equality: Lean is exact (q.y * exp(p.x - M) = p.y * exp(q.x - M) for every pair q), laws.py checks max_j |y_j - y_k w_j| < 30*eps(y.dtype)*max(log2 n,1)*|y_k| with weights in float64. Anchor: Lean assumes only that SOME anchor pair p exists in zip xs ys; laws.py uses p = argmax x (first on ties), where exp(x_p - M) = 1 exactly, which is one instance of the Lean hypothesis. M: Lean IsRowMax (M in xs and all a <= M) mirrors np.max; characterizes_any_M shows any M would do. Shape: Lean ys.length = xs.length (row) / Y.length = X.length (matrix); laws.py checks np.shape equality and also has a separate tolerance-free shape law. FINITE_OUTPUT has no content over a field and is omitted; laws.py defers non-finite output to it (INCONCLUSIVE). ROW_SUMS is exact in Lean, tolerance 30*eps*log2 n in float. SHIFT_INVARIANCE in Lean is for all c (and for all per-row vectors cs at the matrix level), exactly; the gate tests one random float32 partner per group at tolerance 30. Rows: the gate evaluates per matrix pairing output row i with input row i; Lean gives the row theorem and the matrix theorem over List (List F). Empty rows: the gate abstains; Lean hypotheses imply nonempty rows. exp: laws.py uses np.exp (base e, float64); Lean's exp is opaque with E1 (E2/E3 where stated), so the formal theorem is relative to whatever primitive the law names and cannot by itself distinguish base e from base 2 (base2_unscaled is rejected only because the float law uses np.exp). dtype: the float tolerance scales with the output dtype's eps but dtype is checked nowhere; absent in Lean.",
+   "correct_variants_checked": [
+    "reference.py (float64 accumulation, max subtraction)",
+    "correct_variants/base2_scaled.py (exp2 with log2(e) factor, float32)",
+    "correct_variants/float32_sequential_sum.py (strictly sequential float32 denominator)",
+    "correct_variants/log_domain.py (exp(z - logsumexp), float32)",
+    "correct_variants/mean_stabilizer.py (subtract row mean instead of max)",
+    "correct_variants/online_softmax.py (flash-style streaming max/sum rescaling, chunk 5, float32)",
+    "correct_variants/reciprocal_multiply.py (multiply by float32 reciprocal)"
+   ],
+   "remarks_on_formal_ambiguity": "(1) Base ambiguity: ExpPos and ExpAdd are satisfied by 2^x as well as e^x, so formally the completed bundle pins the kernel to 'the Boltzmann formula built from the named primitive'; which exponential is an input to the statement. This is exactly the temperature-blindness finding in another guise: the old bundle is scale covariant (oldBundle_scaleCovariant), so no scale-covariant law can fix the temperature, and the completion must carry a dimensional constant (e) by naming exp. (2) Row vs matrix: the README allows row-at-a-time, but cross_row and rolled_rows are admitted precisely because the laws are per-row; I therefore proved both the admitted-set theorem and the completeness theorem at the matrix level too (mOldBundle_iff_factors, matrix_characterizes). (3) Canonical representative: Lean uses canon = subtract the head, the Python kernels use subtract the max; both are representatives of the shift class and the theorem is representative-independent. (4) FINITE_OUTPUT has no meaning over a field; the Lean bundles omit it. (5) The gate's shift partner is float32-rounded, which can reject kernels that are exactly shift invariant (1/100 random members, ratio 35.4); the float gate is stricter than the theorem there, never looser. (6) Completeness over the reals says nothing about the fixed 18-case set: a kernel agreeing with softmax on those inputs passes either arm.",
+   "notes": "Negative findings and dead ends recorded in RESULT.md §5: inherited proof did not compile (4 theorems on sorryAx) — fixed; inherited random-family experiment produced 23/100 non-members from a sign bug — fixed (now 99/100 admitted, 1 float-conditioning exception verified exactly invariant in float64); float64_leak (right values, float64 dtype) is rejected by the OLD bundle too, via shift_invariance measured in eps64 (ratio 1.3e9), not via any dtype law — on a float64-input task that net would not exist; float16_intermediate rejected by both arms (14/18 cases); ladder blind spots cap detection at 7/9 (two single-column rungs) and 6/9 (row-mixing bugs, one single-row rung), shared by both arms; the completion is ~1.8x coarser than the reference arm in temperature resolution (3.2e-5 vs 1.8e-5), the price of building both sides from the kernel's own output. Minimal-bundle check: {outputs_are_finite, rows_sum_to_one, boltzmann_ratio} gives identical verdicts to the full six-law set and the reference arm on all 22 named kernels. All numbers quoted are in experiments/results/*.txt; the Lean compile log is experiments/results/lean_compile.txt. RESULT.md timing section: start 1790941968, finish 1790942720, elapsed 752 s (the interrupted session's time is unknown and not counted)."
+  }
+ },
+ {
+  "workflow": "wf_49a9863c-ad3",
+  "label": "oracle:softmax-F-r2",
+  "report": {
+   "sandbox": "<scratchpad>/runs/oracle/softmax-F-r2",
+   "task": "softmax",
+   "arm": "F",
+   "claims_complete": true,
+   "claim_grounds": "Over the reals (any ordered field with an opaque exp satisfying exp_pos; only exp != 0 is used), the completed bundle characterizes the reference: machine-checked in proof/Softmax.lean (Lean 4.33.0 core, no Mathlib, no sorry, no axiom; #print axioms = [propext, Classical.choice, Quot.sound] for every theorem). row_complete: SameLength ∧ RowSumOne ∧ ExpRatio ⇒ ys = softmaxRow xs; kernel_complete and matrix_complete lift it to kernels and to matrices exactly as gate.py evaluates the laws; softmax_sound + softmax_sub show the reference (max-subtracted form included) satisfies every law. Minimality: onesColumn_laws, doubled_laws, uniform_old/softmaxT_old + *_ne_softmax show each of {shape, ROW_SUMS, exp ratio} necessary; UnitInterval and ShiftInvariance are redundant over the reals (not assumed by row_complete) and kept for float reasons. Empirically on the float gate: reference + 9 correct variants pass (worst exponential_ratio test ratio 0.335 vs threshold 30 over 40 seeds x 12 shapes incl. 16384-wide rows); all 16 admitted kernels are rejected in exactly the groups the reference arm rejects (234/234 kernel-group agreement); temperature and label-smoothing sweeps flip at the same delta = 3.16e-5 for both arms; in a 5940-case noise sweep there are 0 reference-only rejections. NOT claimed: completeness in floating point (tolerance test), anything about the primitive beyond exp_pos/exp_add (exp2 and exp ≡ 1 satisfy them; primitive_mismatch.py), output dtype (float16 output passes both arms), n = 1 rows (domain blind spot).",
+   "admitted_families": [
+    {
+     "name": "uniform",
+     "description": "g = constant 1/n; ignores the input. Old bundle PASS 0/9, reference FAIL 7/9.",
+     "file": "admitted/uniform.py"
+    },
+    {
+     "name": "hardmax",
+     "description": "one-hot argmax (temperature → 0 limit). FAIL 7/9 on reference arm.",
+     "file": "admitted/hardmax.py"
+    },
+    {
+     "name": "sparsemax",
+     "description": "Euclidean projection onto the simplex, a different shift-invariant normalizer. 7/9.",
+     "file": "admitted/sparsemax.py"
+    },
+    {
+     "name": "temperature_half",
+     "description": "softmax(2x), T = 1/2 (squared exponentials). 7/9.",
+     "file": "admitted/temperature_half.py"
+    },
+    {
+     "name": "temperature_base2",
+     "description": "exp2 without the log2(e) factor, T = 1/ln 2 — the optimizing author's classic slip. 7/9.",
+     "file": "admitted/temperature_base2.py"
+    },
+    {
+     "name": "negated",
+     "description": "softmax(-x), T = -1 (sign slip in the shift). 7/9.",
+     "file": "admitted/negated.py"
+    },
+    {
+     "name": "per_row_temperature",
+     "description": "a different temperature per row: the admitted family is a product over rows. 6/9 (single-row shapes hide it).",
+     "file": "admitted/per_row_temperature.py"
+    },
+    {
+     "name": "label_smoothing",
+     "description": "0.9·softmax + 0.1/n: the family is convex. 7/9.",
+     "file": "admitted/label_smoothing.py"
+    },
+    {
+     "name": "taylor2_exp",
+     "description": "second-order Taylor 'fast exp', percent-level error, still stochastic and shift-invariant. 7/9.",
+     "file": "admitted/taylor2_exp.py"
+    },
+    {
+     "name": "cubed_centered",
+     "description": "softmax((x - rowmean)^3): pre-composition with any shift-invariant reparametrization of the logits. 7/9.",
+     "file": "admitted/cubed_centered.py"
+    },
+    {
+     "name": "rank_softmax",
+     "description": "softmax of within-row ranks: keeps only the ordering. 7/9.",
+     "file": "admitted/rank_softmax.py"
+    },
+    {
+     "name": "drops_last_column",
+     "description": "tail-handling bug: last column never visited (0), rest normalized among themselves. 7/9.",
+     "file": "admitted/drops_last_column.py"
+    },
+    {
+     "name": "tile_prefix",
+     "description": "processes only the largest power-of-two prefix (tiling bug with no tail tile). 3/9 (only non-power-of-two widths).",
+     "file": "admitted/tile_prefix.py"
+    },
+    {
+     "name": "reversed_columns",
+     "description": "correct softmax with columns reversed: post-composition with any permutation. 7/9.",
+     "file": "admitted/reversed_columns.py"
+    },
+    {
+     "name": "rotated_rows",
+     "description": "NOT row-wise: output row i is the softmax of input row i-1; the old bundle does not force a row-wise kernel (Lean admitted_family_matrix, reversedRows_old). 6/9.",
+     "file": "admitted/rotated_rows.py"
+    },
+    {
+     "name": "wrong_shape_ones",
+     "description": "an (m,1) column of ones: the old bundle never states the output shape. 7/9 (caught by output_shape_matches_input).",
+     "file": "admitted/wrong_shape_ones.py"
+    },
+    {
+     "name": "STRUCTURE (all of the above)",
+     "description": "Lean admitted_family / admitted_family_matrix: K satisfies the old bundle iff K(X) = G(X - rowfirst(X)) [= X - rowmax(X)] for an ARBITRARY G into row-stochastic matrices — not necessarily row-wise, not necessarily shape-preserving. The bundle says exactly 'shift-invariant and stochastic'.",
+     "file": "proof/Softmax.lean"
+    }
+   ],
+   "added_laws": [
+    {
+     "name": "output_shape_matches_input",
+     "statement": "shape(K(X)) = shape(X); Lean: SameLength xs ys per row and (K X).length = X.length.",
+     "tolerance": "none — structural, tolerance_free = True; INCONCLUSIVE only on an unusable row."
+    },
+    {
+     "name": "exponential_ratio",
+     "statement": "For every i, j in a row: y_i · exp(x_j) = y_j · exp(x_i) (Lean ExpRatio). Evaluated in the equivalent pivot form at p = argmax x: y_i = y_p · exp(x_i - x_p) (Lean ExpRatioPivot; pivot_imp_ratio). Together with ROW_SUMS this pins the row: y_i = exp(x_i)/Σ exp(x_j).",
+     "tolerance": "residual_ratio(y_row, y_p·exp(x - x_p), dtype=y.dtype, n=row length) < DEFAULT_THRESH = 30 (harness LAPACK convention: ‖·‖∞ / (max|ref| · eps · max(log2 n, 1))). Exponentials computed in float64 from the same float32 input (differences exact). Budget: the normalizer's rounding cancels in y_i/y_p (shared s), leaving exp error (1-2 ulp) + two divisions + cast ≈ 4 eps·y_p, ratio ≲ 4/log2 n, n-independent. Measured worst on 10 correct kernels, 40 seeds x 12 shapes to n=16384: 0.335. Wrong normalizers score 1e5-1e8. Non-finite output and shape mismatch are INCONCLUSIVE, deferred to outputs_are_finite / output_shape_matches_input."
+    }
+   ],
+   "correct_variants_checked": [
+    "correct_variants/base2_log2e.py (exp2 with log2 e, float32)",
+    "correct_variants/online_softmax.py (one-pass running max / rescaled sum, blocks of 8, float32)",
+    "correct_variants/polynomial_exp_f32.py (NEW this session: Cody-Waite reduction + degree-7 Horner fast exp, 0.79 ulp, float32)",
+    "correct_variants/reciprocal_f32.py (multiply by reciprocal, float32)",
+    "correct_variants/reference_copy.py (control)",
+    "correct_variants/rsqrt_normalizer.py (e · rsqrt(s²), float32)",
+    "correct_variants/sequential_f32_sum.py (strictly sequential float32 sum)",
+    "correct_variants/shift_by_first.py (subtracts first element instead of max, float64)",
+    "correct_variants/tiled_masked_f32.py (tile 32, masked tail, two passes, float32)"
+   ],
+   "elapsed_seconds": 834,
+   "outside_paths_read": [
+    "~/.elan/toolchains/leanprover--lean4---v4.33.0/bin/lean (executed, as proof/README.md directs; not read)",
+    "~/.elan/toolchains/ (listed once with ls to confirm the pinned toolchain exists)"
+   ],
+   "inherited_files_used": "Inherited (previous session, cut off before RESULT.md): admitted/ (16 kernels), laws.py (2 laws), correct_variants/ (8), caught/ (3), proof/Softmax.lean, census.py/.md, agreement.py/.md, sweep.py/.md, primitive_mismatch.py, gate_runs.log, proof/scratch/Probe*.lean. KEPT after re-verification: everything — I re-ran gate.py (both modes) on every kernel, re-ran census/agreement/sweep/primitive_mismatch (numbers reproduced exactly), recompiled Softmax.lean with the pinned binary (exit 0, no sorry/axiom, standard axioms), and audited the Lean statement against laws.py. REPAIRED/EXTENDED: Softmax.lean now ends with #print axioms on the main theorem row_complete (README wording; it previously ended on a secondary theorem) and gained softmax_sub (bridges the unshifted Lean reference to reference.py's max-subtraction), admitted_family_matrix + reversedRows_old/_ne_rowwise (matrix-level structure theorem: old bundle does not force row-wise kernels; the inherited prose understated the family as row-wise), and matrix_complete (completeness lifted to matrices as gate.py evaluates them); inherited version kept at proof/scratch/Softmax.lean.inherited. laws.py docstring corrected (family stated at matrix level; tolerance argument sharpened — the inherited one over-budgeted the normalizer's rounding, which cancels), no code change, verdicts identical. ADDED: correct_variants/polynomial_exp_f32.py; probes/ (float64_output, float16_output, scaled_normalizer + README) recording negative findings. REGENERATED: gate_runs.log, census.md, agreement.md, sweep.md, proof/scratch/build.log. DISCARDED: only a scratch Lean copy used to develop the additions (merged). Nothing inherited was found wrong.",
+   "lean_compiled": true,
+   "lean_file": "<scratchpad>/runs/oracle/softmax-F-r2/proof/Softmax.lean",
+   "lean_main_theorem": "SoftmaxBundle.row_complete (xs ys : List F) (hlen : SameLength xs ys) (hsum : RowSumOne ys) (hratio : ExpRatio xs ys) : ys = softmaxRow xs — with corollaries SoftmaxBundle.kernel_complete (CompletedBundle K → ∀ xs ≠ [], K xs = softmaxRow xs) and SoftmaxBundle.matrix_complete (CompletedBundleM K → ∀ X, WF X → K X = X.map softmaxRow). File ends with #print axioms SoftmaxBundle.row_complete → [propext, Classical.choice, Quot.sound].",
+   "primitive_assumptions": [
+    "HasExp.exp : F → F is an opaque function (declared as a class field, not an axiom).",
+    "ExpAssumptions.exp_pos : ∀ x : F, 0 < exp x — the only assumption used by row_complete, kernel_complete, matrix_complete and pivot_imp_ratio (through exp x ≠ 0).",
+    "ExpAssumptions.exp_add : ∀ x y : F, exp (x + y) = exp x * exp y — used by softmax_sound (its SHIFT_INVARIANCE clause), softmax_sub, softmaxT_old, reversedRows_old.",
+    "ExpStrictMono.exp_lt_exp : ∀ x y : F, x < y → exp x < exp y — used ONLY by the separation theorems uniform_ne_softmax and softmaxT_ne_softmax (necessary: exp ≡ 1 satisfies exp_pos and exp_add, and in that model softmaxRow = uniformRow, Blind.softmax_is_uniform).",
+    "exp 0 = 1 is derived (exp_zero), not assumed.",
+    "Ambient algebra: Lean.Grind.Field F, LE F, LT F, LawfulOrderLT F, IsLinearOrder F, OrderedRing F (ℝ is a model); division is total (x / 0 = 0) and every division carries an explicit ≠ 0 hypothesis.",
+    "No `axiom` is declared anywhere; #print axioms for every theorem lists only propext, Classical.choice, Quot.sound (reversedRows_ne_rowwise: propext, Quot.sound)."
+   ],
+   "remarks_on_formal_ambiguity": "(1) The completeness theorem is relative to the primitive: exp_pos/exp_add are satisfied by 2^x and by the constant 1, so Lean pins K to 'softmax w.r.t. whatever exp the law computes with'. primitive_mismatch.py makes this concrete: swapping np.exp for np.exp2 inside laws.py leaves the Lean proof compiling verbatim while the law accepts admitted/temperature_base2.py (0/18 cases failed) and rejects reference.py (14/18). Binding the primitive to e^x rests on np.exp (float64, ≤1 ulp), outside the proof. (2) 'Over the reals' is an idealization: floats are not a field; the Lean predicates are exact equalities and the gate's laws are tolerance tests (except shape and unit interval), so float-level completeness is empirical, and in the noise band η ∈ [1e-5, 3.2e-5] the completed declarative arm is strictly stricter than the reference arm (259 declarative-only rejections, 0 reference-only, out of 5940 cases). (3) The Lean reference row is the unshifted exp x_i / Σ exp x_j; reference.py subtracts the row max; softmax_sub proves they coincide, but this uses exp_add, so the max-subtracted and unshifted forms are only provably equal under that assumption. (4) The bundle has no dtype law: a float16 output passes both arms (probes/float16_output.py); an uncast float64 output is rejected by SHIFT_INVARIANCE only via eps accounting (probes/float64_output.py). Dtype is outside 'over the reals' and was deliberately not added. (5) n = 1 rows are unobservable by any arm on this domain (2 of 9 rungs), so 7/9 is the ceiling for a kernel wrong on every n > 1 row. (6) INCONCLUSIVE/abstention, non-finite values, and the gate's one sampled shift per row (scale 44.4) are not modelled in Lean; Lean's ShiftInvariant quantifies over every per-row constant.",
+   "statement_vs_laws": "Lean states exact equalities over an ordered field; laws.py checks floating-point forms with the harness's normalized test ratio. Differences, one by one: (1) exactness vs residual_ratio(...) < 30 with eps of the OUTPUT dtype and a log2(n) divisor; (2) Lean ExpRatio is the pairwise law ∀ i,j, laws.py evaluates the pivot form y_i = y_p·exp(x_i − x_p) at p = argmax (first argmax on ties) — pivot_imp_ratio proves the pivot form implies the pairwise law given exp ≠ 0, and argmax is chosen so e_p = 1 exactly and no exp overflows; (3) Lean exp is opaque with exp_pos/exp_add, laws.py uses np.exp in float64 on the float32 inputs cast to float64 (float32 differences are exact in float64 on this domain, so no input quantization enters); (4) Lean softmaxRow has no shift, reference.py subtracts the row max — bridged by softmax_sub; (5) FINITE_OUTPUT has no Lean counterpart (vacuous over a field); (6) Lean ShiftInvariant is ∀ xs c, the gate samples one c per row from N(0, 44.4²) in a single partner case; (7) UnitInterval is exact on both sides; (8) domains agree in kind (nonempty rows / WF matrices vs ladder shapes with n ≥ 1, m ≥ 1); (9) Lean has no abstention, laws.py returns INCONCLUSIVE on non-finite output, shape mismatch and exact dtypes, deferring to the owning law; (10) SameLength per row plus (K X).length = X.length corresponds to np.shape(y) == np.shape(x) for 2-D inputs. The matrix-level Lean bundle CompletedBundleM pairs output row i with input row i exactly as laws.py's reshape(-1, n) does.",
+   "notes": "All verification outputs are files in the sandbox: gate_runs.log (64 gate runs: reference, 9 variants, 16 admitted, 3 caught, 3 probes, each with and without laws), census.md, agreement.md, sweep.md, proof/scratch/build.log. Key numbers: worst exponential_ratio ratio on a correct kernel 0.335 (threshold 30, 90x margin); both arms flip at delta = 3.16e-5 on temperature and label-smoothing sweeps; 234/234 per-group agreement between completed declarative arm and reference arm; 0 reference-only rejections in the noise sweep. Negative findings recorded in probes/README.md and RESULT.md section 4: the float64-output hypothesis (needs a dtype law) was refuted — the old bundle already rejects it; float16 output is a shared blind spot of both arms; the ratio law is blind to per-row scale by design (ROW_SUMS necessary in floats too, ratio 280); the inherited tolerance argument over-budgeted the normalizer's rounding, which cancels (confirmed: sequential sum scores 0.302 on the law vs 3.14 on the reference arm at n = 16384). Elapsed 834 s covers this session only; the interrupted session's time is not recoverable. RESULT.md (21 KB) and this report agree on every claim and number."
+  }
+ },
+ {
+  "workflow": "wf_49a9863c-ad3",
+  "label": "oracle:softmax-F-r1",
+  "report": {
+   "sandbox": "<scratchpad>/runs/oracle/softmax-F-r1",
+   "task": "softmax",
+   "arm": "F",
+   "claims_complete": true,
+   "claim_grounds": "Over the reals (exact arithmetic) the completed bundle {FINITE_OUTPUT, UNIT_INTERVAL, ROW_SUMS, SHIFT_INVARIANCE, GIBBS_RATIO} characterizes reference.py for every row width n >= 1, hence every m x n shape row by row. Grounds: (1) Lean theorem Softmax.completed_bundle_characterizes in proof/Softmax.lean states CompletedBundle (m+1) K <-> K = refRow (m+1), both directions, over an abstract ordered field with an opaque exp carrying two named assumptions; compiles with the pinned Lean 4.33.0 binary, exit 0, no sorry, no axiom, #print axioms = [propext, Classical.choice, Quot.sound] (proof/compile.log). The per-row lemma completed_bundle_pins_row uses only ROW_SUMS + GIBBS_RATIO and takes an arbitrary y, so it covers matrix kernels whose rows mix. (2) Gate evidence: reference.py and 6 correct rewrites pass the completed bundle 0/9 with worst law ratio 0.379 vs threshold 30 (79x margin); all 17 admitted kernels pass the old bundle 0/9 and fail the completed bundle (7/9, 6/9 or 9/9) with smallest failing ratio >= 1.8e4; 16 random members of G(x - max x) likewise; two tolerance sweeps show the law and the reference arm flip PASS->FAIL at the same step (results/*.md). NOT claimed: float-level uniqueness (kernels within ~30*eps32*log2 n relative of the reference pass both arms alike); n = 0 (bundle unsatisfiable); that 18 fixed cases witness the universal quantifier; that the law pins the base of the exponential independently of its primitive (it pins the Gibbs distribution of the exp it is given, here NumPy's float64 exp); dtype semantics; adversarially aligned sequential rounding at n = 129 (worst-case ratio ~37, measured 0.155, same budget as the reference arm).",
+   "admitted_families": [
+    {
+     "name": "exponential family at the wrong temperature (beta != 1)",
+     "description": "softmax(beta x) is shift-invariant and in the simplex for every beta; the realistic member is base-2 exponentiation without the log2(e) factor (beta = 1/ln 2).",
+     "file": "admitted/temperature_two.py, admitted/base2_uncorrected.py, admitted/squared_renormalized.py, admitted/softmin.py"
+    },
+    {
+     "name": "constant G (input ignored)",
+     "description": "any fixed point of the simplex: uniform 1/n, or a fixed ramp (j+1)/sum.",
+     "file": "admitted/uniform.py, admitted/constant_ramp.py"
+    },
+    {
+     "name": "simplex vertex",
+     "description": "one-hot at the argmax (zero-temperature limit); the Lean witness for old_bundle_not_complete is the constant one-hot e_0.",
+     "file": "admitted/hardmax.py"
+    },
+    {
+     "name": "convex combination of admitted kernels",
+     "description": "0.9 softmax + 0.1/n (label smoothing baked in); the admitted set is convex.",
+     "file": "admitted/label_smoothed.py"
+    },
+    {
+     "name": "other link functions of x - max x (or x - min x)",
+     "description": "any positive normalized function of the shift-retracted row: sigmoid-normalized, squared-gap normalized, second-order Taylor softmax, sparsemax (Euclidean projection).",
+     "file": "admitted/logistic_normalized.py, admitted/power_normalized.py, admitted/taylor_softmax.py, admitted/sparsemax.py"
+    },
+    {
+     "name": "permutations of the correct row",
+     "description": "fixed rotation or input-dependent sort of the correct softmax row: the old laws see only the multiset of row values.",
+     "file": "admitted/rolled.py, admitted/sorted_softmax.py"
+    },
+    {
+     "name": "cross-row mixing",
+     "description": "output row r is softmax of input row r-1: the old laws are per-matrix and never tie output row r to input row r (new this session).",
+     "file": "admitted/row_rolled.py"
+    },
+    {
+     "name": "tilt surviving the sharpest polynomial law",
+     "description": "softmax with the argmax logit tilted by 0.9 min_j (d_j - log(1+d_j)); satisfies old bundle + the tangent law y_i >= y_j (1 + x_i - x_j) yet is several percent off the reference.",
+     "file": "admitted/tangent_tilted.py"
+    },
+    {
+     "name": "wrong output shape",
+     "description": "returns (m, 2n), the correct row halved and duplicated; no old law checks shape.",
+     "file": "admitted/wrong_shape_duplicated.py"
+    },
+    {
+     "name": "random members of G(x - max x) (structure check)",
+     "description": "12 random G from four unrelated function families plus softmax(0.7 z) composed with four shift-retractions (max, mean, first entry, median): all admitted by the old bundle, all rejected by the completed bundle and the reference. The structure theorem old_bundle_iff_factors (Lean) shows this family IS the admitted set.",
+     "file": "structure_check.py -> results/structure_table.md"
+    }
+   ],
+   "added_laws": [
+    {
+     "name": "GIBBS_RATIO (laws.py GibbsRatioLaw, name gibbs_ratio_law)",
+     "statement": "For every row and every pair (i, j): y_i * exp(x_j - M) = y_j * exp(x_i - M), with M = max of the row of x (exp in float64 from the same input bytes the kernel received). Cross-multiplied, so no division by kernel output and no positivity precondition. Output shape must equal input shape (FAIL otherwise). Together with ROW_SUMS this pins the row to the reference (Lean completed_bundle_pins_row); UNIT_INTERVAL and SHIFT_INVARIANCE become consequences over the reals and are kept for their float-only catches.",
+     "tolerance": "Per row: residual_ratio(lhs, rhs, dtype=y.dtype, n=row_width) with lhs[i,j] = y_i e_j, rhs[i,j] = y_j e_i; verdict within_threshold(max over rows) against DEFAULT_THRESH = 30 (LAPACK convention). Bound for a correct kernel: ratio <= 2(log2 n + c)/log2 n, a few at most. Measured: 0.158 reference, 0.379 worst over six correct variants (79x margin); admitted kernels >= 1.8e4; floor coincides with the reference arm's in both sweeps (1e-5 < eps < 3e-5 relative). Non-finite or int/bool output -> INCONCLUSIVE (harness conventions)."
+    }
+   ],
+   "elapsed_seconds": 876,
+   "outside_paths_read": [],
+   "inherited_files_used": "Inherited: 16 admitted kernels, 6 correct variants, laws.py with the one-law completion, a draft-2 proof/Softmax.lean, four evidence scripts (run_all.py, structure_check.py, tangent_slack.py, tolerance_floor.py) and their results/*.md; no RESULT.md. Verified and kept: all 16 admitted kernels and 6 variants (re-ran run_all.py: every expectation met), laws.py semantics (unchanged), the three evidence scripts (re-ran, exit 0, tables regenerated with identical values). Repaired: proof/Softmax.lean did NOT compile (unknown Preorder.le_refl, doc-comment placed before `open Classical in`, rowMax/refRow missing `noncomputable`; its #print axioms showed sorryAx) -- fixed and extended from 2 to 7 theorems (structure theorem old_bundle_iff_factors that laws.py already cited but the draft lacked, old_bundle_not_complete, gibbs_ratio_alone_insufficient, reference_satisfies_completed_bundle, completed_bundle_unique, and the iff main theorem); compile log saved. Corrected: laws.py docstring quoted measured ratios (0.5-1.2, <3) that no file reproduced; replaced with measured 0.158/0.379 and a pointer to results/ratio_margins.md. Extended: tolerance_floor.py with a second (one-entry perturbation) sweep. Added: admitted/row_rolled.py, ratio_margins.py -> results/ratio_margins.md, scratch/f64_output_probe.py (negative finding), proof/compile.log, RESULT.md. Discarded: nothing. Not edited: reference.py, bundle.yaml, gate.py, autokernel_pbt/.",
+   "lean_compiled": true,
+   "lean_file": "<scratchpad>/runs/oracle/softmax-F-r1/proof/Softmax.lean",
+   "lean_main_theorem": "Softmax.completed_bundle_characterizes (m : Nat) (K : (Fin (m+1) → F) → (Fin (m+1) → F)) : CompletedBundle (m+1) K ↔ K = refRow (m+1)  -- #print axioms: [propext, Classical.choice, Quot.sound]; supporting: completed_bundle_pins_row, completed_bundle_unique, reference_satisfies_completed_bundle, old_bundle_iff_factors, old_bundle_not_complete, gibbs_ratio_alone_insufficient (all same axioms)",
+   "primitive_assumptions": [
+    "exp_add : ∀ x y : F, exp (x + y) = exp x * exp y",
+    "exp_tangent : ∀ x : F, 1 + x ≤ exp x",
+    "(derived, not assumed: exp 0 = 1; exp x * exp (-x) = 1; 0 < exp x)",
+    "(ambient algebra, not about exp: F with [Field F] [LE F] [LT F] [LawfulOrderLT F] [IsLinearOrder F] [OrderedRing F] -- core Lean grind classes of which the reals are a model; Classical.choice is used only for the `if` in rowMax)"
+   ],
+   "statement_vs_laws": "Lean states exact equality over an ordered field; laws.py checks residual_ratio(lhs, rhs, dtype=y.dtype, n=row_width) < 30 per row (scale = the row's largest rhs entry, eps of the kernel's output dtype, log2(row width) budget). Lean's exp is opaque with two axioms; laws.py uses NumPy float64 exp. Lean's M is rowMax exactly; laws.py takes np.max in float64 of the float32 input (exact). FiniteOutput is `True` in Lean (all field elements finite); laws.py returns INCONCLUSIVE on non-finite y, deferring to FINITE_OUTPUT, and INCONCLUSIVE on int/bool dtype. Shape is by typing in Lean ((Fin n → F) → (Fin n → F)); laws.py makes it an explicit FAIL. Lean quantifies over all inputs and all shift constants c; the gate samples 18 fixed float32 cases and one random c per group. Lean is per row with K a row kernel, but completed_bundle_pins_row takes an arbitrary y so it applies to each row of a matrix kernel however produced, which is how laws.py applies the law (row r of y against row r of x). Lean excludes n = 0 (bundle unsatisfiable); the gate has no empty shape.",
+   "correct_variants_checked": [
+    "correct_variants/exp2_log2e_f32.py (base-2 exponentiation with log2 e factor, float32)",
+    "correct_variants/reciprocal_sequential_f32.py (one reciprocal multiply, sequential float32 accumulation)",
+    "correct_variants/online_softmax_f32.py (flash-style running max and rescaled running sum, float32)",
+    "correct_variants/logsoftmax_then_exp_f32.py (x - logsumexp then exp, float32)",
+    "correct_variants/no_shift_f64.py (no max subtraction, float64)",
+    "correct_variants/subtract_mean_f64.py (mean subtraction instead of max, float64)",
+    "reference.py itself"
+   ],
+   "remarks_on_formal_ambiguity": "(1) 'Characterize' is read as: for every n >= 1 the completed bundle is satisfied by exactly one row kernel, the reference's; proved as an iff. For matrices this follows row by row because both load-bearing laws are per-row and the pins-row lemma takes an arbitrary y. (2) The theorem is relative to the primitive: any F and any exp satisfying the two axioms. Informal remark (not mechanized): over the reals the two axioms already single out the real exponential (an additive f with e^f(x) >= 1 + x is bounded near 0, hence linear with slope 1; 2^x violates exp_tangent at x = 1/2), so instantiated at R the theorem is about the true exp; in the gate the primitive is NumPy's exp, the reference's own. (3) Proposition 4 (informal, in RESULT.md): no finite set of exp-free (semialgebraic) single-input laws can characterize softmax, since its graph is not semialgebraic (e^t grows faster than any algebraic function); so a transcendental primitive, or a multi-input metamorphic law with partner cases the generator does not produce, is unavoidable. (4) n = 0 is excluded because ROW_SUMS is unsatisfiable there, and n = 1 rungs (1,1), (17,1) are correct for every kernel, which is why admitted kernels fail 7/9 rather than 9/9. (5) Float tolerance: the law's blind band equals the reference arm's (same budget, same flip point in two sweeps); dtype widening is rejected by both arms through budget arithmetic rather than by any law's intent (scratch/f64_output_probe.py).",
+   "notes": "Reproduce: venv/bin/python run_all.py && structure_check.py && tangent_slack.py && tolerance_floor.py && ratio_margins.py (all exit 0); ~/.elan/toolchains/leanprover--lean4---v4.33.0/bin/lean proof/Softmax.lean (exit 0). Gate table: reference + 6 variants 0/9 on every arm; 15 admitted kernels old 0 / completed 7 / reference 7; row_rolled 0/6/6; wrong_shape_duplicated 0/9/9. Executed (not read) outside the sandbox only the pinned Lean binary the README directs me to use; venv is the README-designated symlink. One oversized Bash result was spilled by the agent harness to a file outside the sandbox; I did not open it and re-read the sources from the sandbox instead. Negative findings recorded in RESULT.md section 6: tangent law dead end, exp-free metamorphic alternative not implementable here, blind rungs, inherited proof/docstring defects, the float64-output accident, small Lean pitfalls."
+  }
+ },
+ {
+  "workflow": "wf_49a9863c-ad3",
+  "label": "oracle:layernorm-T-r1",
+  "report": {
+   "sandbox": "<scratchpad>/runs/oracle/layernorm-T-r1",
+   "task": "layernorm",
+   "arm": "T",
+   "claims_complete": true,
+   "claim_grounds": "Exact arithmetic over the reals: Theorem 1 (RESULT.md s3) proves the old bundle's solution set is exactly {G o C}: centre each row, then apply ANY map G landing each row on the sphere S_n = {sum y = 0, |y|^2 = n} (n-2 free dimensions per row; output shape and row assignment also free). Theorem 2 (s5.2) proves old + POSITIVE_AFFINE has exactly one solution, K_0(x) = sqrt(n) z/|z| (0 on constant rows) = the reference with eps = 0; SHIFT_INVARIANCE becomes redundant. Theorem 3 (s5.3) proves the reference itself is NOT an exact solution of even the old bundle (var(y_ref) = v/(v+eps) < 1), so \"characterizes the reference\" can only mean \"up to eps\": the completed bundle characterizes K_0 exactly, and the reference differs from K_0 by eps/(2v) <= 6.6e-7 relative on the gate's domain, 15x below the reference arm's own resolution. The proof identities are checked in exact rational arithmetic (probes/exact_arithmetic_check.py, 250 rows). Evidence in the gate: 14 admitted kernels (admitted/) spanning isometries, monotone nonlinearities, input-dependent rotations, input-ignoring, cross-row and wrong-shape classes, all old-bundle 0/9, reference 6-9/9, completed bundle fails EXACTLY the reference's groups; 36 random family members (probes/random_admitted_family.py) likewise; reference and 5 correct variants pass every arm 0/9 with the new law's test ratio <= 0.81 against threshold 30 (results/summary.md, probes/run_all.py exits 0). Minimality: at least one law is needed (n-2 free dims), one suffices, and any completing law must read x (output-only or shift-metamorphic laws admit every fixed rotation of S_n).",
+   "admitted_families": [
+    {
+     "name": "negated",
+     "file": "admitted/negated.py",
+     "description": "G(z) = -z: sign flip (mean - x)/std. Old 0/9, reference 7/9, completed 7/9 (caught by the a > 0 sign condition; its error is along z with zero radial deviation, invisible to UNIT_VARIANCE)."
+    },
+    {
+     "name": "reversed_columns",
+     "file": "admitted/reversed_columns.py",
+     "description": "G(z) = z[::-1]: fixed column permutation. Old 0/9, reference 7/9, completed 7/9."
+    },
+    {
+     "name": "lane_swizzle",
+     "file": "admitted/lane_swizzle.py",
+     "description": "y[j] = ref[j ^ 1]: adjacent-lane XOR swizzle (bank-mapping bug), last lane of odd rows untouched. Old 0/9, reference 7/9, completed 7/9."
+    },
+    {
+     "name": "rotated",
+     "file": "admitted/rotated.py",
+     "description": "G(z) = R_n z, a fixed random orthogonal map of the zero-mean hyperplane per width: the generic element of O(n-1). Old 0/9, reference 7/9, completed 7/9."
+    },
+    {
+     "name": "small_rotation",
+     "file": "admitted/small_rotation.py",
+     "description": "Reference rotated by 1e-3 rad inside the hyperplane: a near miss that a correlation-form direction law misses entirely (second-order blind). Old 0/9, reference 7/9, completed 7/9."
+    },
+    {
+     "name": "cubed",
+     "file": "admitted/cubed.py",
+     "description": "G(z) = z^3 renormalized: odd, strictly monotone, nonlinear; defeats tolerance-free order-preservation laws. Old 0/9, reference 7/9, completed 7/9."
+    },
+    {
+     "name": "ranks",
+     "file": "admitted/ranks.py",
+     "description": "G(z) = rank(z) renormalized: monotone, discards magnitudes. Old 0/9, reference 7/9, completed 7/9."
+    },
+    {
+     "name": "signed",
+     "file": "admitted/signed.py",
+     "description": "G(z) = sign(z) renormalized: binarized layernorm. Old 0/9, reference 7/9, completed 7/9."
+    },
+    {
+     "name": "softmax_normalized",
+     "file": "admitted/softmax_normalized.py",
+     "description": "G(z) = softmax(z) renormalized: the wrong operator with a standardizing epilogue. Old 0/9, reference 7/9, completed 7/9."
+    },
+    {
+     "name": "data_dependent_rotation",
+     "file": "admitted/data_dependent_rotation.py",
+     "description": "Rotation by angle |z|^2/1000: nonlinear, non-equivariant, input-dependent G, Lipschitz-small so float32 shift invariance survives (a hash-angle version, probes/kernels/hash_rotation.py, is rejected by the old bundle through input rounding). Old 0/9, reference 7/9, completed 7/9."
+    },
+    {
+     "name": "constant_pattern",
+     "file": "admitted/constant_pattern.py",
+     "description": "Fixed ramp (0..n-1) standardized, ignoring the input values: the extreme point of the family. Old 0/9, reference 7/9, completed 7/9."
+    },
+    {
+     "name": "cross_row_mix",
+     "file": "admitted/cross_row_mix.py",
+     "description": "Row i = normalize(z_i + z_{i+1 mod m}): cross-row leak; the laws never ask which input row an output row came from. Old 0/9, reference 6/9, completed 6/9."
+    },
+    {
+     "name": "rows_reversed",
+     "file": "admitted/rows_reversed.py",
+     "description": "Row i = normalize(z_{m-1-i}): row-index bug. Old 0/9, reference 6/9, completed 6/9."
+    },
+    {
+     "name": "wrong_shape",
+     "file": "admitted/wrong_shape.py",
+     "description": "Returns (m, 2) rows (-1, +1) regardless of input: the old bundle never compares output shape to input shape (UNIT_VARIANCE falls back to judging every row). Old 0/9, reference 9/9, completed 9/9 (the new law FAILs a shape mismatch). Added this session."
+    },
+    {
+     "name": "random family (rotation / permutation / odd power)",
+     "file": "probes/random_admitted_family.py",
+     "description": "12 random orthogonal maps of the hyperplane, 12 random column permutations, 12 random odd powers sign(z)|z|^p, p ~ U[0.4, 3], seeded: all 36 old 0/9, reference 7/9, completed 7/9 on the same groups (results/random_admitted_family.md)."
+    }
+   ],
+   "added_laws": [
+    {
+     "name": "POSITIVE_AFFINE (rows_are_positive_affine_images_of_input, laws.py RowsArePositiveAffineImagesOfInput)",
+     "statement": "Each output row is a positive affine image of its input row: y = a x + b 1 for scalars a, b with a > 0 on non-constant input rows (a = 0 on constant rows), and the output has the input's shape. With ZERO_MEAN this forces b = -a mean(x), with UNIT_VARIANCE a = sqrt(n)/|z|, so the five laws have the unique exact solution K_0 = sqrt(n) z/|z|.",
+     "tolerance": "Per-row least-squares fit a = <y,z>/<z,z>, b = mean(y) in float64; FAIL on output/input shape mismatch; FAIL if a <= 0 on any non-constant row (no tolerance: a correct kernel has a >= 0.149 here); otherwise the harness's residual_ratio ||y - (a z + b)||_inf / (||a z + b||_inf * eps(y.dtype) * log2 n) with n = row length, judged against DEFAULT_THRESH = 30 via within_threshold. Justification: for any kernel of the form fl(fl(x - m) s) or fl(x s + t) with per-row scalars however computed, the exact value is affine in x and absorbed by the fit, so the residual is only final rounding (<= ~2 ulp, ratio <= 2/log2 n). Measured max ratio: reference 0.097, float32 two-pass/rsqrt/Welford 0.14, fused x*s+t 0.81 (margin >= 37x). Rejects rotations >= 3e-5 rad, identical to the reference arm. INCONCLUSIVE on failed/empty/non-finite/exact-dtype output; defers non-finite to outputs_are_finite."
+    }
+   ],
+   "correct_variants_checked": [
+    "correct_variants/float32_two_pass.py (all float32; 0/9 every arm, law ratio 0.14)",
+    "correct_variants/rsqrt_multiply.py (multiply by (v+eps)^-0.5; 0/9, 0.14)",
+    "correct_variants/welford_float32.py (single-pass Welford in float32; 0/9, 0.14)",
+    "correct_variants/fused_scale_shift.py (y = x*s + t fused epilogue; 0/9, 0.81)",
+    "correct_variants/onepass_float64.py (E[x^2]-E[x]^2 in float64; 0/9, 0.097)",
+    "probes/kernels/eps_free_normalizer.py (K_0, eps = 0; 0/9 every arm) and probes/kernels/eps_outside_sqrt.py (eps outside the root; 0/9 every arm) -- formally different functions that no arm can distinguish from the reference on this domain"
+   ],
+   "elapsed_seconds": 992,
+   "outside_paths_read": [],
+   "inherited_files_used": "The interrupted session left laws.py (one direction law), 13 admitted kernels, 5 correct variants, 8 probe scripts and 6 probe kernels, with docstrings citing a RESULT.md (Theorems 1-3, R1, R3-R5) that did not exist; no probe had ever been run (no results/ directory). KEPT AND VERIFIED: laws.py (re-derived the proof, re-gated every kernel; fixed its claim that the reference's ratio is 0.3 -- measured 0.097), all 13 admitted kernels (old 0/9, reference 6-7/9, completed fails exactly the reference's groups; fixed two stale file references in docstrings), all 5 correct variants (0/9 every arm), all probe kernels. REPAIRED: alternative_direction_laws.py, error_decomposition.py and run_all.py crashed on a wrong-shape output (added shape guards); error_decomposition.py's narrative was wrong for negated (error along z with zero radial deviation) and was rewritten with a radial-deviation column; run_all.py's expectation that both arms reject onepass_float32 was false (it passes every arm on seed 42, reference ratio up to 25.8) and was corrected, as were the onepass_float32.py and onepass_float64.py docstrings making that claim. ADDED: admitted/wrong_shape.py, probes/kernels/float64_output.py (my first draft of its docstring was also wrong -- the old bundle rejects it through dtype-scaled tolerances -- corrected after measurement), probes/kernels/reference_edge_peaked.py, results/ (all tables), RESULT.md. DISCARDED: nothing; three false prose claims corrected in place. reference.py, bundle.yaml, gate.py and autokernel_pbt/ untouched (verified by mtime).",
+   "lean_compiled": false,
+   "lean_file": "",
+   "lean_main_theorem": "",
+   "primitive_assumptions": [
+    "sqrt: every positive real t has exactly one positive square root, and sqrt(t)^2 = t (used in Theorem 2 to pick a = sqrt(n)/|z| from a^2 |z|^2 = n with a > 0, and in Theorem 3 to write the reference as K_0 * sqrt(v/(v+eps)))",
+    "v + eps > 0 for every row (eps = 1e-5 > 0, v >= 0), so the reference's division is defined and var(y_ref) = v/(v+eps) is exact algebra",
+    "The float32 unit roundoff u = 2^-23 = 1.19e-7 and LAPACK threshold 30 as the harness defines them (tolerance.py); the rounding model fl(op) = op(1 + d), |d| <= u, used only in the informal tolerance justification of s5.4, not in Theorems 1-3",
+    "No exp or log is involved in layernorm; none assumed"
+   ],
+   "statement_vs_laws": "The exact statement (Theorem 2) is: for every row, y = a x + b 1 with a > 0 when z != 0, and y = 0 when z = 0, with output shape = input shape. laws.py checks instead: (1) a shape mismatch is a FAIL (the statement makes no sense across shapes); (2) a > 0 strictly, computed as the least-squares slope <y,z>/<z,z> in float64, with no tolerance; (3) the residual of the least-squares affine fit measured through residual_ratio against the fit's inf-norm, eps of the OUTPUT dtype and log2(row length), threshold 30 -- so a row within ~30 u log2(n) ||y|| of some positive affine image of x passes, which admits all of the reference arm's acceptance ball in the direction components and about 2/log2(n) worth of final rounding; (4) on constant input rows the fit is the constant b = mean(y) and the law only requires y to be constant within tolerance, leaving b = 0 to ZERO_MEAN (whose max(|y|,1) floor makes that |y| <= 3.6e-6); (5) INCONCLUSIVE rather than FAIL on failed execution, empty, non-finite or exact-dtype output, the harness's conventions; (6) ZERO_MEAN and UNIT_VARIANCE (unchanged, from bundle.yaml) carry n-normalized budgets 30 u n, so the floating-point acceptance region of the completed bundle is an anisotropic polytope with n/log2 n extra slack along 1 and along y relative to the reference arm's ball (R4); exact uniqueness does not transfer to equality of acceptance regions.",
+   "remarks_on_formal_ambiguity": "(1) The question \"is the reference the only kernel satisfying every law in exact arithmetic\" has a degenerate answer: the reference satisfies none of them exactly -- UNIT_VARIANCE fails on every non-constant row by eps/(v+eps) (Theorem 3). I read the question as asking about the eps -> 0 limit / the laws with their tolerances, and state both readings in RESULT.md s0, s5.3 and s6. An eps-aware radius law would make the reference the exact solution but is exactly contradicted by UNIT_VARIANCE and invisible in float32 (R5), so it was not added. (2) \"Kernel K: R^{m x n} -> R^{m x n}\" presumes the output shape; the old bundle does not check it (wrong_shape), and the new law treats a shape mismatch as FAIL, not INCONCLUSIVE. (3) \"On every input in the gate's domain\": the gate's inputs are 18 fixed float32 cases with row variance in [7.5, 45]; constant rows of width >= 2 never occur, and rows with v < v*(n) (where the correct reference fails UNIT_VARIANCE's tolerance) never occur; Theorems 1-2 are stated over all real matrices, the tolerance claims only over the gate's cases. (4) UNIT_VARIANCE abstains on constant input rows, so on the two width-1 rungs only ZERO_MEAN and FINITE judge anything and every admitted kernel is correct there -- hence the 7/9 ceilings. (5) Output dtype is outside the real-number question; it is enforced in every arm by tolerance scaling, not by a law (R6). (6) The run's start time: only this session's start is known (1790941969); the interrupted session's wall time is not recoverable, so elapsed_seconds covers this session only.",
+   "notes": "Key results, all demonstrated by files in the sandbox: results/summary.md is the master table (probes/run_all.py, exit 0). Negative findings worth carrying forward: R3 -- the correlation form of the direction law (Cauchy-Schwarz equality) is second-order blind and misses rotations up to 3e-3 rad that the reference arm rejects at 3e-5, and no tolerance-free formulation (order/extremes preserved) can complete the bundle (all monotone G pass them). R4 -- the completed bundle's acceptance region and the reference arm's ball are INCOMPARABLE: anisotropy_witness (completed 0/9, reference 7/9) and reference_edge_peaked (completed 4/9, reference 0/9) are both within 1e-5 of the reference; renormalizing ZERO_MEAN/UNIT_VARIANCE by log2 n (probes/tight_laws.py, not part of laws.py since properties.py/bundle.yaml are off limits) restores agreement on every probe at no cost on this domain. R5 -- eps magnitude (below 3e-4) and placement are invisible to every arm here. R6 -- a float64-returning kernel is rejected by every arm through dtype-scaled tolerances, not by any law. R7 -- float32 one-pass variance passes every arm on seed 42 (reference ratio 25.8/30) and fails both at row offsets >= ~50 (n=8); the inherited claim that it is rejected was false, and \"correct rewrite\" is a property of kernel + domain + seed. Theorem 3's v*(n) = eps(1/(30 u n) - 1) predicts the UNIT_VARIANCE false-alarm rate the harness's tasks.py reports having hit on N(0,1) inputs (9.8% of n=8 rows) and matches a bisected boundary to 3 digits. Process note: three oversized tool outputs were persisted by the harness to files outside the sandbox; I did not open them and re-read sources inside the sandbox instead."
+  }
+ },
+ {
+  "workflow": "wf_49a9863c-ad3",
+  "label": "oracle:softmax-T-r3",
+  "report": {
+   "sandbox": "<scratchpad>/runs/oracle/softmax-T-r3",
+   "task": "softmax",
+   "arm": "T",
+   "claims_complete": true,
+   "claim_grounds": "Over the reals, in exact arithmetic, the completed bundle characterizes the reference: theorem SoftmaxBundle.completeness in proofs/SoftmaxBundle.lean (Lean 4.34.1 core, no Mathlib, no sorry; axioms propext/Classical.choice/Quot.sound; compile log proofs/SoftmaxBundle.log) shows that for any input row x of width n >= 1, a row y satisfying EXP_RATIO_LAW (y_j*E(x_k) = y_k*E(x_j) for all j,k) and ROW_SUMS (sum y = 1) equals E(x_j)/sum_k E(x_k), using only 0 < E t. The theorem is pointwise in x (no partner case) and per row with no row-independence assumption. softmax_sound shows the reference satisfies both laws, so nothing correct is excluded; ratio_law_unit_interval, ratio_law_shift_invariant and shift_invariance_redundant show the other three original laws are implied over the reals. Empirically (results/run_all.txt, results/law_subsets.txt, results/worst_ratios.json): reference 0/9 (worst exp-ratio test ratio 0.0822), all 8 correct variants 0/9 (worst 0.135 vs threshold 30), all 14 admitted kernels rejected (7/9, rolled_rows 6/9) with ratios >= 7.6e4, and the completed declarative arm agrees group-for-group with the reference arm on all 24 kernels; the two-law subset EXP_RATIO+ROW_SUMS alone gives the same verdicts. Floating-point completeness is NOT claimed (the law accepts anything within 30*eps*log2(n) of proportional, e.g. temperature errors below ~3e-5, the same band the reference arm has).",
+   "admitted_families": [
+    {
+     "name": "temperature_2",
+     "description": "softmax(x/2): temperature family softmax(beta x), beta=1/2. Bundle is blind to the temperature.",
+     "file": "admitted/temperature_2.py"
+    },
+    {
+     "name": "temperature_0p5",
+     "description": "softmax(2x), beta=2. Admitted mathematically; in float the SHIFT law would reject colder members (T<=0.08) for an unrelated quantization-gain reason (theory/shift_gain.py).",
+     "file": "admitted/temperature_0p5.py"
+    },
+    {
+     "name": "softmin",
+     "description": "softmax(-x), beta=-1: sign blindness.",
+     "file": "admitted/softmin.py"
+    },
+    {
+     "name": "uniform",
+     "description": "constant 1/n, beta=0: the bundle never reads the values of x.",
+     "file": "admitted/uniform.py"
+    },
+    {
+     "name": "hardmax",
+     "description": "one-hot argmax, beta=+inf; outputs in {0,1}, exact row sums.",
+     "file": "admitted/hardmax.py"
+    },
+    {
+     "name": "label_smoothing",
+     "description": "(1-eps) softmax + eps/n, eps=0.1: simplex-preserving affine post-map (wrong-constant bug).",
+     "file": "admitted/label_smoothing.py"
+    },
+    {
+     "name": "reversed_columns",
+     "description": "softmax with every row's columns reversed: column-indexing bug (post-permutation).",
+     "file": "admitted/reversed_columns.py"
+    },
+    {
+     "name": "rolled_rows",
+     "description": "row i receives softmax of row i+1 mod m: row-stride bug; not row-separable; 6/9 because the roll is the identity on the single-row shape (1,64).",
+     "file": "admitted/rolled_rows.py"
+    },
+    {
+     "name": "topk_renorm",
+     "description": "softmax truncated to the top-3 entries per row and renormalized.",
+     "file": "admitted/topk_renorm.py"
+    },
+    {
+     "name": "cauchy_kernel",
+     "description": "y_j proportional to 1/(1+(max-x_j)^2): continuous, strictly monotone, shift-invariant, non-exponential normalizer.",
+     "file": "admitted/cauchy_kernel.py"
+    },
+    {
+     "name": "sparsemax",
+     "description": "Euclidean projection of each row onto the simplex (Martins & Astudillo 2016).",
+     "file": "admitted/sparsemax.py"
+    },
+    {
+     "name": "rank_softmax",
+     "description": "softmax of the within-row ranks of x: keeps only the ordering of x.",
+     "file": "admitted/rank_softmax.py"
+    },
+    {
+     "name": "cross_row_temperature",
+     "description": "row i is a softmax whose temperature is set by the spread of row i+1: rows interact; bundle only requires each row's own shift be killed.",
+     "file": "admitted/cross_row_temperature.py"
+    },
+    {
+     "name": "random_linear_mixing",
+     "description": "softmax(W . pi(x)) with a fixed random n x n W: G may be any map from centered rows to the simplex. The whole admitted set is {G o pi : pi(x) = x - rowmax(x), G arbitrary into the simplex} (theory/characterization.py: 24 arbitrary G and 11 pre/post-composition closures; theory/factor_check.py: every file satisfies K(x) = K(pi(x)); Lean shift_invariant_iff_factors and old_bundle_incomplete).",
+     "file": "admitted/random_linear_mixing.py"
+    }
+   ],
+   "added_laws": [
+    {
+     "name": "EXP_RATIO_LAW (exp_ratio_law, class ExpRatioLaw in laws.py)",
+     "statement": "For every row i and all columns j, k: y_ij * exp(x_ik) = y_ik * exp(x_ij), i.e. each output row is proportional to exp of its input row. Checked anchored at the row argmax k*: y_ij = y_ik* * exp(x_ij - x_ik*), with exp computed in float64 from the float32 input. Together with ROW_SUMS it pins y to the reference pointwise (Lean theorem completeness); it alone admits 0.5*softmax, so ROW_SUMS stays load-bearing. Non-finite output is deferred to outputs_are_finite; a wrong output shape FAILs.",
+     "tolerance": "The harness's own LAPACK-style ratio, verbatim: residual_ratio(y, anchor*e, dtype=y.dtype, n=y.shape[-1]) = ||y - y_k* e||_inf / (||y_k* e||_inf * eps(y.dtype) * log2 n) < DEFAULT_THRESH = 30 via within_threshold. The comparison side inherits the kernel's rounding of one output entry plus exp's ulp, the same O(eps log2 n) budget RowsSumToOne and the reference arm grant, so no new threshold argument is needed. Measured: reference 0.0822, eight correct variants worst 0.135, every admitted kernel >= 7.6e4 (results/worst_ratios.json). Resolution: rejects softmax(x/(1+delta)) from delta = 3.2e-5 (reference arm 1.8e-5) and (1-eps)softmax+eps/n from eps = 5.6e-5 (reference arm 1.8e-5)."
+    }
+   ],
+   "correct_variants_checked": [
+    "correct_variants/base2_exp_f32.py (exp2 with a float32 log2(e) factor, float32 throughout)",
+    "correct_variants/float32_accumulate.py (three-pass softmax accumulated in float32, pairwise sum)",
+    "correct_variants/logsumexp_form.py (exp(x - logsumexp(x)), float64)",
+    "correct_variants/online_softmax_f32.py (single-pass online normalizer over 4-column chunks, float32)",
+    "correct_variants/reciprocal_multiply_f32.py (multiply by reciprocal of the row sum, float32)",
+    "correct_variants/sequential_f32_accumulate.py (strictly sequential float32 row sum)",
+    "correct_variants/fast_exp_poly_f32.py (NEW: Cephes-style polynomial expf with range reduction and ldexp, ~1-2 ulp, float32)",
+    "correct_variants/rcp_newton_f32.py (NEW: 12-bit reciprocal estimate refined by one Newton step, float32)"
+   ],
+   "elapsed_seconds": 1068,
+   "outside_paths_read": [
+    "~/.elan/bin/lean (and `which lean`): EXECUTED as the already-installed Lean 4.34.1 toolchain to compile proofs/SoftmaxBundle.lean; no download, no file outside the sandbox read as data",
+    "~/.claude/projects/.../tool-results/*.txt: the agent harness persisted two oversized outputs of my own `cat` of in-sandbox files there; I did NOT open them and re-read the sources inside the sandbox in smaller pieces instead (venv is the README-sanctioned symlink into the scratchpad)"
+   ],
+   "inherited_files_used": "The interrupted session left: 14 admitted kernels + admitted/_common.txt; laws.py with ExpRatioLaw; 6 correct variants; theory/{characterization,shift_gain,temperature_resolution}.py with results/*.{txt,json}; run_all.py; proofs/Smoke.lean and Smoke2.lean; no RESULT.md. Everything was re-run from scratch. KEPT and re-verified: all 14 admitted kernels (bundle 0/9, reference 7/9, rolled_rows 6/9 exactly as recorded), laws.py unchanged as a law (reference 0/9, variants 0/9, all admitted rejected), the 6 variants, the 3 theory scripts (outputs identical to the stored results), run_all.py. REPAIRED: the laws.py docstring cited proofs/SoftmaxBundle.lean and four theorem names that did not exist; that proof now exists with those names, and two misquoted numbers were corrected (reference worst ratio 0.0822, variants 0.135). DISCARDED: proofs/Smoke.lean (does not compile: Lean.Grind.LinearOrder does not exist in Lean 4.34.1) and Smoke2.lean (4 of 7 grind examples fail); replaced by proofs/SoftmaxBundle.lean + SoftmaxBundle.log, which compile clean. ADDED: correct_variants/fast_exp_poly_f32.py, rcp_newton_f32.py; theory/factor_check.py, theory/law_subsets.py (+ results/factor_check.*, law_subsets.*, worst_ratios.json); a demonstrations paragraph in admitted/_common.txt; RESULT.md.",
+   "lean_compiled": true,
+   "lean_file": "<scratchpad>/runs/oracle/softmax-T-r3/proofs/SoftmaxBundle.lean",
+   "lean_main_theorem": "SoftmaxBundle.completeness : ∀ (E : F → F), (∀ t, 0 < E t) → ∀ (n : Nat), 0 < n → ∀ (x y : Fin n → F), ExpRatioLaw E n x y → RowSumsToOne n y → y = softmaxE E n x  (F any linearly ordered field; supporting theorems softmax_sound, ratio_law_unit_interval, ratio_law_shift_invariant, shift_invariance_redundant, old_bundle_incomplete, shift_invariant_iff_factors; all check with axioms [propext, Classical.choice, Quot.sound], see proofs/SoftmaxBundle.log)",
+   "primitive_assumptions": [
+    "exp positivity: ∀ t, 0 < E t — the ONLY property of exp used by completeness, softmax_sound and ratio_law_unit_interval (hypothesis hE)",
+    "exp homomorphism: ∀ a b, E (a + b) = E a * E b — used only by ratio_law_shift_invariant and shift_invariance_redundant (hypothesis hom)",
+    "the scalar field F is a linearly ordered field: Lean.Grind.Field F, Std.IsLinearOrder F, Std.LawfulOrderLT F, Lean.Grind.OrderedRing F (the reals are an instance); arithmetic is exact, no rounding",
+    "E is otherwise arbitrary: the statement is parametric in E, so with E' t = E (beta t) it pins y to softmax at temperature 1/beta instead — the law must name exp itself (laws.py uses float64 np.exp)",
+    "laws.py additionally assumes float64 np.exp is accurate to about 1 ulp and that exp(x_j)/exp(x_k*) may be computed as exp(x_j - x_k*) (homomorphism, avoids overflow)",
+    "row width n >= 1 (hn : 0 < n); n = 0 is vacuous and absent from the gate"
+   ],
+   "remarks_on_formal_ambiguity": "The README asks about kernels K: R^{m x n} -> R^{m x n}; the Lean statement is about one output row against the same input row and assumes nothing about how rows relate, so it applies to non-row-separable kernels (cross_row_temperature, rolled_rows) and to kernels whose behaviour depends on (m, n). 'On every input in the gate's domain' is read as: for each input x, the laws evaluated on that single case force y = softmax(x); completeness is pointwise, so it holds on any input set, finite or not, and needs no shift partner. 'Characterizes' is read as uniqueness of the function; on the two width-1 shapes ((1,1), (17,1)) every simplex-valued kernel outputs 1.0, so uniqueness there is trivial for every arm. 'Smallest set of additional laws' is read as count: one law is minimal since the bundle alone is incomplete; it is the natural single law (the proportionality factor of the reference, leaving the scale to ROW_SUMS) rather than the unique weakest one (artificial disjunctions exist). Centering: the Lean factoring theorem uses pi(x) = x - x_0 while the Python check uses the row max; over the reals any fixed representative of the shift class is equivalent. FINITE_OUTPUT is automatic in a field and has no Lean counterpart; the ratio law defers NaN to it in float.",
+   "statement_vs_laws": "Lean: exact equality y_j * E(x_k) = y_k * E(x_j) for ALL pairs (j,k), abstract E > 0, one row over an abstract ordered field, no rounding. laws.py: (1) a tolerance band instead of equality — the LAPACK ratio ||y - y_k* e||_inf / (||y_k* e||_inf * eps(y.dtype) * log2 n) < 30; (2) only the pairs (j, k*) with the row's argmax are checked directly (the remaining pairs follow by transitivity over the reals, not in float); (3) E(x_j)/E(x_k*) is computed as exp(x_j - x_k*) in float64 from the float32 input (uses the homomorphism; avoids overflow; makes e_k* = 1 and e <= 1); (4) the ratio's scale ||y_k* e||_inf is the max over the whole (m x n) matrix, not per row, so a row whose maximum is far below another row's is held to a looser absolute band, by at most a factor n <= 129 — the same convention the reference arm uses; (5) non-finite output returns INCONCLUSIVE (deferred to outputs_are_finite) rather than failing; a wrong output shape FAILs; exact-dtype outputs are INCONCLUSIVE; (6) Lean quantifies over all real inputs, the gate over 18 fixed float32 cases. Consequence: the float gate admits near-misses inside the band (temperature error below ~3.2e-5, smoothing below ~5.6e-5), roughly 2-3x coarser than the reference arm.",
+   "notes": "Negative findings and dead ends (all recorded in RESULT.md section 4): (a) the inherited Lean scaffolding never compiled: Lean.Grind.LinearOrder does not exist in Lean 4.34.1 (order classes are Std.IsLinearOrder / Std.LawfulOrderLT); grind on an abstract Lean.Grind.Field fails to canonicalize ring instances unless Lean.Grind.Semiring.natCast and Lean.Grind.Ring.intCast are registered as local instances; and grind does not derive nonlinear order facts (0 < a*b, 0 < b⁻¹, a <= b -> a/b <= 1) even when given the OrderedRing lemma as a hint, so those steps are done by hand through OrderedRing.mul_lt_mul_of_pos_right. (b) SHIFT_INVARIANCE in float is a gain test, not a symmetry test (theory/shift_gain.py): the shifted partner carries ~4e-6 of float32 quantization, the law's ratio on a correct kernel is ~gain x quantization spread / (eps32 log2 n), 4.11 worst for the reference, and softmax(x/T) — mathematically admitted by the bundle — is rejected by SHIFT_INVARIANCE alone for T <= 0.08. (c) Two of nine groups are blind for every arm (width 1); max detectable 7/9, 6/9 for a row-permutation bug on the single-row shape. (d) A log-domain form of the law was rejected: no natural residual_ratio scale. (e) The completed arm's resolution is ~2x coarser than the reference arm on temperature errors, ~3x on smoothing. (f) The Luce/IIA remark (qualitative axioms leave the temperature free) is supported by the admitted temperature family beta in {1/2, 2, -1, 0, +inf} but the axiom theorem itself is not demonstrated by code. (g) Elapsed time covers the resumed session only; the interrupted session left no timestamps. Reproduction commands are in RESULT.md section 5; every quoted number is in results/."
+  }
+ },
+ {
+  "workflow": "wf_49a9863c-ad3",
+  "label": "oracle:layernorm-T-r2",
+  "report": {
+   "sandbox": "<scratchpad>/runs/oracle/layernorm-T-r2",
+   "task": "layernorm",
+   "arm": "T",
+   "claims_complete": true,
+   "claim_grounds": "Claimed: (a) the old bundle does NOT characterize layernorm — in exact arithmetic it admits exactly A_old = { F∘P : F : H^m → H^m, ||F(z)_i||^2 = n whenever z_i != 0 } (P = row centering, H = mean-zero hyperplane), plus any mean-zero value on constant rows, plus wrong-shaped outputs (no shape law); 9 gate-demonstrated kernels in admitted/ (each 0/9 under --no-laws, rejected 6-9/9 by the reference arm) and one in beyond_gate/. (b) The completed bundle {old laws} ∪ {output_shape_matches_input, rows_are_positive_affine_images} characterizes the reference at eps = 0 EXACTLY: paper proof (RESULT.md §2.2: zero mean fixes the intercept, unit variance fixes |a| = 1/std, positivity fixes the sign, constant rows forced to 0) mechanized in proofs/Layernorm.lean (core Lean 4.34.1, no Mathlib, exit 0, no sorry; theorems completed_bundle_unique, standardize_satisfies, row_zero_of_const, bundle_implies_shift_invariance, eps_breaks_exact_unit_variance) over any field with a preorder compatible with + and *. (c) On the gate (results/gate_table.txt): reference and 4 optimizing rewrites pass 9/9 in both arms; all 9 admitted kernels are rejected by the declarative arm with laws on. Tolerance: worst PASS ratio of the new law on correct kernels is 0.137 on the gate, 0.188 over 900 groups from the gate's domain, 0.122 in stress regimes; smallest FAIL ratio on admitted kernels is 1.35e5 — a >1e5 gap around the threshold 30 (results/tolerance_margin.txt, results/law_robustness.txt). QUALIFICATION, stated in RESULT.md: the exact bundle pins eps = 0; the actual reference (eps = 1e-5) passes only within rows_have_unit_variance's tolerance, and kernels with eps' in {1e-6,1e-5,1e-4} inside or {1e-6,1e-5} outside the root are 0/9 in BOTH arms (results/eps_sweep.txt) — so the completed bundle characterizes the reference up to the gate's own resolution, the same blindness the reference arm has.",
+   "admitted_families": [
+    {
+     "name": "negated",
+     "file": "admitted/negated.py",
+     "description": "y = -layernorm(x): the isometry -id of the mean-zero hyperplane H; bundle cannot see the sign. --no-laws 0/9, reference 7/9, with laws 7/9 (sign test)."
+    },
+    {
+     "name": "reversed_columns",
+     "file": "admitted/reversed_columns.py",
+     "description": "y = layernorm(x)[:, ::-1]: a fixed column permutation (isometry of H). 0/9, reference 7/9, with laws 7/9."
+    },
+    {
+     "name": "rotated",
+     "file": "admitted/rotated.py",
+     "description": "y = layernorm(x) Q^T with Q a Haar-random orthogonal matrix fixing the all-ones vector: the generic element of O(n-1), of which negation and permutations are special cases. 0/9, reference 7/9, with laws 7/9."
+    },
+    {
+     "name": "cubed",
+     "file": "admitted/cubed.py",
+     "description": "K_3(x) = standardize((x - mean x)^3): non-linear continuous map of H onto the sphere, equivariant under every layernorm symmetry and strictly order preserving; defeats every invariance/equivariance law. 0/9, reference 7/9, with laws 7/9."
+    },
+    {
+     "name": "ranked",
+     "file": "admitted/ranked.py",
+     "description": "K_rank(x) = standardize(rank within row): satisfies zero mean, unit variance, finiteness, shift/positive-scale invariance, negation and permutation equivariance, idempotence and strict order preservation exactly as layernorm does (Theorem A, RESULT.md §1.3) yet differs for n >= 3. 0/9, reference 7/9, with laws 7/9."
+    },
+    {
+     "name": "signed",
+     "file": "admitted/signed.py",
+     "description": "K_sign(x) = standardize(sign(x - mean x)): two-level rows, idempotent, symmetry-equivariant. 0/9, reference 7/9, with laws 7/9."
+    },
+    {
+     "name": "constant_direction",
+     "file": "admitted/constant_direction.py",
+     "description": "Every row is the same fixed point of the sphere (standardized e_1), zeros when n = 1: a kernel that never reads the values of x. 0/9, reference 7/9, with laws 7/9."
+    },
+    {
+     "name": "row_reversed",
+     "file": "admitted/row_reversed.py",
+     "description": "y = layernorm(x)[::-1, :]: row mixing — output row i is the layernorm of input row m-1-i; the bundle never ties output row i to input row i. 0/9, reference 6/9, with laws 6/9."
+    },
+    {
+     "name": "constant_1x2",
+     "file": "admitted/constant_1x2.py",
+     "description": "Returns [[1, -1]] for every input of every shape: constant map with the wrong shape, admitted because the bundle has no shape law. 0/9, reference 9/9, with laws 9/9 (output_shape_matches_input)."
+    },
+    {
+     "name": "constant_row_nonzero (beyond the gate)",
+     "file": "beyond_gate/constant_row_nonzero.py",
+     "description": "Reference everywhere except on constant input rows with n >= 2, where it returns a non-zero mean-zero vector: the old bundle leaves the value at the origin of each row's hyperplane free (unit variance abstains there). The gate's case set has no such row, so neither arm separates it (0/9, 0/9, 0/9); admission and the completing law's rejection (ratio 5.4e6) are shown on a hand-built input in results/constant_rows.txt."
+    }
+   ],
+   "added_laws": [
+    {
+     "name": "output_shape_matches_input",
+     "statement": "y.shape == x.shape. Structural; the old bundle has no shape law and rows_have_unit_variance falls back to judging every row when shapes differ. In the README's framing K : R^{m x n} -> R^{m x n} this is the type, which is why it is absent from the Lean statement.",
+     "tolerance": "none (tolerance_free = True)"
+    },
+    {
+     "name": "rows_are_positive_affine_images",
+     "statement": "For every row i there exist a_i > 0 and b_i with y_i = a_i * x_i + b_i * 1; equivalently (y_i - mean y_i) = lambda_i (x_i - mean x_i) with lambda_i > 0, equivalently Pearson correlation of each output row with its own input row is exactly +1. A constant input row must give a constant output row. Shape mismatch deferred to output_shape_matches_input, non-finite output to outputs_are_finite, exact dtypes INCONCLUSIVE. With rows_have_zero_mean (fixes b_i) and rows_have_unit_variance (fixes a_i = 1/std) it pins y_i = (x_i - mean)/std, the reference at eps = 0; shift_invariance becomes a theorem (Lean: bundle_implies_shift_invariance).",
+     "tolerance": "Orientation half: lambda_i = <c_i,d_i>/<c_i,c_i> <= 0 is FAIL, a sign test with no tolerance. Collinearity half: residual_ratio(d, lambda*c, dtype=y.dtype, n=n) = ||d - lambda c||_inf / (||lambda c||_inf * eps(dtype) * log2 n) must be < DEFAULT_THRESH = 30, the harness's LAPACK convention. Justification: the fit removes the per-row offset and per-row scale that every correct rewrite perturbs (float32 mean -> offset; one-pass/rsqrt/exp2 variance -> scale), leaving only elementwise output rounding, so the ratio is O(1/log2 n) for correct kernels: measured worst 0.137 on the gate, 0.188 over 900 groups from the gate's domain, 0.122 in stress regimes (n up to 16384, var(x) ~ 3 eps, offsets up to 1e5), zero false alarms; smallest FAIL-side ratio on admitted kernels 1.35e5. Declared tolerance_free = False because the collinearity half uses a ratio."
+    }
+   ],
+   "correct_variants_checked": [
+    "correct_variants/exp2_log_trick.py (rsqrt as exp2(-0.5*log2(var+eps)) in float32) — 0/9 both arms, new-law ratio <= 0.114 on gate",
+    "correct_variants/float32_accumulate.py (all reductions float32, two-pass mean/variance) — 0/9 both arms, ratio <= 0.137",
+    "correct_variants/rsqrt_reciprocal.py (float32, reciprocal multiply, one-pass E[x^2]-E[x]^2 variance) — 0/9 both arms on the gate, new-law ratio <= 0.137; NOTE: correct only at the gate's resolution — over 900 domain groups the reference arm rejects it on 8 (ratios 38-117) and the OLD bundle's shift_invariance on the same 8 (unit_variance on 4), due to one-pass cancellation under the sigma = 44.4 shift; the new law never rejects it, correctly, since the defect is a row-scale error",
+    "correct_variants/welford_float64.py (sequential Welford update in float64, reciprocal multiply) — 0/9 both arms, ratio <= 0.0973"
+   ],
+   "elapsed_seconds": 1075,
+   "outside_paths_read": [
+    "PATH lookup `command -v lean lake elan` resolving to ~/.elan/bin/lean, ~/.elan/bin/lake, ~/.elan/bin/elan",
+    "directory listing of ~/.elan/toolchains (four toolchain directory names)",
+    "ls attempts on /opt/homebrew/bin/lean and /usr/local/bin/lean (both absent)",
+    "executed ~/.elan/toolchains/leanprover--lean4---v4.34.1/bin/lean on files inside the sandbox (the compiler reads its own standard library from its installation; invoked directly to bypass the elan proxy, no network)"
+   ],
+   "inherited_files_used": "The previous session left: admitted/ (10 kernels + _common.txt), laws.py (output_shape_matches_input, rows_are_positive_affine_images), correct_variants/ (4 kernels), scripts/ (run_all, constant_rows, eps_sweep, theorem_a_check, tolerance_margin) with their results/*.txt, and an EMPTY proofs/ although laws.py's docstring cited proofs/Layernorm.lean. Disposition: re-ran gate.py and every script; all inherited results reproduced exactly and were regenerated by me. KEPT: 9 admitted kernels (each verified 0/9 under --no-laws and rejected by the reference arm), laws.py (reference 0/9, all admitted rejected, all variants pass), the 4 correct variants, all scripts. MOVED: admitted/constant_row_nonzero.py -> beyond_gate/ because it is 0/9 in every arm on the gate and so does not meet the README's definition of an admitted/ entry; docstring, _common.txt, scripts/constant_rows.py and run_all.py updated accordingly. REPAIRED: wrote the missing proofs/Layernorm.lean (compiled, exit 0, no sorry) and corrected laws.py's docstring to name the theorems actually proved and their hypotheses. EXTENDED: tolerance_margin.py now also reports the detection margin on admitted kernels. ADDED: scripts/law_robustness.py -> results/law_robustness.txt (900-group domain sweep + stress regimes), scripts/dtype_probe.py -> results/dtype_probe.txt, RESULT.md. DISCARDED: nothing substantive (only my own Lean probe scratch files).",
+   "lean_compiled": true,
+   "lean_file": "<scratchpad>/runs/oracle/layernorm-T-r2/proofs/Layernorm.lean",
+   "lean_main_theorem": "LayernormBundle.completed_bundle_unique : for any {F : Type} [Lean.Grind.Field F] [LE F] [LT F] [Std.IsPreorder F] [Std.LawfulOrderLT F] [Lean.Grind.OrderedRing F] and any K K' : (Fin m → Fin n → F) → (Fin m → Fin n → F), SatisfiesBundle K → SatisfiesBundle K' → K = K', where SatisfiesBundle K := ∀ x i, ZeroMean (K x i) ∧ (¬ IsConst (x i) → UnitVariance (K x i)) ∧ PosAffine (x i) (K x i). Companion theorems in the same file: row_unique, row_zero_of_const, standardize_satisfies (existence: r > 0, r²·Σ(x−mean x)² = n ⇒ r·(x − mean x) satisfies the bundle), zero_row_satisfies_on_const, bundle_implies_shift_invariance, eps_breaks_exact_unit_variance. Compiled with Lean 4.34.1 (core only, no Mathlib), exit 0, no sorry.",
+   "primitive_assumptions": [
+    "Lean: no square root is assumed to exist in the field; the reciprocal standard deviation enters standardize_satisfies as a hypothesis r > 0 with r * r * Σ(x i − mean x)² = n, and eps_breaks_exact_unit_variance as r * r * (Σ centered² + eps * n) = n.",
+    "Lean: division is the field's a / b = a * b⁻¹ (Lean.Grind.Field); it is used only with the denominator ones (n+1) = Σ 1, proved non-zero (0 < ones (n+1)).",
+    "Lean: the order is only a preorder compatible with + and * (Lean.Grind.OrderedRing: 0 < 1, multiplication by a positive element preserves <) with < related to ≤ by Std.LawfulOrderLT; no totality, no Archimedean property, no completeness.",
+    "Lean: exp, log and exp2 do not appear; the exp2/log2 rewrite is covered only numerically (correct_variants/exp2_log_trick.py).",
+    "Python laws: numpy's float64 mean, subtraction, multiplication, sum and division used inside the law are assumed accurate to a few ulps, so the law's own arithmetic error is negligible against the 30·eps32·log2 n budget — measured (worst ratio 0.188), not proven.",
+    "Python laws: the kernel's sqrt / rsqrt / exp2 / log2 / reciprocal are assumed to perturb only the per-row scale (absorbed by the fitted slope lambda), and its mean to perturb only the per-row offset (absorbed by the intercept); only elementwise output rounding is assumed to remain — measured, not proven.",
+    "Harness conventions taken as given: residual_ratio's log2(n) pairwise-summation normalization and DEFAULT_THRESH = 30 (LAPACK LAWN 41), eps taken from the OUTPUT dtype."
+   ],
+   "remarks_on_formal_ambiguity": "(1) 'Characterizes the reference' is only meaningful up to tolerance: reference.py has eps = 1e-5 inside the root, so in exact arithmetic it does NOT satisfy UNIT_VARIANCE (Σy² = n·var/(var+eps) < n; Lean: eps_breaks_exact_unit_variance) and is admitted by the old and the completed bundle only through rows_have_unit_variance's budget 30·eps32·n; the exact completed bundle characterizes layernorm at eps = 0. Neither arm can pin eps on this domain (results/eps_sweep.txt). (2) UNIT_VARIANCE's wording 'except rows a constant input zeroed' is implemented as an abstention, not as an assertion that such rows are zero; that abstention is precisely what leaves the constant-row value free in the old bundle, and the completing law is what forces it to zero (Lean: row_zero_of_const). In floating point eps > 0 is forced not by any statistical law but by FINITE_OUTPUT at the n = 1 rungs (eps = 0 gives 0/0). (3) 'K : R^{m×n} → R^{m×n}' in the question makes the shape law a typing fact, but the harness's bundle has no shape law and admits a constant 1×2 output, so a structural law is needed at the gate even though it is not mathematics. (4) The README's criterion for a wrong kernel is 'the reference arm rejects', and the reference arm measures in the kernel's output dtype: a float16-returning kernel is accepted by both arms, a float64-returning one rejected by both (the old bundle rejects it incidentally via shift_invariance on the float32-quantized partner); no dtype law was added, and this is noted as a reference-arm blind spot (results/dtype_probe.txt). (5) Theorem A (K_rank indistinguishable from layernorm by any unary/equivariance/idempotence/order law) holds for n ≥ 3 on rows with distinct entries; for n = 2 the sphere in H is two points, and with ties the stable-argsort K_rank is not permutation-equivariant (probability 0 under the gate's draws). (6) The Lean UnitVariance is Σy² = n, which is population variance 1 given zero mean; the two hypotheses always appear together.",
+   "statement_vs_laws": "The Lean statement uses exact equalities where laws.py uses tolerances: PosAffine is an existential ∃ a > 0, b, y i = a * x i + b, whereas the law computes the least-squares slope lambda = <c,d>/<c,c> on centered rows, FAILs on lambda <= 0 (exact sign test) and otherwise requires residual_ratio(d, lambda*c) < 30 (equivalent in exact arithmetic: the residual is zero iff the law holds and then lambda = a); ZeroMean is vsum y = 0 vs |mean| <= 30·eps·n·max(|y|,1); UnitVariance is Σy² = n vs |var(y) − 1| <= 30·eps·n. The Lean world is an abstract field with a compatible preorder, with no rounding model, no float32/float64 distinction and no dtype; laws.py judges float32 outputs with float64 accumulation. Lean has no shape law (the matrix type Fin m → Fin n → F is the shape) and no finiteness law (vacuous over a field), while laws.py adds output_shape_matches_input and the bundle keeps outputs_are_finite. Lean proves shift_invariance as a consequence (bundle_implies_shift_invariance); the gate still evaluates it as a law since bundle.yaml is fixed. The Lean hypotheses quantify over all inputs x; the gate evaluates 18 fixed cases (seed 42), so Lean says nothing about kernels correct on those 18 and wrong elsewhere.",
+   "notes": "Negative findings and dead ends recorded in RESULT.md §3: (a) eps blindness of both arms on this domain (eps' in [1e-6, 1e-4] inside, [1e-6, 1e-5] outside indistinguishable from the reference); (b) the invariance/equivariance/idempotence/monotonicity vocabulary cannot complete the bundle (Theorem A, K_rank; cubed is the continuous counterpart), which is why a relational law was necessary; (c) the gate's case set has no constant row with n >= 2, so the constant-row freedom of the old bundle is unreachable by either arm on the gate (beyond_gate/, results/constant_rows.txt); (d) the OLD bundle's rows_have_unit_variance and shift_invariance give false alarms on the reference itself when var(x) <~ 300·eps (block B of results/law_robustness.txt), while the new law has no false alarm in any regime tried; (e) correct_variants/rsqrt_reciprocal.py (one-pass float32 variance) is rejected by the reference arm on 8 of 900 domain groups and sits at ratio 25.3 on the gate's seed — it is correct only at the gate's resolution; (f) output dtype: float64 output rejected by both arms (incidentally), float16 output accepted by both; no dtype law added by the README's criterion. The Lean proof was done with the installed toolchain binary invoked directly; four grind limitations were worked around (a*a = b*b with a,b > 0 via (a−b)(a+b) = 0; positivity of products via OrderedRing.mul_lt_mul_of_pos_left). Elapsed 1075 s covers this session only; the previous session's time is unrecorded."
+  }
+ },
+ {
+  "workflow": "wf_49a9863c-ad3",
+  "label": "oracle:softmax-T-r2",
+  "report": {
+   "sandbox": "<scratchpad>/runs/oracle/softmax-T-r2",
+   "task": "softmax",
+   "arm": "T",
+   "claims_complete": true,
+   "claim_grounds": "In exact arithmetic over the reals, for kernels R^{m x n} -> R^{m x n}: bundle.yaml plus the one law log_ratio_to_input (y > 0 and x_j - log y_j constant within every row) admits the reference and nothing else, on the gate's domain and every domain. Proof: y_j = exp(x_j - c) and rows summing to one force exp(-c) = 1/sum exp(x_k); mechanized as SoftmaxBundle.completion_characterizes (=>) and softmax_satisfies (<=) in proofs/SoftmaxBundle.lean, compiled with Lean 4.34.1 core (proofs/lean_build.log, exit 0). Theorem 1 (admitted set of the original bundle = {F o q}, F arbitrary into the simplices) mechanized as admitted_iff_factor; Theorem 3 (every completion needs a non-scale-invariant law) in proofs/ScaleBlindness.lean. Empirically: 14 admitted kernels and 50 random draws from the admitted set are rejected by the completed bundle on exactly the groups the reference arm rejects (gate_results.txt, lattice_table.txt, random_admitted.txt); reference and six correct float32 rewrites pass with max test ratio 1.24 vs threshold 30 (tolerance_margins.txt), 0 false alarms over 20 extra seeds x 9 groups x 7 kernels (seed_sweep.txt). Not claimed: anything about floating point beyond what was measured, tightness of the threshold, closure of the abstention gap for kernels that raise, float16.",
+   "admitted_families": [
+    {
+     "name": "scaling orbit softmax(beta*x)",
+     "description": "every law of the bundle is invariant under x -> beta*x (Theorem 3); members: temperature_half (beta=1/2), softmin (-1), base2_missing_log2e (ln 2, the exp2-without-log2e slip), uniform (0), argmax_onehot (limit 0+). Reference arm rejects 7/9 groups; bundle 0/9.",
+     "file": "admitted/temperature_half.py, admitted/softmin.py, admitted/base2_missing_log2e.py, admitted/uniform.py, admitted/argmax_onehot.py"
+    },
+    {
+     "name": "non-Gibbs normalized f(x - max)",
+     "description": "y = f(z)/sum f(z) for an arbitrary positive f; Taylor softmax f = 1 + z + z^2/2.",
+     "file": "admitted/taylor_softmax.py"
+    },
+    {
+     "name": "Gibbs of a curved exponent",
+     "description": "softmax of a quadratic in z agreeing with x at the row's extremes; passes unit_temperature, fails gibbs_log_linear (independence witness for the factoring).",
+     "file": "admitted/curved_gibbs.py"
+    },
+    {
+     "name": "vertex-valued / sparse simplex maps",
+     "description": "hard argmax one-hot; sparsemax (Euclidean projection onto the simplex, exact zeros).",
+     "file": "admitted/argmax_onehot.py, admitted/sparsemax.py"
+    },
+    {
+     "name": "output permutations",
+     "description": "softmax with columns written back in reverse order (indexing bug).",
+     "file": "admitted/column_reversed.py"
+    },
+    {
+     "name": "row mixing (F not row-separable)",
+     "description": "output row i is softmax of input row i+1 mod m; still shift-invariant because the shift law adds a constant to every row. Reference arm rejects 6/9.",
+     "file": "admitted/row_rotated.py"
+    },
+    {
+     "name": "shape-dependent patchwork",
+     "description": "the admitted set is a product over shapes: correct on full 8-wide tiles, temperature 1/2 on ragged tail columns; rejected on 3/9 groups only.",
+     "file": "admitted/tail_temperature.py"
+    },
+    {
+     "name": "convex mixtures (the admitted set is convex)",
+     "description": "(softmax + 1/n)/2 and (1-eps) softmax + eps/n with eps = 1e-3; admitted for every eps in (0,1], so the bundle's resolution is the diameter of the simplex (resolution_sweep.txt).",
+     "file": "admitted/half_uniform_mixture.py, admitted/near_reference.py"
+    },
+    {
+     "name": "wrong output type (harness blind spot)",
+     "description": "returns [[1.0]] for every input; all four bundle laws read y alone so it is admitted on every shape; reference arm FAILs the shape mismatch 8/9. Closed by output_type_matches_input.",
+     "file": "admitted/wrong_shape_scalar.py"
+    },
+    {
+     "name": "random F on the shift quotient",
+     "description": "random tanh network, piecewise-constant per-row temperature switch, argmax mixture, column permutation: 40/40 admitted by the bundle, 40/40 rejected by reference arm and completed bundle; the smooth per-row temperature field (10 draws) is admitted in exact arithmetic but rejected by the float32 shift law (conditioning effect, finding F1).",
+     "file": "random_admitted.py / random_admitted.txt"
+    },
+    {
+     "name": "abstention gaps (not counterexamples: reference arm abstains too)",
+     "description": "int64 one-hot, empty output, raising kernel: every tolerance-bearing law and the reference arm answer INCONCLUSIVE, which gate.py prints as PASS 0/9. The first two are FAILed by output_type_matches_input; the third cannot be closed by any law.",
+     "file": "abstentions/int_onehot.py, abstentions/empty_output.py, abstentions/raises.py"
+    }
+   ],
+   "added_laws": [
+    {
+     "name": "output_type_matches_input (active, tolerance-free)",
+     "statement": "y.shape == x.shape and y.dtype is a floating dtype. Structural guard for the kernel's type, which the harness does not enforce; the value law defers to it. For softmax a non-floating output is provably wrong on every row of width >= 2 (exact values lie strictly inside (0,1)).",
+     "tolerance": "none"
+    },
+    {
+     "name": "log_ratio_to_input (active; the completion)",
+     "statement": "Within every row, every judgeable entry y_j > 0 and x_j - log y_j is constant across j (y proportional to exp(x)). With rows_sum_to_one this is the graph of softmax (Theorem 2). Judgeable = entries whose exact value exp(x_j - max) is a normal number of y's dtype (all, on the gate's domain).",
+     "tolerance": "residual r = centred ((x - max) - log y) per row; residual_ratio(r, 0, dtype=y.dtype, n=row width) = ||r||_inf / (eps * max(log2 n, 1)) < 30 (DEFAULT_THRESH). A residual in log y is a relative error in y, so the harness's unit-scale fallback applies. Bound for a correct float32 kernel: per-entry relative error <= (D/2 + 2.5) eps (D = row logit range; exponent formation D*eps/2, exp 1 ulp, divide 0.5 ulp, cast 0.5 ulp); normalizer cancels in centring; centring at most doubles: ratio <= (D+5)/log2 n ~ 4 at n=8. Measured max 1.24 (seed 42), 1.2 over 20 further seeds, 0 false alarms."
+    },
+    {
+     "name": "gibbs_log_linear (inactive factoring half, scale-free)",
+     "statement": "(x_j, log y_j) collinear within each row: y is a Gibbs distribution of x at some per-row temperature (beta = 0 included). Least-squares line in centred coordinates, sup-norm residual.",
+     "tolerance": "same residual_ratio convention, threshold 30; measured max 1.12"
+    },
+    {
+     "name": "unit_temperature (inactive factoring half, scale-fixing)",
+     "statement": "For rows with distinct judgeable logits: log y[argmax x] - log y[argmin x] = max x - min x. log_ratio_to_input <=> gibbs_log_linear and unit_temperature (SoftmaxBundle.factoring); the halves are independent (temperature_half vs curved_gibbs).",
+     "tolerance": "same residual_ratio convention, threshold 30; measured max 1.37"
+    }
+   ],
+   "correct_variants_checked": [
+    "correct_variants/base2_with_log2e_f32.py (exp2 with log2(e) factor, float32 throughout)",
+    "correct_variants/reciprocal_multiply_f32.py (multiply by float32 reciprocal of the row sum)",
+    "correct_variants/log_domain_f32.py (normalize in the log domain, float32)",
+    "correct_variants/online_softmax_f32.py (FlashAttention-style running max and rescaled running sum over 8-wide blocks)",
+    "correct_variants/sequential_f32_accumulate.py (scalar float32 arithmetic, sequential sum)",
+    "correct_variants/f64_no_max_subtraction.py (correct on this domain; exp overflows in float64 only past 709)",
+    "reference.py itself; all seven pass every arm 0/9 at seed 42 and 0/180 groups over seeds 100..119"
+   ],
+   "elapsed_seconds": 1168,
+   "outside_paths_read": [
+    "~/.elan/toolchains (directory listing, to find a pinned Lean binary)",
+    "~/.elan/toolchains/leanprover--lean4---v4.19.0/bin/lean, .../v4.32.0/bin/lean, .../v4.33.0/bin/lean, .../v4.34.1/bin/lean (executed with --version; v4.34.1 then used to compile the two proof files in the sandbox). No other file, repository or web resource was read; no network used. venv is a symlink outside the sandbox as the README instructs."
+   ],
+   "inherited_files_used": "Inherited: 13 admitted kernels, 4 independence witnesses, 6 correct variants, laws.py with three active laws (output_shape_matches_input, gibbs_log_linear, unit_temperature) and an inactive one-law completion, candidate_laws.py, five report scripts whose *.txt outputs had never been generated, an uncompiled proofs/ScaleBlindness.lean marked 'proof sketch', no RESULT.md. Kept and verified by re-running the gate: all kernels (admitted 0/9 under --no-laws and rejected by the reference arm; witnesses fail exactly one law each; variants 0/9 everywhere), the law implementations and tolerance argument, the scripts. Repaired: a first-failing-law parsing bug in three scripts (printed '8)' because the shape contains a space; now sandbox_util.first_law); random_admitted.py's docstring claimed every draw is admitted but the smooth temperature-field construction is rejected by the float32 shift law on 2-4 groups per draw -- docstring corrected, a piecewise-constant construction that is admitted was added, and the effect is recorded as finding F1. Changed: made the one-law completion log_ratio_to_input active (the README asks for the smallest set) and kept the two-law factoring inactive as FACTORED_CASE_PROPERTIES (evaluated by lattice.py/tolerance_margins.py; identical verdicts on every kernel); widened the structural law to shape-and-floating-dtype (closes the int-output abstention gap). Added: admitted/wrong_shape_scalar.py, abstentions/ (3 kernels), scale_orbit_sweep.py, seed_sweep.py, sandbox_util.py, proofs/SoftmaxBundle.lean (Theorems 1, 2, factoring; compiled), compiled proofs/ScaleBlindness.lean (one unused-variable rename), proofs/check_lean.sh and lean_build.log, all *.txt outputs, RESULT.md. Discarded: nothing.",
+   "lean_compiled": true,
+   "lean_file": "<scratchpad>/runs/oracle/softmax-T-r2/proofs/SoftmaxBundle.lean (and proofs/ScaleBlindness.lean; both compiled by proofs/check_lean.sh, log in proofs/lean_build.log, Lean 4.34.1 core, no Mathlib)",
+   "lean_main_theorem": "SoftmaxBundle.completion_characterizes : for an abstract Lean.Grind.Field F with LT, exp log : F -> F, n : Nat, x y : Fin n -> F, given exp_add (exp (a+b) = exp a * exp b) and exp_log (0 < a -> exp (log a) = a), RowLaws log n x y (forall j, 0 < y j; exists c, forall j, x j - log (y j) = c; fsum n y = 1) implies forall j, y j = exp (x j) / fsum n (fun k => exp (x k)). Converse: SoftmaxBundle.softmax_satisfies (ExpLog axioms, rows of width m+1). Also: SoftmaxBundle.admitted_iff_factor (Theorem 1), SoftmaxBundle.factoring, and ScaleBlindness: no_scale_invariant_bundle_characterizes, completion_has_scale_fixing_law, bundle_scale_blind (Theorem 3).",
+   "primitive_assumptions": [
+    "F is an abstract Lean.Grind.Field (core grind class: commutative ring with inverses, 0 != 1, mul_inv_cancel for a != 0) equipped with an LT relation; the reals are the intended instance but are not constructed in the proof.",
+    "exp (a + b) = exp a * exp b for all a b (used by the main direction).",
+    "0 < a -> exp (log a) = a (used by the main direction).",
+    "0 < exp a for all a (converse only).",
+    "log (exp a) = a for all a (converse only).",
+    "0 < a -> 0 < b -> log (a / b) = log a - log b (converse only).",
+    "0 < a -> 0 < b -> 0 < a + b (converse only; positivity of the row sum by induction).",
+    "0 < a -> 0 < b -> 0 < a / b (converse only).",
+    "0 < a -> a != 0 (converse only; the row sum is a valid divisor).",
+    "Theorem 3's witness softmax(2x) != softmax(x) (needs e != e^2 in the reals) is not formalized; it is exhibited numerically by admitted/temperature_half.py.",
+    "Finite sums are defined by structural recursion over Fin n (fsum); no library of finite sums is assumed. Field identities are discharged by grind."
+   ],
+   "remarks_on_formal_ambiguity": "The informal question is posed for kernels K : R^{m x n} -> R^{m x n}; the harness never enforces that type, so a kernel of the wrong type ([[1.0]]) is admitted by the bundle as a program while being outside the question's scope -- the structural law output_type_matches_input resolves the ambiguity in the gate and has no formal counterpart (Theorem 1 is stated over abstract X -> Y and never sees shapes). 'Characterizes' is read as: admits the reference and nothing else, universally over inputs, in exact arithmetic; the gate itself can only sample 18 float32 cases, and the float32 gate's admitted set is a proper subset of the exact one (the shift law doubles as a conditioning test, finding F1), so 'admitted' means different things in the two settings and RESULT.md keeps them apart. 'Smallest set' was read as fewest laws: one value law is minimal, and no completing law can be extensionally weaker than the definition; the previous session's two-law factoring is retained as the diagnostic decomposition. The extreme pair in unit_temperature is formalized through the hypothesis 'their logits differ or the row is constant' rather than through an order on F. INCONCLUSIVE is not FAIL, so gate.py prints PASS 0/9 for kernels no arm judged; run_all.py marks these 'abstained'.",
+   "statement_vs_laws": "Lean: x_j - log y_j = c exactly for all j with y_j > 0, on one row, no tolerance, no masking; ShiftInvariant quantifies over every shift c; the field is abstract. laws.py log_ratio_to_input: centres (x - max) - log y per row (max is a per-row constant so identical in exact arithmetic), judges only entries whose exact value exp(x_j - max) is a normal number of y's dtype (all entries on the gate's domain), accepts ||r||_inf / (eps * log2 n) < 30, abstains (INCONCLUSIVE) on non-finite output, shape or dtype mismatch, empty output or failed execution, FAILs y <= 0 on judgeable entries; the gate tests one N(0, 44.4) shift partner per group rather than all c. The Lean factoring takes the extreme pair as indices with hypothesis 'logits differ or row constant'; the Python unit_temperature computes argmax/argmin itself. The Lean converse covers rows of width >= 1; the Python laws are vacuous on width-1 rows where rows_sum_to_one already forces y = 1. The type law and the abstention behaviour have no formal counterpart.",
+   "notes": "Key negative/side findings (RESULT.md Part 4): F1 the float32 shift law also measures input conditioning (reference spends 4.11/30 at seed 42, 8.05/30 over 20 seeds on quantization alone; a smooth per-row temperature field admitted in exact arithmetic is rejected 2-4/9 in float32); F2 the linear prediction that the float32 bundle rejects softmax(beta x) for |beta| > ~7 is false -- max shift ratio 29 at beta=10, 31.6 at 16 (1/9 fails), 28 at 64 (admitted again) because the softmax Jacobian beta(diag p - pp^T) saturates; F3 natural scale-free laws (positivity, order, ties) cannot complete the bundle (Theorem 3, lattice_table.txt); F5 the completed bundle resolves K_eps and beta = 1 + delta a decade finer than the reference arm (relative vs absolute residual): rejects eps >= 1e-6 and delta >= 1e-5, reference arm eps >= 3e-5 and delta >= 1e-4. All numbers in gate_results.txt, lattice_table.txt, tolerance_margins.txt, seed_sweep.txt, random_admitted.txt, resolution_sweep.txt, scale_orbit_sweep.txt. Elapsed 1168 s is this session only; the interrupted previous session's time is unknown."
+  }
+ },
+ {
+  "workflow": "wf_4d6f3815-cca",
+  "label": "adherence:k2-r2",
+  "report": {
+   "sandbox": "<scratchpad>/runs/adherence/k2-r2",
+   "kernel": "k2",
+   "verdict": "refuted",
+   "refutation_kind": "lean-negation",
+   "compiled": true,
+   "files": [
+    "<scratchpad>/runs/adherence/k2-r2/proof/K2Refutation.lean",
+    "<scratchpad>/runs/adherence/k2-r2/refute.py",
+    "<scratchpad>/runs/adherence/k2-r2/refute_output.txt",
+    "<scratchpad>/runs/adherence/k2-r2/RESULT.md"
+   ],
+   "theorem_statement": "K2.k2_refuted : ∃ xs : List F, H xs ∧ ¬ S xs (M xs)   — over an abstract ordered field F (Field F, linear order, OrderedRing F; ℝ is a model), with S xs ys := ys = xs.map (fun x => exp x / (xs.map exp).sum), M the faithful per-row model of kernel.py (scale by INV_TEMPERATURE = 2, listMax, subtract, exp, sum, divide), H xs := xs ≠ []. Witness row [0, 1]. This is the negation of the adherence statement ∀ xs, H xs → S xs (M xs).",
+   "model_description": "One row at a time. M xs := let z := xs.map (· * INV_TEMPERATURE) with INV_TEMPERATURE : F := 2; let m := listMax z; let e := z.map (fun zi => exp (zi - m)); e.map (· / e.sum). Same operations in the same order as kernel.softmax (z = x*INV_TEMPERATURE; m = np.max(z); e = np.exp(z - m); e / np.sum(e)); exp and listMax are opaque primitives with named assumptions. The kernel was not simplified toward the spec.",
+   "primitive_assumptions": [
+    {
+     "name": "ExpAssumptions.exp_pos",
+     "statement": "∀ x : F, 0 < exp x",
+     "justification": "The real exponential is strictly positive everywhere (e^x > 0)."
+    },
+    {
+     "name": "ExpAssumptions.exp_add",
+     "statement": "∀ x y : F, exp (x + y) = exp x * exp y",
+     "justification": "The exponent law e^(x+y) = e^x · e^y."
+    },
+    {
+     "name": "ExpAssumptions.exp_one_ne_one",
+     "statement": "exp (1 : F) ≠ 1",
+     "justification": "e = 2.71828… ≠ 1; weakest fact ruling out exp ≡ 1 (implied by injectivity or strict monotonicity of the real exp)."
+    },
+    {
+     "name": "ListMaxAssumptions.le_listMax",
+     "statement": "∀ (xs : List F) (x : F), x ∈ xs → x ≤ listMax xs",
+     "justification": "np.max over a row returns the maximum, which bounds every element of the row."
+    },
+    {
+     "name": "ListMaxAssumptions.listMax_mem",
+     "statement": "∀ xs : List F, xs ≠ [] → listMax xs ∈ xs",
+     "justification": "np.max of a non-empty row returns one of its elements (it selects, it does not compute a new value); on an empty row np.max raises, which H excludes."
+    }
+   ],
+   "print_axioms_line": "'K2.k2_refuted' depends on axioms: [propext, Classical.choice, Quot.sound]",
+   "not_established": "Exact-arithmetic result over an abstract ordered field: says nothing about float32 rounding, overflow/underflow, inf/nan, or the numerical merit of the max-subtraction (the Python run covers float32 only empirically). Exhibits one disagreeing row; does not characterize all disagreeing rows (constant rows agree) nor bound the disagreement in general. Does not say softmax(2x) is wrong for its own purposes, only that it is not what spec.md specifies. Shape/dtype/2-D handling beyond one row are outside the model (Python run observes float32 and shape preserved). Depends on the stated assumptions about exp and listMax being true of the real functions, and on M being a faithful transcription of kernel.py (by inspection; Python confirms kernel ≡ spec-formula-at-2x to 1.2e-7).",
+   "inherited_files_used": "The directory contained only the task's original files (README.md, SANDBOX, kernel.py, spec.md, proof/README.md, proof/Skeleton.lean, proof/lean-toolchain, venv symlink), all with the 02:22 setup timestamp. The previous session(s) left no proof file, scripts, notes or RESULT.md, so nothing was re-checked, repaired or discarded. I recompiled Skeleton.lean to confirm the pinned toolchain (exit 0) and reused its HasExp/ExpAssumptions pattern and exp_zero lemma as the starting point; all deliverables were written fresh. A throwaway proof/Probe.lean (#check probes for lemma names) was created and deleted.",
+   "elapsed_seconds": 371,
+   "outside_paths_read": [],
+   "notes": "Verdict certified both ways allowed by the README: (1) Lean negation proof, primary — proof/K2Refutation.lean compiles with ~/.elan/toolchains/leanprover--lean4---v4.33.0/bin/lean, exit 0, no warnings, no sorry, no axiom declarations, ends with #print axioms K2.k2_refuted listing only propext/Classical.choice/Quot.sound; (2) concrete input, corroboration — venv/bin/python refute.py (numpy 1.26.4): on x=[[0,1]] float32 the kernel gives [0.11920292, 0.880797] vs spec formula [0.26894142, 0.73105858], abs diff 0.1497 = 1.26e6 float32 eps, while the spec formula's own float32 rounding is 1.9e-8; on 1000 random N(0,1) rows of width 8 all 1000 differ by >1e-3 (max 0.368), and kernel matches the spec formula at 2x to 1.2e-7. Root cause: INV_TEMPERATURE = 2 scales the input before softmax; spec has no temperature. Nothing outside the sandbox was read, searched or opened; the pinned Lean binary was executed (and once stat'ed via ls -la to confirm it exists) and venv/bin/python (symlink into the session scratchpad venv) was executed, both as the task directs; no network. kernel.py and spec.md unedited. First date +%s 1790960331, last 1790960702, elapsed 371 s — RESULT.md states the same."
+  }
+ }
+]

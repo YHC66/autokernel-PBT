@@ -3,38 +3,29 @@
 
 \input{figures/harness}
 
-Figure~\ref{fig:harness} shows one iteration. An agent edits a candidate kernel, the
-PBT gate scores it, and only admitted candidates are measured on the loop's objective.
-That objective is kernel speed in a kernel-optimization loop, or validation
+In each iteration (Figure~\ref{fig:harness}) the gate scores a candidate, and only
+admitted candidates are measured on the objective: kernel speed, or validation
 bits-per-byte (\texttt{val\_bpb}) when the kernels sit inside a model being trained.
-A ledger keeps or reverts the candidate. The three layers below divide the work.
 
 \subsection{Skills}
 \label{sec:skills}
 
-A skill is a versioned document that an agent loads into its context: a procedure, a
-set of rules, or a record of what not to rediscover \citep{anthropic2025skills}. Long
-sessions and fresh sub-agents lose what earlier ones measured unless it is written
-down where the next agent will read it. Four skills carry the weight in this work.
-\begin{itemize}
-  \item \textbf{Module contracts.} The repository's agent notes record more than
-    \contractCount{} contracts, each of which once cost a review round to establish. For
-    example: a reduction's tolerance takes the reduction length explicitly; PyTorch's
-    caching allocator hides out-of-bounds accesses from \texttt{compute-sanitizer}; and a
-    Triton tile narrower than its row silently drops the row's tail.
-  \item \textbf{The review standard.} Every assertion in a test must be the
-    \emph{unique} catcher of at least one deliberately broken implementation (a
-    saboteur). This is verified by deleting each assertion in turn and checking that
-    exactly its own saboteurs survive.
-  \item \textbf{The blinded-authoring protocol.} An agent writing a mutant receives the
-    correct kernel and one verbatim fault-class description from the bug taxonomy
-    \citep{rathnasuriya2026tile}, and nothing else. It never sees the property set,
-    tolerances, other mutants or results. Here the skill specifies what is
-    \emph{withheld}.
-  \item \textbf{The loop program.} The instructions for the optimizing agent name the two
-    cheapest reward hacks and their measured speedups, state each kernel's semantics, and
-    point to the measured headroom.
-\end{itemize}
+A skill is a versioned document an agent loads into its context: a procedure, a set of
+rules, or a record of what not to rediscover \citep{anthropic2025skills}. Long sessions
+and fresh sub-agents lose what earlier ones measured unless it is written where the next
+agent reads it. Four skills carry the weight here.
+\textbf{Module contracts}: more than \contractCount{} recorded contracts, each of which
+once cost a review round. For example, a reduction's tolerance takes its length
+explicitly, and PyTorch's caching allocator hides out-of-bounds accesses from
+\texttt{compute-\allowbreak sanitizer}.
+\textbf{The review standard}: every test assertion must be the \emph{unique} catcher of
+at least one deliberately broken implementation (a saboteur). This is verified by
+deleting each assertion in turn.
+\textbf{The blinded-authoring protocol}: an agent writing a mutant receives the correct
+kernel and one verbatim fault-class description \citep{rathnasuriya2026tile}, and never
+the properties, tolerances or results. This skill specifies what is \emph{withheld}.
+\textbf{The loop program}: the optimizing agent's instructions name the two cheapest
+reward hacks with their measured speedups and state each kernel's semantics.
 
 \subsection{Property-based testing over replayed executions}
 \label{sec:pbt}
@@ -52,8 +43,8 @@ judgment is defined is never counted as a caught bug. The unit of every rate is 
 case group.
 
 \paragraph{Four oracle arms.}
-\allclose is the field default, \texttt{np.allclose} against the reference with
-$\mathrm{rtol}=\allcloseRtol$ and $\mathrm{atol}=\allcloseAtol$. It is deliberately
+The first arm is the field default: \allclose compares with the reference at
+$\mathrm{rtol}=\allcloseRtol$ and $\mathrm{atol}=\allcloseAtol$, deliberately
 untuned. \RefArm replaces elementwise comparison with a LAPACK-style normalized test ratio
 \citep{anderson1992lawn41}:
 \begin{equation}
@@ -82,8 +73,12 @@ max-subtraction actually overflows. Kernels run on a NumPy backend and on Triton
 \subsection{Formal proof: agent-written certificates}
 \label{sec:formal}
 
-A test can only check the properties it was given. A formal statement can say that a
-kernel computes a function. In our design the kernel-writing agent writes everything
+Proofs serve two purposes here. \emph{Proofs about the oracle} show that a bundle of laws
+characterizes its function. They are cheap, needed once per task, and fix what the loop
+can converge to (\S\ref{sec:incomplete}). \emph{Proofs about a kernel} show that one
+candidate adheres to its spec. They are costly and needed per candidate, and they turn
+``admitted'' into ``certified''. The rest of this section is about the second kind. The
+kernel-writing agent writes everything
 in a formal language: a \emph{spec} formalizing the informal one, a \emph{model} of the
 kernel, \emph{hypotheses} under which it claims adherence, and a \emph{proof} of a
 theorem whose shape the harness fixes, $\forall x.\; H(x) \Rightarrow S(x, M(x))$. An
@@ -117,20 +112,19 @@ C6 & axioms hold on samples; no derivation of \textsf{False} & axiom $\exp(x) = 
 \end{table}
 
 A proof certifies adherence only if all \formalChecks{} checks in Table~\ref{tab:checks}
-pass. Every artifact must have an executable reading, obtained from the proved
-definitions themselves (for example, a definition over an abstract numeric type
-instantiated at IEEE floats). The PBT machinery then executes the formal claims on its
-own cases, backends and rounding budget. The agent never sees those cases. C2 and C3
-pin the spec between the reference and a hidden set of wrong kernels that includes
-every row of Table~\ref{tab:gap}. A spec loose enough to admit the gate's failures fails
-C3, and one too tight to accept the reference fails C2. Certificates are issued only for
-kernels the gate has already accepted, and never act as the loop's filter, because a
-proof gate costs speed \citep{costa2026aicompiler}.
+pass. Every artifact needs an executable reading derived from the proved definitions
+themselves, for example a definition over an abstract numeric type instantiated at IEEE
+floats. PBT then runs those readings on its own cases, which the agent never sees. C2 and
+C3 pin the spec between the reference and a hidden set of wrong kernels that includes
+every row of Table~\ref{tab:gap}. Certificates are issued only for kernels the gate
+accepted. They never filter the loop, because a proof gate costs speed
+\citep{costa2026aicompiler}.
 
-\paragraph{Status.} The language-neutral core that runs C2--C6 is built and tested
-against a fake language adapter. Each check rejects its own cheat and no other, and
-deleting any of \formalRemovedConditions{} conditions inside the checks fails a test.
-Its review found one way to certify a wrong kernel. The disjunctive spec
-``$y = \softmax(x)$ or $y = \softmax(1.5x)$'' certified a $\softmax(1.5x)$ kernel,
-because C3 probed only the hidden set. C3 now also probes the kernel under proof. No
-formal language or agent has run yet (\S\ref{sec:program}).
+\paragraph{Status.} The core that runs C2--C6 is built and tested against a fake
+language adapter. Each check rejects its own cheat and no other, and deleting any of
+\formalRemovedConditions{} conditions inside the checks fails a test. Review found three ways to
+certify a wrong kernel, each now closed and pinned by a cheat only its fix catches. C3 probed
+only the hidden set, so the spec ``$y = \softmax(x)$ or $y = \softmax(1.5x)$'' certified a
+$\softmax(1.5x)$ kernel. C4 budgeted at the kernel's own dtype, so a kernel returning
+float16 set its own tolerance. And a spec could rewrite the reference or the comparison it
+was handed. No formal language or agent has run yet.

@@ -35,7 +35,7 @@
   \draw[back] (ledger.south) -- (ledger.south |- bottom)
     -- node[lbl, below, pos=0.85] {best so far} ([xshift=-3mm]agent.south |- bottom)
     -- ([xshift=-3mm]agent.south);
-  \draw[back, dashed] (formal.west) -| node[lbl, left, pos=0.75] {failed checks}
+  \draw[back, dashed] (formal.west) -| node[lbl, above, pos=0.3] {failed checks}
     ([xshift=3mm]agent.south);
 \end{tikzpicture}
 \caption{The harness. An agent proposes a candidate with its skills in context. The

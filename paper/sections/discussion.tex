@@ -29,12 +29,9 @@ calibrated gate can still be incomplete (\S\ref{sec:incomplete}). A proof says n
 about the code that actually runs unless it is checked against that code's executions,
 which is why C2--C6 run on PBT's cases. The loop improves only when all three hold.
 
-The results also sharpen what a declarative oracle is for. Where a cheap reference
-exists, laws tie it on detection, add no calibration advantage over a well-normalized
-ratio, and, as drafted, admit wrong kernels that the reference rejects. Their value lies
-where no reference exists, as in translation to a new backend, and only once their
-completeness has been checked. The same holds for an agent-written formal spec, which is
-why the certificate design measures spec completeness (C3) instead of trusting it.
+Laws earn their place where no reference exists, as in translation to a new backend,
+and only once their completeness is checked. That holds equally for an agent-written
+formal spec, which is why C3 measures completeness instead of trusting it.
 
 \paragraph{Threats to validity.}
 Device results come from one GPU model, float32 only and seed 42. The mutation corpora
@@ -46,22 +43,18 @@ chosen by authors who knew the bundles. They show that the gate \emph{can} fail 
 not detection rates. The six rolled, reversed, sorted and negated rows come from a
 re-run script not yet recorded with the project's measurements. The training results in
 \S\ref{sec:incomplete} use one seed each. The gate counts abstention as a pass, which our
-matrix guards only for its own rows. Of the formal layer, only the checking core exists.
-It is tested against a fake adapter, and the guarantee that an adapter's executable
-readings come from the proved definitions is still that adapter's obligation.
-Proposition~\ref{prop:softmax}(a) and (b) are mechanized over an abstract ordered field and
-(c) is proven on paper; all hold over $\R$ and leave the floating-point forms open. C3 is a lower bound, since a spec that rejects every wrong
-kernel we hold may admit one nobody has written yet. Finally,
-this area produces a closely competing preprint roughly every month, so the related work
-must be re-checked before any submission.
+matrix guards only for its own rows. The formal checking core is tested only against a
+fake adapter, and each adapter must still show its readings come from the proved
+definitions. The permutation members and part (c) of Proposition~\ref{prop:softmax} are
+proven on paper only, and the floating-point forms are open. C3 is a lower bound: a spec
+may admit a wrong kernel nobody has written yet. A competing preprint appears roughly
+monthly, so related work must be re-checked before submission.
 
 \section{Conclusion}
 
-For an agent that optimizes kernels, the correctness gate is half the objective. We
-showed that its calibration decides whether the loop can start, that its completeness
-decides what the loop converges to, and that a gate built from plausible laws can admit a
-wrong kernel \fillSpeedup$\times$ faster than the real one. Skills carry those lessons
-forward and keep each experiment's agents honest. PBT makes the gate cheap and fair to
-compare. Formal proof, written by the agent but checked against PBT's own executions
-and issued only after the gate accepts a kernel, is what can turn
-``passes the gate'' into a guarantee.
+For a kernel-optimizing agent the correctness gate is half the objective. Its
+calibration decides whether the loop can start, and its completeness decides what the loop
+converges to. Skills carry those lessons forward, and PBT makes the gate cheap and fair to
+compare. Proofs about the oracle make the gate complete. Proofs about a kernel yield a
+certificate whose every assumption was executed on the gate's cases. That is less than a
+guarantee, and more than any test alone gives.
