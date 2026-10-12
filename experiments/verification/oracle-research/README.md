@@ -29,10 +29,20 @@ The experiment ran on 2026-10-02 under the pre-registration, including the relau
 there as a deviation. **11 of 24 cells returned a structured report**: all 8 softmax oracle cells
 (4 arm T, 4 arm F), 2 of 8 layernorm cells (both arm T) and 1 of 8 adherence cells (k2, replicate
 2). The sandboxes lived under `/private/tmp` and were wiped before any evaluation was recorded, so
-`evaluate.py` can no longer be pointed at them. What survives is `runs/reports.json`: each agent's
-own report — its claims, not an evaluation of them — with absolute paths redacted to
-`<scratchpad>` and `~`. The agents' transcripts survive outside the repository and may allow the
-artifacts to be reconstructed.
+`evaluate.py` can no longer be pointed at them. Two things survive, both in `runs/`:
+
+- `reports.json`: each agent's own structured report. These are its claims, not an evaluation of
+  them.
+- `transcripts/`: all 54 agent sessions in the run's three waves (`1-initial`, then the two
+  continuation waves recorded as a deviation), one JSONL file per cell. Alongside them,
+  `workflows/` holds the workflow script, which contains every prompt the agents were given, and
+  each wave's journal.
+
+Each transcript keeps only the conversation: the prompt, the agent's messages and tool calls, and
+the tool results, in order. Harness context entries and request metadata were dropped. Every file
+an agent wrote or edited appears in its tool calls, so the sandboxes can be reconstructed from
+them and then scored with `evaluate.py`. In all of these files, the user's email and every
+machine-specific path are redacted to `<user-email>`, `<scratchpad>`, `<repo>` and `~`.
 
 **No result has been appended below the pre-registration's line, and none of these reports may be
 quoted as a finding until one is.** Next time, run `collect.py` the moment each agent
