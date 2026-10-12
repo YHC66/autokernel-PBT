@@ -35,7 +35,7 @@ Stated before the numbers, per the repo standard.
 | bundle | `kernels/tasks/softmax/acceptance.yaml`, unmodified: `outputs_are_finite`, `values_in_unit_interval`, `rows_sum_to_one`, `shift_invariance` (relation `shift_rows`) |
 | cases | `GATE_SEED = 42`, `GATE_GROUPS = 9`: one group per ladder rung, each a base case plus one `shift_rows` partner — 18 executions per kernel |
 | unit | groups failed of 9, per arm, exactly as `check_task` reports them |
-| reproduce | `cd experiments/generation/autoresearch-pbt && ../../.venv/bin/python saboteurs.py` prints §2's table |
+| reproduce | `cd experiments/generation/autoresearch-pbt && ../../../.venv/bin/python saboteurs.py` prints §2's table |
 | pinned by | `experiments/generation/autoresearch-pbt/test_gate_saboteurs.py` (§6) |
 
 The temperature family, with the parameter named `x` because the backend calls `kernel(**inputs)`:

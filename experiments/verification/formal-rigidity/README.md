@@ -9,7 +9,7 @@ interpretation also passes.
 
 It is the sampled, language-neutral counterpart of the theorems in
 [`proofs/why3-real-theories/`](../../../proofs/why3-real-theories/), and it finds the same
-symmetries in milliseconds: all of Why3's `real.ExpLog` admits `exp(βx)` for β > 0, `Square`
+symmetries in seconds per theory: all of Why3's `real.ExpLog` admits `exp(βx)` for β > 0, `Square`
 admits nothing, and `Trigonometry` admits a ×5 frequency alias. It also measured that C6, as
 designed, rejects some *true* axioms whose two sides pass near zero, on up to 2.4% of samples. C6
 needs a floored comparison.

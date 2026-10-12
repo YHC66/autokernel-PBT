@@ -1,7 +1,7 @@
 # Autokernel translation: the pipelines we propose
 
 > **Status: proposed.** No translation pipeline has run yet. This page states the design we
-> propose for the paper's second task segment, grounded in what the shared substrate already
+> propose for the second task segment the paper is being planned around, grounded in what the shared substrate already
 > does. Each claim is marked as either *evidence we have* or *a gap*. Comments and changes are
 > welcome. Open a PR against this file.
 
@@ -12,17 +12,20 @@ meets the target's performance bar.
 
 **Why it is harder than generation, for the gate.**
 
-1. **There is often no trusted second implementation on the target.** A Trainium kernel has no
-   reference to diff against except the source, which runs on a different device. That is exactly
-   where laws are needed: they catch the same bugs as a reference recompute
-   ([findings](../findings.md), "detection is a tie") without needing one.
+1. **There is often no second implementation on the target device.** Current NKI practice is a
+   hand-written NumPy reference on the CPU compared by `np.allclose`, and the source kernel runs
+   on a different device. That is where laws are needed: where a reference exists they catch the
+   same bugs it does ([findings](../findings.md), "detection is a tie"), and they need no
+   reference at all, provided the bundle is complete (findings #4).
 2. **The two backends round differently by design.** Accumulation order, tile shapes and
-   accumulator width all differ. On a TPU, matrix units multiply in bfloat16 by default unless
-   higher precision is requested. A correct port is therefore *correct but different* in the last
+   accumulator width all differ. For example, XLA on a TPU computes float32 matrix products with
+   bfloat16 multiplies at its default precision; whether a given Pallas kernel's `dot` does the
+   same has to be checked per kernel. A correct port is therefore *correct but different* in the last
    bits on every element, which is the regime where `allclose` raised 18.5% false alarms on one
    backend ([findings](../findings.md) #1).
 3. **The field default is compile-and-compare.** The only NKI kernel-generation paper we found
-   verifies by compiling and comparing outputs, and the NKI getting-started guide has no
+   (NKI-Agent) verifies by compiling and comparing outputs
+   (`reference/PBT-property-based-testing/README.md`), and the NKI getting-started guide has no
    validation guidance at all (`reference/PBT-property-based-testing/NOTES.md` §5.5).
 
 ## The equivalence contract
@@ -40,7 +43,7 @@ tractable (design §3.4):
   target device.
 
 *Evidence we have:* Tier-1 laws moved from NumPy to Triton **unchanged**, with no false failure
-up to 29.4 M elements, and caught a scale-only launch defect ([findings](../findings.md) #3). That
+up to 29.4 M elements at 78% of peak bandwidth ([findings](../findings.md) #3). That
 is one backend pair, so it answers the design's open question 2 ("which properties fail to
 transfer?") for NumPy → Triton only.
 
@@ -49,7 +52,7 @@ transfer?") for NumPy → Triton only.
 | ID | Equivalence check | Needs a target reference? | Status |
 |---|---|---|---|
 | **T0** | `allclose(K_tgt(x), K_src(x))` on shared inputs, or compile-and-compare | yes (the source's outputs) | the field default; the baseline arm |
-| **T1** | **Differential PBT across backends**: one seeded case set, recorded once on each device, scored offline with the normalized reference ratio, using `K_src`'s recorded outputs as the reference and a tolerance derived for *both* backends' accumulation | no (source outputs suffice) | [proposed]; the substrate supports it today |
+| **T1** | **Differential PBT across backends**: one seeded case set, recorded once on each device, scored offline with the normalized reference ratio, using `K_src`'s recorded outputs as the reference and a tolerance derived for *both* backends' accumulation | no (source outputs suffice) | [proposed]; record/replay and offline scoring exist, but it needs a target backend, a reference arm that scores against recorded source outputs (today's takes a reference function), and a cross-backend tolerance |
 | **T2** | **Law-only acceptance**: the completed Tier-1 bundle on the target alone | no | [proposed]; needs E2's completed bundles first |
 | **T3** | T1 + T2 + **Tier-2 target constraints** captured on the device | no | [proposed]; needs a target backend |
 | **T4** | T3 + **shared-spec certificates**: the source and the port are each proved to adhere to *one* spec, with the six checks run on each backend's own recorded cases | no | [proposed]; needs feature 0010 adapters |
@@ -102,8 +105,8 @@ a port.
 
 ## Proposed experiments
 
-Each would be pre-registered under `docs/measurements/` before it runs, like every experiment in
-this repository.
+Each should be pre-registered under `docs/measurements/` before it runs, as the
+prover-in-the-toolkit experiment was.
 
 - **TE1: do the laws transfer to the target?** Repeat the first and at-scale hardware runs on a
   TPU (and Trainium if available): the stock ladder kernels, ported, scored by every arm.

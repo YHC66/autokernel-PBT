@@ -13,7 +13,8 @@ objective, and this repository builds and measures that half.
 
 ## Two task segments
 
-The paper, and so this repository, covers two tasks:
+The paper is being planned around two tasks, and this repository is organized the same way.
+The current draft covers generation; translation is where the laws' case is strongest:
 
 | Segment | The agent… | The correctness question | Status | Pipelines |
 |---|---|---|---|---|
@@ -32,13 +33,14 @@ The full ranked list, with every number linked to its record, is in
 |---|---|---|---|
 | PBT | **Calibration**: the gate accepts correct kernels | `allclose` rejects 10/54 correct-kernel groups (0.185); law, reference and hybrid arms reject 0/54. An `allclose`-gated loop cannot accept its own baseline | G+T |
 | PBT | **A cheap gate made an optimization loop safe** | −21.2% val_bpb, +27.7% throughput over 26 candidates; 6 faster-but-wrong optimizations caught | G |
-| PBT | **Laws port across backends** with no second implementation | NumPy → Triton unchanged, up to 29.4 M elements; a scale-only launch defect caught | T |
-| PBT → FV | **A gap found by testing became an exact characterization** | The gate admits 10 wrong-kernel families. Proposition 1, mechanized in Lean, characterizes them, and one added law per task closes them | G+T |
+| PBT | **Laws port across backends** with no second implementation | NumPy → Triton unchanged, with no false failure up to 29.4 M elements at 78% of peak bandwidth | T |
+| PBT + FV | **A gap in the laws became an exact characterization** | The gate admits wrong kernels: 4 recorded softmax families, including a constant fill 52–54× faster, plus 6 from an unrecorded probe. Proposition 1 characterizes them and one added law per task closes them; its core is machine-checked in Lean | G+T |
 | FV | **Verifier axioms share the blind spot** | All 10 axioms of Why3's `real.ExpLog` hold for exp(βx), so a softmax certificate holds at *some* temperature | G+T |
-| FV × PBT | **Certificates whose claims are executed** | 6 checks run every formal artifact on PBT's cases, each the only catcher of one cheat (built; pilot pre-registered) | G |
+| FV × PBT | **Certificates whose claims are executed** | 6 checks, each the only catcher of one cheat; C2–C5 run the agent's spec, model and hypotheses on PBT's cases (built; pilot pre-registered) | G |
 
 **Where they did not help:** on detection, the four oracle arms tie, with 0 disagreements over 20
-admitted mutants. Where a cheap, trusted reference exists, laws can only match it. Their value is
+admitted mutants. Where a cheap, trusted reference exists, laws can at best match it, and on the
+incomplete bundles' wrong families they miss what the reference catches. Their value is
 calibration, and working where no reference exists, which is the translation setting.
 
 ## Repository map

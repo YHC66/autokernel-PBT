@@ -3,12 +3,12 @@
 **PBT means *property-based testing*.** Not population-based training. An earlier draft used
 the latter; that framing was removed in full.
 
-The project is the correctness layer for agent-written kernels, in the paper's two task
-segments: **generation** (an agent writes or optimizes a kernel) and **translation** (an agent
+The project is the correctness layer for agent-written kernels, in the two task segments the
+paper is being planned around: **generation** (an agent writes or optimizes a kernel) and **translation** (an agent
 ports one between backends). Its instrument compares **oracle strategies** — `allclose`,
 reference, declarative, hybrid — over **byte-identical replayed executions**, measuring
 bug-catching power, false-positive rate, authoring cost, and cost-per-bug; the formal track
-(ADR 0002) adds agent-written proofs whose every claim is executed on PBT's cases. Almost every
+(ADR 0002) is designed to add agent-written proofs whose claims are executed on PBT's cases. Almost every
 convention below exists to keep one of those numbers honest.
 
 Design: `docs/superpowers/specs/2026-08-14-kernel-property-oracle-layer-design.md`

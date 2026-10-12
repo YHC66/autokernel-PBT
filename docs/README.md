@@ -3,7 +3,7 @@
 | Path | What lives there |
 |---|---|
 | [`findings.md`](./findings.md) | **Start here.** Where property-based testing and formal verification paid off, ranked, with links to the records |
-| [`pipelines/`](./pipelines/) | The proposed pipelines for the paper's two task segments: [generation](./pipelines/generation.md) and [translation](./pipelines/translation.md) |
+| [`pipelines/`](./pipelines/) | The proposed pipelines for the two task segments the paper is being planned around: [generation](./pipelines/generation.md) and [translation](./pipelines/translation.md) |
 | [`measurements/`](./measurements/) | Dated, append-only measurement records and pre-registrations ([index](./measurements/README.md)) |
 | [`superpowers/specs/`](./superpowers/specs/) | Design documents: the parent oracle-layer design, phase designs, the formal-adherence design |
 | [`superpowers/plans/`](./superpowers/plans/) | Implementation plans, one per design phase |

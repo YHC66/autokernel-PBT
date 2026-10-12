@@ -1,6 +1,6 @@
 # Experiments
 
-Every experiment this project has run or pre-registered, grouped by the paper's two task segments
+Every experiment this project has run or pre-registered, grouped by the two task segments the paper is being planned around
 plus the verification layer they share. Each self-contained experiment lives in its own directory
 with a README that says how to run it. Experiments that run through the library itself (the
 oracle comparison, the hardware runs) have their code under `src/`, `kernels/` and `scripts/`, and
@@ -55,7 +55,7 @@ over byte-identical recorded executions. Code: `src/autokernel_pbt/props/`, `ker
 | False-positive rate on correct kernels | [M] | `allclose` 10/54; the other arms 0/54; a "correct" variant found to be a cancellation bug | [`2026-08-19-false-positive-rate`](../docs/measurements/2026-08-19-false-positive-rate.md), [`2026-08-16-allclose-layernorm-false-positives`](../docs/measurements/2026-08-16-allclose-layernorm-false-positives.md) |
 | Detection over mutation corpora | [M] | 20 admitted mutants from 3 corpora, **0** arm disagreements | [`2026-08-18-arm-differentiation-null-result`](../docs/measurements/2026-08-18-arm-differentiation-null-result.md), [`…-blinded-corpus-pilot`](../docs/measurements/2026-08-17-blinded-corpus-pilot.md), [`…-provisional-corpus-pilot`](../docs/measurements/2026-08-17-provisional-corpus-pilot.md) |
 | Reference-arm normalization | [M] | `log2 n` over linear `n`; tile-aware bound 3.5× vs 5.9× drift | [`2026-08-17-hybrid-reduction-tree`](../docs/measurements/2026-08-17-hybrid-reduction-tree.md), [`…-normalization-discrepancy-resolved`](../docs/measurements/2026-08-17-normalization-discrepancy-resolved.md) |
-| Hardware runs: transfer and scale (NumPy → Triton, A10) | [M] | Laws transfer unchanged up to 29.4 M elements; a tile-tail launch defect caught | [`2026-08-17-first-hardware-run`](../docs/measurements/2026-08-17-first-hardware-run.md), [`…-at-scale-hardware-run`](../docs/measurements/2026-08-17-at-scale-hardware-run.md) |
+| Hardware runs: transfer and scale (NumPy → Triton, A10) | [M] | Laws transfer unchanged up to 29.4 M elements; a tile-tail launch defect found while deriving the tile width, now refused by the launcher | [`2026-08-17-first-hardware-run`](../docs/measurements/2026-08-17-first-hardware-run.md), [`…-at-scale-hardware-run`](../docs/measurements/2026-08-17-at-scale-hardware-run.md) |
 | compute-sanitizer viability | [M] | Works only with `PYTORCH_NO_CUDA_MEMORY_CACHING=1` | [`2026-08-17-sanitizer-viability-probe`](../docs/measurements/2026-08-17-sanitizer-viability-probe.md) |
 | Authoring cost (layernorm) | [M], `n = 1` | Declarative arm 176 lines and 1 serious defect, against 77 lines for the reference arm | [`2026-08-16-layernorm-authoring-cost`](../docs/measurements/2026-08-16-layernorm-authoring-cost.md) |
 
@@ -63,7 +63,7 @@ over byte-identical recorded executions. Code: `src/autokernel_pbt/props/`, `ker
 
 | Experiment | Status | Headline | Code | Record |
 |---|---|---|---|---|
-| Proposition 1, mechanized | [M] | The bundle admits softmax(βx) for all β; the log-ratio law pins softmax. Lean 4, no Mathlib, 6 theorems | [`proofs/softmax-bundle/`](../proofs/softmax-bundle/) | [`2026-10-01-softmax-bundle-mechanized`](../docs/measurements/2026-10-01-softmax-bundle-mechanized.md) |
+| Proposition 1, mechanized | [M] | The bundle admits softmax(βx) for all β; the log-ratio law pins softmax. Part (b), and (a) for the temperature family, in Lean 4 without Mathlib, 6 theorems | [`proofs/softmax-bundle/`](../proofs/softmax-bundle/) | [`2026-10-01-softmax-bundle-mechanized`](../docs/measurements/2026-10-01-softmax-bundle-mechanized.md) |
 | Why3 real theories, audited | [M] | All 10 `ExpLog` axioms hold for exp(βx); `Square` categorical; trig ×5 alias | [`proofs/why3-real-theories/`](../proofs/why3-real-theories/), [`verification/formal-rigidity/`](./verification/formal-rigidity/) | [`2026-10-02-why3-real-theories-symmetry`](../docs/measurements/2026-10-02-why3-real-theories-symmetry.md) |
 | Prover in the toolkit | [ran] | 11 of 24 agent self-reports survive, unscored; not quotable | [`verification/oracle-research/`](./verification/oracle-research/) | [`2026-10-02-prover-in-the-toolkit-prereg`](../docs/measurements/2026-10-02-prover-in-the-toolkit-prereg.md) |
 | Formal adherence core (feature 0009) | [B] | Six checks, each the sole catcher of one cheat | [`src/autokernel_pbt/formal/`](../src/autokernel_pbt/formal/) | [design](../docs/superpowers/specs/2026-10-01-agent-formal-adherence-design.md), [ADR 0002](../docs/adr/0002-formal-track.md) |

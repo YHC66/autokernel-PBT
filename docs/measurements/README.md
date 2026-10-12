@@ -7,9 +7,8 @@ result. Corrections are made in a later record that supersedes it. A pre-registr
 The paper quotes these records through [`paper/numbers.tex`](../../paper/numbers.tex), and
 [`../findings.md`](../findings.md) ranks what they add up to.
 
-Paths inside a record name files where they were when the record was written. Experiment
-directories moved under `experiments/{generation,verification}/` on 2026-10-11, and the records'
-paths were updated to match.
+Experiment directories moved under `experiments/{generation,verification}/` on 2026-10-11, and
+the paths inside the records were updated to match. Nothing else in a record was changed.
 
 ## Verification layer: property-based oracles
 

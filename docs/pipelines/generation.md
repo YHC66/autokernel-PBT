@@ -62,13 +62,14 @@ flowchart LR
 
 ## What each step adds, and why it is ordered this way
 
-**G0 → G1: calibration.** `allclose` rejects 10 of 54 correct-kernel groups, including the loop's
-own baseline layernorm, so a G0 loop cannot get past iteration 0. G1's arms reject none. G1 is
+**G0 → G1: calibration.** On the A10, `allclose` rejects 10 of 54 correct-kernel groups and G1's
+arms reject none. In the CPU loop it rejects the loop's own correct baseline layernorm on 5 of 9
+groups, so a G0 loop cannot get past iteration 0. G1 is
 measured: a 26-candidate loop took `val_bpb` from 2.829 to 2.228 (−21.2%) at +27.7% throughput,
 and six faster-but-wrong saboteurs were all caught.
 
 **G1 → G2: completeness.** G1's bundle admits ten wrong-kernel families, among them a constant fill
-52–54× faster than softmax. A speed objective with a G1 gate converges to it. Proposition 1 says
+52–54× faster than softmax. A speed objective with a G1 gate would converge to it. Proposition 1 says
 which laws close the gap, so G2 is a known edit. It still needs float tolerances, and inputs that
 match the real call site, such as `-inf`-masked rows. *Success criterion:* every family the proof
 says G1 admits is admitted by G1 and rejected by G2, with no new false positive on the 26 loop
@@ -92,10 +93,11 @@ recommends this as the centerpiece experiment.
 
 - A spec or law set can only be shown complete against the wrong kernels someone has written. C3
   is a lower bound.
-- Axiomatized primitives can be blind to scale. A Lean or Why3 proof "with respect to `exp`" is
-  temperature-blind unless a rigidity axiom such as `1 + x ≤ exp x` is present, so G4 audits
-  every primitive an agent assumes (C6).
-- Device results so far come from one A10, float32 only. Mixed precision, which is 58 of the 301
+- Axiomatized primitives can be blind to scale. A proof "with respect to `exp`" from axioms
+  alone, as in Why3 or core Lean without Mathlib, is temperature-blind unless a rigidity axiom
+  such as `1 + x ≤ exp x` is present, so G4 audits every primitive an agent assumes (C6). A
+  language that defines `exp` (Lean with Mathlib) does not have this gap.
+- Device results so far come from one A10, float32 only. Data-type semantics, 58 of the 301
   bugs in the taxonomy we use, is almost entirely outside today's corpus.
 
 ## Entry points
@@ -104,7 +106,7 @@ recommends this as the centerpiece experiment.
 # G1, the measured loop (its own venv; see that README)
 cd experiments/generation/autoresearch-pbt && .venv/bin/python runner.py baseline
 
-# record and score a task on a device (the substrate)
+# record a task on a device (the substrate); scoring happens later, offline on CPU
 python scripts/gpu_record.py --help
 
 # the certificate core's tests
