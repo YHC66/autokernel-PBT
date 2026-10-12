@@ -122,7 +122,9 @@ accepted. They never filter the loop, because a proof gate costs speed
 
 \paragraph{Status.} The core that runs C2--C6 is built and tested against a fake
 language adapter. Each check rejects its own cheat and no other, and deleting any of
-\formalRemovedConditions{} conditions inside the checks fails a test. Review found one way to
-certify a wrong kernel. The spec ``$y = \softmax(x)$ or $y = \softmax(1.5x)$'' certified a
-$\softmax(1.5x)$ kernel, because C3 probed only the hidden set. C3 now also probes the
-kernel under proof. No formal language or agent has run yet.
+\formalRemovedConditions{} conditions inside the checks fails a test. Review found three ways to
+certify a wrong kernel, each now closed and pinned by a cheat only its fix catches. C3 probed
+only the hidden set, so the spec ``$y = \softmax(x)$ or $y = \softmax(1.5x)$'' certified a
+$\softmax(1.5x)$ kernel. C4 budgeted at the kernel's own dtype, so a kernel returning
+float16 set its own tolerance. And a spec could rewrite the reference or the comparison it
+was handed. No formal language or agent has run yet.
