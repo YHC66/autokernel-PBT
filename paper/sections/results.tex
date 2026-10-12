@@ -31,42 +31,34 @@ pooled                      &           & \textbf{\fpAllclose} & 0/54 \\
 \subsection{Calibration decides what a loop can reach}
 \label{sec:calibration}
 
-Table~\ref{tab:fp} scores \fpKernels{} kernels that are correct but numerically
-different from the reference. Three are rewrites an optimizing author writes
-(\texttt{exp2}, reciprocal-multiply, \texttt{rsqrt}). The admission gate verified that
-each is correct. \allclose rejects \fpAllclose{} groups ($\fpAllcloseRate$), all on
-layernorm, where it rejects \fpAllcloseLN{} groups of two independent correct kernels. The
-other three arms reject none. The mechanism does not depend on the backend: $\mathrm{atol}$
-is about \atolBelowEps$\times$ below float32 $\eps$, and a layernorm output is centered
-on zero by construction, so every row contains elements whose whole error budget is
-$\mathrm{atol}$. The same \fpAllcloseLN{} appears on the NumPy backend. A ladder that
-stopped at softmax would have reported the field default as perfectly calibrated.
+Table~\ref{tab:fp} scores \fpKernels{} correct kernels. Three are rewrites an optimizing
+author writes (\texttt{exp2}, reciprocal-multiply, \texttt{rsqrt}), and the admission
+gate verified each. \allclose rejects \fpAllclose{} groups ($\fpAllcloseRate$), all on
+layernorm, where it rejects \fpAllcloseLN{} groups of two independent kernels. The other
+arms reject none. The cause does not depend on the backend: $\mathrm{atol}$ sits
+\atolBelowEps$\times$ below float32 $\eps$, and a layernorm row is centered on zero, so
+some of its elements have an error budget of only $\mathrm{atol}$. A ladder that stopped
+at softmax would have called the field default perfectly calibrated.
 
-Inside a loop this miscalibration is fatal, not merely noisy. The loop's baseline
-layernorm is correct and \allclose rejects it on \fpAllcloseLN{} groups, so a loop gated
-on \allclose never completes iteration 0. A broken layernorm scores \lnBrokenAllclose{}
-under the same arm (\S\ref{sec:loop}). The distributions of correct and broken kernels
-overlap, so the arm barely discriminates at all. The choice of oracle bounds the frontier
-before search begins.
+In a loop, this miscalibration is fatal. \allclose rejects the loop's own correct
+baseline layernorm on \fpAllcloseLN{} groups, so an \allclose-gated loop never completes
+iteration 0. It scores a broken layernorm only slightly worse, at \lnBrokenAllclose{}
+(\S\ref{sec:loop}). The choice of oracle bounds the frontier before search begins.
 
-The reference arm owes its calibration to the normalization in Eq.~\eqref{eq:ratio}.
-LAPACK's literal linear-$n$ convention makes a correct kernel's ratio drift
-\linearNDrift$\times$ across $n = 64$ to $16384$ and leaves it about
-\linearNBlinder$\times$ blinder than \allclose. Under $\log_2 n$ the arm catches every
-injected bug \allclose catches at $n=4096$, with \logHeadroomLo--\logHeadroomHi$\times$
-headroom for correct kernels. A multi-tile Triton kernel with up to
-\multiTileMaxTiles{} tiles changes the ranking that single-tile kernels suggested:
-$\log_2 n$ drifts \multiTileLogDrift$\times$ and a constant normalization drifts
-\multiTileOneDrift$\times$. A tile-aware bound, $\log_2(\text{tile}) + n_\text{tiles}$,
-drifts only \multiTileTileAwareDrift$\times$. That is a tolerance the formal layer
-could derive rather than fit.
+The reference arm gets its calibration from the $\log_2 n$ in Eq.~\eqref{eq:ratio}.
+LAPACK's literal linear-$n$ convention drifts \linearNDrift$\times$ over
+$n = 64$--$16384$ and is \linearNBlinder$\times$ blinder than \allclose. With $\log_2 n$,
+the arm catches every bug \allclose catches at $n = 4096$, with
+\logHeadroomLo--\logHeadroomHi$\times$ headroom on correct kernels. On a multi-tile
+kernel, the tile-aware bound $\log_2(\text{tile}) + n_\text{tiles}$ drifts
+\multiTileTileAwareDrift$\times$, against \multiTileLogDrift$\times$ for $\log_2 n$. A
+proof could derive that tolerance rather than fit it.
 
-Finally, the declarative laws transferred from NumPy to Triton unchanged. No law failed on
-a correct device kernel across the first run's \firstRunRows{} executions, nor at
-\scaleElements{} elements running at about \scaleRoofline\% of the \gpuName's memory
-bandwidth. The row-sum law also detects a launch defect found at that scale. With a
-tile narrower than its row, Triton silently dropped the row's tail, and softmax rows
-summed to \tileTailRowSum. The launcher now refuses that configuration.
+The laws transferred from NumPy to Triton unchanged. No law failed on a correct device
+kernel, from the first run's \firstRunRows{} executions up to \scaleElements{} elements at
+\scaleRoofline\% of peak bandwidth. They also detect a launch defect found at that scale:
+a tile narrower than its row silently dropped the row's tail, and rows summed to
+\tileTailRowSum.
 
 %% Sources: docs/measurements/2026-08-17-provisional-corpus-pilot.md,
 %% 2026-08-17-blinded-corpus-pilot.md, 2026-08-18-arm-differentiation-null-result.md,
@@ -95,48 +87,37 @@ loop saboteurs (NumPy)      & 6/6   & ---  & 0 \\
 \subsection{Detection: the arms tie}
 \label{sec:detection}
 
-Mutants were written by agents for five Triton softmax fault classes from the bug
-taxonomy \citep{rathnasuriya2026tile}. Table~\ref{tab:corpora} gives the result: across
-\mutantsAdmitted{} admitted mutants from three independently authored corpora, plus six
-saboteurs on the NumPy backend, the four arms \emph{never disagree}. Every mutant is
-numerically gross enough that a reference recompute catches it, and every bug the
-property bundle catches, \allclose also catches. Tolerance-free detection (catching a
-bug with no tolerance in the decision) is real but rare: \grownTolFree{} mutants in
-the largest corpus.
-
-This reproduces \citeauthor{hughes2020specify}'s finding in a new domain: where a cheap,
-trusted reference exists, a reference comparison is close to an upper bound, and a
-property set can at best tie it. The case for laws is therefore not ``more bugs''. It is
-the same bugs \emph{without a reference}, which is exactly the situation of kernel
-translation to a backend that has no second implementation.
+Agents wrote mutants for five Triton softmax fault classes from the bug taxonomy
+\citep{rathnasuriya2026tile}. Across \mutantsAdmitted{} admitted mutants from three
+independently authored corpora, plus six saboteurs on NumPy, the four arms \emph{never
+disagree} (Table~\ref{tab:corpora}). Each mutant is gross enough that a reference
+recompute catches it. Tolerance-free detection, meaning a catch with no tolerance in the
+decision, is rare: \grownTolFree{} mutants in the largest corpus. This reproduces
+\citeauthor{hughes2020specify}'s finding for kernels. Where a cheap, trusted reference
+exists, laws can at best tie it. Their case is the same bugs \emph{without a reference},
+as in translation to a backend that has no second implementation.
 
 \subsection{A property-gated optimization loop}
 \label{sec:loop}
 
 We transplanted autoresearch's loop \citep{karpathy2026autoresearch} to a NumPy
-byte-level GPT with a fixed 60\,s wall-clock budget, so that a cheaper step becomes more
-steps. The gate checks the model's \texttt{softmax} and \texttt{layernorm} through all
-four arms and decides on \DeclArm. The gate needed one new module of
-\loopGateLines{} lines. Everything else was reused unchanged. Over \loopCandidates{}
-candidates in \loopRounds{} rounds, validation bits-per-byte fell from \loopBpbBase{} to
-\loopBpbBest{} ($-\loopBpbGain\%$, three seeds each), at \loopTputGain\% higher
-throughput (\loopTputBase{}k to \loopTputBest{}k tokens/s). The gains came from Muon
-\citep{jordan2024muon}, a squared-ReLU MLP, a fused QKV projection with a cached mask,
-a warmup-and-cosine schedule, and fewer, wider attention heads. The loop ran on one
-Apple M4 Pro CPU.
+byte-level GPT with a fixed 60\,s budget, on one Apple M4 Pro CPU, so that a cheaper step
+buys more steps. The gate checks the model's \texttt{softmax} and \texttt{layernorm} with
+all four arms and decides on \DeclArm. It needed one new \loopGateLines-line module.
+Over \loopCandidates{} candidates in \loopRounds{} rounds, \texttt{val\_bpb} fell from
+\loopBpbBase{} to \loopBpbBest{} ($-\loopBpbGain\%$, three seeds each), at
+\loopTputGain\% higher throughput. The gains came from Muon \citep{jordan2024muon}, a
+squared-ReLU MLP, a fused QKV projection, a warmup-and-cosine schedule, and fewer, wider
+heads.
 
-The gate rejected \loopRejections{} of \loopCandidates{} candidates. That number measures
-the agents, not the gate (\S\ref{sec:skills-results}). To measure the gate, we wrote
-\sabCount{} saboteurs, each a plausible optimization. All four arms caught all of them,
-and the three we timed were \sabSpeedNoMax$\times$, \sabSpeedNoCenter$\times$ and
-\sabSpeedNoDivide$\times$ faster than the correct kernels.
-
-One candidate passed every arm while being measurably wrong. It was a fast-exp softmax
-whose relative error ($\fastExpRelErr$) is about \fastExpWorse$\times$ that of the exact
-kernel. The approximation appears in both numerator and denominator, so it cancels from
-the row sums. The shift relation compares two equally approximate outputs. No law in
-the bundle can see the accuracy of $\exp$. In NumPy the candidate was also slower, so it was stopped
-by its speed, not by the gate.
+The gate rejected \loopRejections{} candidates. That number measures the agents, not
+the gate (\S\ref{sec:skills-results}). Six saboteurs, each a plausible optimization, were
+caught by all four arms. The three we timed were \sabSpeedNoMax$\times$,
+\sabSpeedNoCenter$\times$ and \sabSpeedNoDivide$\times$ faster than correct. One
+candidate passed every arm while wrong: a fast-$\exp$ softmax with
+\fastExpWorse$\times$ the exact kernel's relative error. The approximation cancels from
+the row sums, and the shift relation compares two equally approximate outputs. It was
+stopped by being slower, not by the gate.
 
 %% Sources: docs/measurements/2026-10-01-softmax-temperature-blind-spot.md, section 2
 %% (temperature rows, fast-exp, control); [P] symmetry probe re-run 2026-10-01
@@ -180,16 +161,14 @@ rows rolled by one            & 6/9 & 0/9 & --- \\
 \subsection{The property bundles are incomplete}
 \label{sec:incomplete}
 
-Table~\ref{tab:gap} shows the first detection difference between arms in this project,
-and it goes against \DeclArm. The gate admits softmax at the wrong temperature, the
-uniform $1/n$, a reversed ranking, outputs paired with the wrong input row, and four
-layernorm transforms. The three other arms reject each of these on every group they can
-judge. On the temperature rows the reference test ratios run from $\refRatioLo$ to
-$\refRatioHi$ against a threshold of \refThresh. These are not near misses, and no
-threshold fixes them. Across
-\betaSweepValues{} values of $\beta \in [-8, 8]$ the declarative arm fails no group. It
-first fires at $\beta = \betaFirstCatch$, and only through float32 rounding of the
-shift. The following proposition explains every row.
+Table~\ref{tab:gap} shows the first detection difference between arms, and it goes
+against \DeclArm. The gate admits softmax at the wrong temperature, the uniform $1/n$, a
+reversed ranking, outputs paired with the wrong input row, and four layernorm
+transforms. The other arms reject every one of them on every group they can judge, with
+reference ratios of $\refRatioLo$--$\refRatioHi$ on the temperature rows against a
+threshold of \refThresh. No threshold fixes this. Across \betaSweepValues{} values of
+$\beta \in [-8,8]$, the declarative arm fails no group. It first fires at
+$\beta = \betaFirstCatch$, and then only through float32 rounding.
 
 \begin{proposition}
 \label{prop:softmax}
@@ -228,81 +207,77 @@ what excludes $-\LN$.
 \end{proof}
 
 \begin{remark}
-Every law in both bundles reads the output alone or compares outputs with outputs. Both
+Every law in both bundles reads outputs alone or compares outputs with outputs. Both
 completing laws tie outputs to inputs. A bundle with no such law is closed under every
-shift-invariant post-processing that preserves its row constraints. That gives a cheap
-syntactic check for any drafted bundle. For an agent-written spec, check C3
-(\S\ref{sec:formal}) tests the same thing by execution. The floating-point form of the new
-laws is still open. On underflow $y_{ij} = 0$ and $\log y_{ij} = -\infty$, and with
-$\eps > 0$ the layernorm row variance is $\sigma^2/(\sigma^2 + \eps)$. The log-ratio
-spread does make fast-$\exp$ visible (\spreadFastExp{} against \spreadExact{} $\eps$),
-which turns its acceptance into an explicit accuracy budget instead of a blind spot.
+shift-invariant post-processing that preserves its row constraints. Checking for such a
+law is a cheap syntactic test of any drafted bundle, and C3 (\S\ref{sec:formal})
+tests the same thing by execution. The laws' floating-point forms are open, since
+underflow makes $\log y_{ij} = -\infty$. The log-ratio spread does expose fast-$\exp$
+(\spreadFastExp{} against \spreadExact{} $\eps$).
 \end{remark}
 
-\paragraph{Mechanized, and what the proof could not see.}
-Parts (a) and (b) are machine-checked in Lean~\leanVersion{} without Mathlib, over an abstract
-ordered field: \leanTheorems{} theorems in \leanLines{} lines, each audited by
-\texttt{\#print axioms} to rest on Lean's three standard axioms only [M]. The
-mechanization states two things the paper proof did not. First, (b) uses no property of
-$\exp$ at all: row sums and the log-ratio law pin the kernel to softmax \emph{relative to
-whatever $\exp$ the spec names}. Second, the \expAxioms{} natural first-order axioms of
-$\exp$ (positive, additive, injective) are scale-invariant: they hold for
-$x \mapsto \exp(\beta x)$, and softmax with respect to that function \emph{is}
-$\softmax(\beta x)$. A proof carried out from those axioms is therefore temperature-blind in
-exactly the way the bundle is. One more first-order axiom, the tangent line $1 + x \le \exp x$,
-restores rigidity: if $\exp$ and its rescaling both satisfy it then $\beta = 1$. For the
-formal layer (\S\ref{sec:formal}) this is a protocol item: an SMT-backed language that
-axiomatizes $\exp$ proves a temperature-blind theorem unless such an axiom is assumed, and
-only the executable reading, which instantiates $\exp$ at the real one, or C6's sampling of
-that axiom, breaks the symmetry.
+\paragraph{Mechanized.}
+Part (b), and part (a) for the temperature family, are machine-checked in
+Lean~\leanVersion{} without Mathlib, over an abstract ordered field. That is
+\leanTheorems{} theorems in \leanLines{} lines, and \texttt{\#print axioms} shows each
+rests only on Lean's standard axioms. The mechanization found two things the paper proof
+does not say. First, (b) uses no property of $\exp$: the laws pin softmax \emph{relative
+to whatever $\exp$ the spec names}. Second, the \expAxioms{} natural first-order axioms
+of $\exp$ (positive, additive, injective) also hold for $x \mapsto \exp(\beta x)$, so a
+proof from them is temperature-blind in exactly the way the bundle is. Adding the
+tangent-line axiom $1 + x \le \exp x$ forces $\beta = 1$. In an SMT-backed language that
+axiomatizes $\exp$, only that axiom, C6's sampling of it, or the executable reading
+breaks the symmetry.
+
+\paragraph{A deployed verifier has the same symmetry.}
+Why3's \texttt{real.ExpLog} theory, which Frama-C/WP also uses, axiomatizes $\exp$. All
+\whyExpAxioms{} of its axioms hold for $(x \mapsto \exp(\beta x),\, y \mapsto \log(y)/\beta)$
+for every $\beta > 0$; this is machine-checked in the same setting, as one of
+\whyTheorems{} theorems. A Why3 certificate that code computes softmax with respect to
+$\exp$ therefore denotes softmax at \emph{some} positive temperature. Its axioms rule out
+$\beta \le 0$, and with it the uniform and reversed rows. They keep exactly the
+temperatures that the training loop cannot see either. Why3's square-root theory, in
+contrast, is categorical on $x \ge 0$, so a layernorm certificate excludes $-\LN$. A
+sampled version of the audit takes seconds per theory. As built, it showed that C6 would
+reject some true axioms whose two sides pass near zero, on up to
+\cSixFalseRejectMax\% of samples. C6 needs a floored comparison.
 
 \paragraph{What catches these downstream.}
-The loop's objective is a partial backstop at best. Trained inside the model,
-$\softmax(2x)$ reaches \texttt{val\_bpb} \bpbBetaTwo{} against \bpbCorrect{} for the
-correct kernel (one seed, a tie). The learned query projection absorbs the factor, so
-the runner would keep it, yet every other caller of the kernel gets the wrong answer.
-The constant fill is rejected on merit (\bpbFill). $\softmax(0x)$ and $\softmax(-x)$ fail
-only because the model's additive $-\infty$ causal mask makes them produce NaN, and the
-gate never generates $-\infty$ as an input. A loop whose objective is kernel speed has no
-backstop: the constant fill passes the gate and runs \fillSpeedup$\times$ faster than the
-loop's softmax. It is the optimum of any loop whose only correctness check is this gate.
+Inside the model, $\softmax(2x)$ ties the correct kernel on \texttt{val\_bpb}
+(\bpbBetaTwo{} against \bpbCorrect{}, one seed), because the learned query projection
+absorbs the factor. The constant fill loses on merit (\bpbFill). $\softmax(0x)$ and
+$\softmax(-x)$ fail only as NaN under the model's $-\infty$ mask, an input the gate never
+generates. A loop optimizing kernel speed has no backstop: the fill passes the gate and
+runs \fillSpeedup$\times$ faster.
 
 \subsection{What the skills did}
 \label{sec:skills-results}
 
 \paragraph{Blinding changed the corpus.}
-The first corpus was written by an agent that had seen the property set. Its mutants
-broke the row-sum law, a gross defect any arm catches, and the gate admitted five of
-five (Table~\ref{tab:corpora}). Under the blinded-authoring protocol the gate
-rejected about a quarter of the mutants as not broken on the ladder. Those rejections
-exposed two coverage holes. One was a shape-specialized branch that is dead on the ladder,
-whose widest row has \ladderWidestRow{} columns: specialization is the taxonomy's
-largest class, \isstaSpecialization{} of \isstaBugs{} bugs. The other was a
-mixed-precision defect that never fires in a float32-only corpus (dtype bugs:
-\isstaDtype{} of \isstaBugs{}). On the at-scale task, whose row widths are all powers of
-two, the rejection rate was \grownRejectionScale, because masking defects never fire there. Contamination was not
-uniform across classes. For the off-by-one predicate class, the blinded mutant was
-character-for-character identical to the contaminated one.
+The author of the first corpus had seen the property set. Its mutants broke the row-sum
+law, a gross defect any arm catches, and the gate admitted all five. Under blinding the
+gate rejected about a quarter of mutants as not broken on the ladder, and those
+rejections exposed two coverage holes. The first was a shape-specialized branch that is
+dead when rows are at most \ladderWidestRow{} wide; specialization is the taxonomy's
+largest class (\isstaSpecialization/\isstaBugs). The second was mixed-precision defects
+that never fire in a float32-only corpus (\isstaDtype/\isstaBugs). Contamination was not
+uniform: one class's blinded mutant was identical to the contaminated one, character for
+character.
 
 \paragraph{Naming the hacks changed the proposals.}
-The loop program names the two cheapest reward hacks with their measured speedups. None
-of the \loopCandidates{} proposals used them, and an agent asked to build an
-approximate $\exp$ did so openly. The in-loop rejection count therefore measures
-compliance with the program. Gate strength has to be measured with saboteurs, and with a
-loop that has no list of forbidden moves (experiment~E3).
+The loop program names the two cheapest reward hacks and their speedups. None of the
+\loopCandidates{} proposals used them, so in-loop rejections measure compliance. Gate
+strength must be measured with saboteurs, or with a loop that has no forbidden list (E3).
 
-\paragraph{The review standard caught vacuous checks in our own instrument.}
-The fairness criterion that certifies arms score byte-identical executions passed
-vacuously through \fairnessLayers{} successive fixes. In the last of them, an arm that
-merely relabelled a case's relation tag cost \relabelLoss{} detections with every tensor
-byte untouched. Two of our own properties were vacuous as first written. A unit-scale
-shift relation caught an overflowing softmax \shiftUnitCatch\% of the time over 400
-trials, and \shiftScaledCatchLo--\shiftScaledCatchHi\% once scaled to the overflow point,
-with no false alarms. The variance law's tolerance modelled rounding when the dominant
-term was the reference's own $\eps$. Adversarial review found \reviewDefects{} defects
-after spec compliance had passed. The lessons became recorded contracts, among them that
-PyTorch's caching allocator made \texttt{compute-sanitizer} report zero errors for a
-\sanitizerOverrun{} overrun. The same discipline applies to results: a
-``weight decay is inert'' finding survived three rounds after the code it was measured on
-turned out to apply decay to only \wdCoverage\% of the parameters. Recorded rules travel
-with their configuration. Folklore does not.
+\paragraph{The review standard caught vacuity in our own instrument.}
+The criterion certifying that arms score byte-identical executions passed vacuously
+through \fairnessLayers{} successive fixes. In the last one, an arm that only relabelled
+a relation tag cost \relabelLoss{} detections with no tensor byte changed. Two of our own
+laws were vacuous as first written. A unit-scale shift caught an overflowing softmax
+\shiftUnitCatch\% of the time, and \shiftScaledCatchLo--\shiftScaledCatchHi\% once scaled
+to the overflow point. A variance tolerance modelled rounding, while the dominant error
+term was the reference's $\eps$. Review found \reviewDefects{} defects after spec
+compliance had passed, and the lessons became contracts. One of them: PyTorch's caching
+allocator hid a \sanitizerOverrun{} overrun from \texttt{compute-\allowbreak sanitizer}. Results need
+the same care. ``Weight decay is inert'' survived three rounds after the code it was
+measured on turned out to decay only \wdCoverage\% of parameters.
