@@ -23,10 +23,10 @@ from autokernel_pbt.props.tolerance import residual_ratio, within_threshold
 class Comparisons:
     """Closeness for one case, budgeted by the harness.
 
-    ``dtype`` is the kernel output's dtype — the precision whose rounding is forgiven — and
-    deliberately not the dtype of whatever the spec computes with: a spec that sums float32
-    outputs in float64 would otherwise be held to float64's budget and reject every correct
-    kernel. ``n`` is the accumulation length, read from the input as the reference arm reads it.
+    ``dtype`` is the task's precision — the reference's output dtype, whose rounding is
+    forgiven. It is deliberately not the dtype of whatever the spec computes with: a spec that sums
+    float32 outputs in float64 would otherwise be held to float64's budget and reject every correct
+    kernel. Nor is it the kernel's: a kernel that returned float16 would then set its own budget. ``n`` is the accumulation length, read from the input as the reference arm reads it.
     """
 
     dtype: np.dtype

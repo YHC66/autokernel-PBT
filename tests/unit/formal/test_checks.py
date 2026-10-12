@@ -112,6 +112,31 @@ def spec_admitting_the_kernel_in_hand(inputs, y, cmp):
     return cmp.close(y, definition(x)) or cmp.close(y, definition(x, 1.5))
 
 
+def spec_widening_the_harness_budget(inputs, y, cmp):
+    """Admits softmax(1.5x) by name, then loosens the comparison it was handed, as if that were
+    the one the harness judges "wrong" with. ``Comparisons`` is frozen; this bypasses it."""
+    ok = spec_admitting_the_kernel_in_hand(inputs, y, cmp)
+    object.__setattr__(cmp, "dtype", np.dtype(np.float16))
+    object.__setattr__(cmp, "n", 2**62)
+    return ok
+
+
+def spec_rewriting_the_reference(inputs, y, cmp):
+    """Shown the reference, re-enables writes on it and overwrites it with softmax(1.5x), so the
+    kernel under proof would look right wherever the harness compares against it later."""
+    x = inputs["x"]
+    if cmp.close(y, definition(x)):
+        y.flags.writeable = True
+        y[...] = definition(x, 1.5)
+        return True
+    return cmp.close(y, definition(x, 1.5))
+
+
+def softmax_1_02x_in_float16(x: np.ndarray) -> np.ndarray:
+    """Slightly wrong, and returned at a lower precision than the float32 task asks for."""
+    return softmax_beta(1.02)(x).astype(np.float16)
+
+
 def model_of(kernel):
     return lambda inputs: kernel(inputs["x"])
 
@@ -231,6 +256,39 @@ CHEATS = {
         Check.SPEC_COMPLETENESS,
         r"accepts wrong output from the kernel under proof",
     ),
+    # The spec is handed a comparison; the harness must not judge "wrong" with that same object.
+    "spec_widening_the_harness_budget": (
+        lambda: (
+            honest(
+                kernel_id="softmax_1_5x",
+                readings=Readings(
+                    spec_widening_the_harness_budget,
+                    model_of(softmax_beta(1.5)),
+                    two_dimensional,
+                ),
+            ),
+            ground(softmax_beta(1.5)),
+        ),
+        Check.SPEC_COMPLETENESS,
+        r"accepts wrong output from the kernel under proof",
+    ),
+    # Read-only flags can be switched back on an array that owns its memory: the reference the
+    # spec is shown must be a copy, not the one every later check compares against.
+    "spec_rewriting_the_reference": (
+        lambda: (
+            honest(
+                kernel_id="softmax_1_5x",
+                readings=Readings(
+                    spec_rewriting_the_reference,
+                    model_of(softmax_beta(1.5)),
+                    two_dimensional,
+                ),
+            ),
+            ground(softmax_beta(1.5)),
+        ),
+        Check.SPEC_COMPLETENESS,
+        r"accepts wrong output from the kernel under proof",
+    ),
     "spec_made_of_the_gates_case_laws": (
         lambda: (
             honest(
@@ -248,6 +306,19 @@ CHEATS = {
                 readings=Readings(spec_of(), model_of(correct), two_dimensional),
             ),
             ground(tail_dropping),
+        ),
+        Check.MODEL_FIDELITY,
+        r"diverges from the kernel",
+    ),
+    # Fidelity is judged at the task's precision. At the kernel's own float16 it would forgive
+    # the difference between this kernel and the ideal function the model computes.
+    "model_idealizes_a_kernel_that_lowers_its_precision": (
+        lambda: (
+            honest(
+                kernel_id="softmax_1_02x_float16",
+                readings=Readings(spec_of(), model_of(correct), two_dimensional),
+            ),
+            ground(softmax_1_02x_in_float16),
         ),
         Check.MODEL_FIDELITY,
         r"diverges from the kernel",

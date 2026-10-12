@@ -6,14 +6,17 @@ without proving adherence, and each is paired, in the tests, with an attempt tha
 that way and must be rejected by that check alone.
 
 Agent-supplied readings are data, not harness code: one that raises, returns something other than
-a boolean, or writes into its inputs fails its own check and never aborts the others.
+a boolean, or writes into its inputs fails its own check and never aborts the others. Each call
+gets its own copies of every array and of the comparison, so nothing a reading does to its
+arguments can reach the harness's own decisions or a later call.
 """
 
 from __future__ import annotations
 
-from collections.abc import Callable
-from dataclasses import dataclass
+from collections.abc import Callable, Mapping
+from dataclasses import dataclass, replace
 from enum import Enum
+from types import MappingProxyType
 
 import numpy as np
 
@@ -86,10 +89,33 @@ def certify(attempt: Attempt, ground: Ground) -> Certificate:
     return Certificate(attempt.language, attempt.kernel_id, findings)
 
 
+def _read_only(array: np.ndarray) -> np.ndarray:
+    copy = np.array(array, copy=True)
+    copy.flags.writeable = False
+    return copy
+
+
+def _isolated(arg: object) -> object:
+    """A disposable copy of one argument handed to agent code.
+
+    Read-only flags alone are not isolation: a copy owns its memory, so a reading can set
+    ``writeable`` back to True, and ``Comparisons`` is frozen only against ordinary assignment, so
+    ``object.__setattr__`` rebinds its budget. Either would then change what the harness decides
+    with the same object. A fresh copy per call leaves the reading nothing shared to change.
+    """
+    if isinstance(arg, np.ndarray):
+        return _read_only(arg)
+    if isinstance(arg, Comparisons):
+        return replace(arg)
+    if isinstance(arg, Mapping):
+        return MappingProxyType({name: _isolated(value) for name, value in arg.items()})
+    return arg
+
+
 def _holds(reading: Callable[..., object], *args: object) -> tuple[bool | None, str]:
     """Run a reading that should answer yes or no. ``None`` means it did neither."""
     try:
-        answer = reading(*args)
+        answer = reading(*(_isolated(arg) for arg in args))
     except Exception as exc:  # noqa: BLE001 - agent code failing is a finding, not an abort
         return None, f"raised {type(exc).__name__}: {exc}"
     if not isinstance(answer, (bool, np.bool_)):
@@ -187,8 +213,12 @@ def _model_fidelity(readings: Readings | None, cases: tuple[CaseRecord, ...]) ->
             )
             return Finding(Check.MODEL_FIDELITY, False, detail)
         try:
-            output = np.asarray(readings.model(case.inputs))
-            cmp = Comparisons.for_output(case.inputs, case.kernel.dtype)
+            output = np.asarray(readings.model(_isolated(case.inputs)))
+            # At the reference's dtype, the task's precision, as every other check judges. The
+            # kernel's own dtype would let the kernel under proof set its own budget: one that
+            # returns float16 for a float32 task would be compared at float16's rounding, and a
+            # model of the ideal function would pass as faithful to a kernel that is wrong.
+            cmp = Comparisons.for_output(case.inputs, case.reference.dtype)
             same = cmp.close(output, case.kernel)
         except Exception as exc:  # noqa: BLE001 - agent code failing is a finding, not an abort
             detail = f"model reading raised {type(exc).__name__}: {exc} on {case.case_id}"
