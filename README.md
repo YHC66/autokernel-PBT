@@ -101,9 +101,18 @@ its own NumPy 2.x environment: see
 
 ## Reference library
 
-PDFs live under `reference/L0-start-here/` … `L5-advanced-topics/` and are gitignored. Fetch them
-with `scripts/download_reference_pdfs.sh`, from `reference/manifest.csv`. The PBT literature
-review is [`reference/PBT-property-based-testing/`](reference/PBT-property-based-testing/).
+PDFs are gitignored here. `reference/manifest.csv` lists every paper, and two scripts put the
+PDFs in place:
+
+```bash
+scripts/download_reference_pdfs.sh    # every paper with an arXiv id, from arXiv
+scripts/fetch_private_papers.sh       # the PBT review's 145 papers, 76 of them not on arXiv
+```
+
+The second script clones the **private** repository
+[suv11235/autokernel-PBT-papers](https://github.com/suv11235/autokernel-PBT-papers). It holds
+third-party papers, so ask the owner for access. The PBT literature review is
+[`reference/PBT-property-based-testing/`](reference/PBT-property-based-testing/).
 
 ## License
 

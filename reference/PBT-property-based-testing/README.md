@@ -8,6 +8,13 @@ GPU tooling they sit on, and the experimental methodology that makes the compari
 > Throughout this repository **PBT means *property-based testing*** (Claessen & Hughes 2000) —
 > generated inputs checked against general properties instead of hand-written examples.
 
+> ### Where the PDFs are
+> The `[PDF](./papers/…)` links below point into `papers/`, which is gitignored. Run
+> `scripts/fetch_private_papers.sh` from the repository root to fill it from the private
+> repository [suv11235/autokernel-PBT-papers](https://github.com/suv11235/autokernel-PBT-papers),
+> which holds all 145, including the 76 with no arXiv id. They are third-party papers, so ask
+> the owner for access.
+
 ## Core idea
 
 A kernel test needs an **oracle**: something that says whether an execution was correct. This
