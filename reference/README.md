@@ -36,6 +36,9 @@ reference/
 
 ## Conventions
 
+- PDFs are gitignored. `scripts/download_reference_pdfs.sh` fetches the arXiv ones;
+  `scripts/fetch_private_papers.sh` fetches the PBT review's papers, including the 76 not on arXiv,
+  from the private repository [suv11235/autokernel-PBT-papers](https://github.com/suv11235/autokernel-PBT-papers)
 - PDFs named `{arxiv_id}.pdf` or descriptive name for non-arXiv (e.g. `triton-mapl2019.pdf`)
 - arXiv canonical URL: `https://arxiv.org/abs/{id}`
 

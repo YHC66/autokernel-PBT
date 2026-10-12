@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # Download reference PDFs listed in reference/manifest.csv (gitignored).
+# Only papers with an arXiv id; the rest are in the private papers repository, fetched by
+# scripts/fetch_private_papers.sh.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 MANIFEST="$ROOT/reference/manifest.csv"
