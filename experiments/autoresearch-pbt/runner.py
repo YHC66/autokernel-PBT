@@ -19,11 +19,17 @@ import json
 import shutil
 import subprocess
 import sys
-import time
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-PY = HERE.parents[1] / ".venv" / "bin" / "python"
+#: The loop's own venv (see requirements.txt), falling back to the project's. The
+#: fallback is loud: under the project's numpy<2 pin the same code takes ~6x fewer
+#: steps in the budget, so its val_bpb is not comparable with the recorded ledger.
+_LOCAL_PY = HERE / ".venv" / "bin" / "python"
+PY = _LOCAL_PY if _LOCAL_PY.exists() else HERE.parents[1] / ".venv" / "bin" / "python"
+if PY != _LOCAL_PY:
+    print(f"warning: {_LOCAL_PY} not found; using the project venv, whose numpy<2 "
+          f"pin makes timings incomparable with results.tsv", file=sys.stderr)
 LEDGER = HERE / "results.tsv"
 BEST = HERE / "best" / "train.py"
 WORK = HERE / "train.py"
@@ -37,8 +43,17 @@ def rows() -> list[dict]:
     if not LEDGER.exists():
         return []
     lines = LEDGER.read_text().strip().splitlines()
+    if not lines:
+        return []
     head = lines[0].split("\t")
     return [dict(zip(head, ln.split("\t"))) for ln in lines[1:]]
+
+
+def _cell(value: object) -> str:
+    """One TSV cell. A tab or newline inside a free-text field (an agent's note, a
+    gate's failure detail) would otherwise split the row and misalign every later
+    column when ``rows()`` reads it back."""
+    return " ".join(str(value).split())
 
 
 def append(row: dict) -> None:
@@ -46,7 +61,7 @@ def append(row: dict) -> None:
     with LEDGER.open("a") as fh:
         if new:
             fh.write("\t".join(COLUMNS) + "\n")
-        fh.write("\t".join(str(row.get(c, "")) for c in COLUMNS) + "\n")
+        fh.write("\t".join(_cell(row.get(c, "")) for c in COLUMNS) + "\n")
 
 
 def best_bpb() -> float:
@@ -56,7 +71,8 @@ def best_bpb() -> float:
 
 def run_gate() -> dict:
     out = subprocess.run(
-        [str(PY), "pbt_gate.py"], cwd=HERE, capture_output=True, text=True, timeout=600
+        [str(PY), "pbt_gate.py"], cwd=HERE, capture_output=True, text=True, timeout=600,
+        check=False,
     )
     if out.returncode != 0:
         return {"passed": False, "error": (out.stderr or out.stdout)[-1500:]}
@@ -69,13 +85,13 @@ def run_train(env_extra: dict | None = None) -> dict:
     env = {**os.environ, **(env_extra or {})}
     out = subprocess.run(
         [str(PY), "train.py"], cwd=HERE, capture_output=True, text=True,
-        timeout=900, env=env,
+        timeout=900, env=env, check=False,
     )
     if out.returncode != 0:
         return {"error": (out.stderr or out.stdout)[-1500:]}
     try:
         return json.loads(out.stdout.strip().splitlines()[-1])
-    except Exception:
+    except (json.JSONDecodeError, IndexError):
         return {"error": f"unparseable stdout: {out.stdout[-600:]}"}
 
 
@@ -99,6 +115,8 @@ def evaluate(note: str) -> int:
             for a in t["arms"]:
                 if a["arm"] == "declarative" and a["first_failure"]:
                     first = a["first_failure"]
+            if t.get("refused"):
+                first = f"{t['task']}: {t['refused']}"
         append({"iter": n, "decision": "reject-gate", "gate": "FAIL", "val_bpb": "",
                 "tok_per_s": "", "steps": "", "params": "",
                 "gate_detail": detail, "note": f"{note} || {first}"[:400]})
@@ -111,7 +129,7 @@ def evaluate(note: str) -> int:
     if "error" in m:
         append({"iter": n, "decision": "reject-crash", "gate": "PASS", "val_bpb": "",
                 "tok_per_s": "", "steps": "", "params": "", "gate_detail": detail,
-                "note": f"{note} || {m['error'][:200]}".replace("\t", " ").replace("\n", " ")})
+                "note": f"{note} || {m['error'][:200]}"})
         shutil.copy(BEST, WORK)
         print(json.dumps({"decision": "reject-crash", "error": m["error"][-800:],
                           "reverted": True}, indent=2))
@@ -122,7 +140,7 @@ def evaluate(note: str) -> int:
     append({"iter": n, "decision": "keep" if keep else "revert", "gate": "PASS",
             "val_bpb": m["val_bpb"], "tok_per_s": m["tokens_per_sec"], "steps": m["steps"],
             "params": m["params"], "gate_detail": detail,
-            "note": note.replace("\t", " ").replace("\n", " ")[:300]})
+            "note": note[:300]})
     if keep:
         shutil.copy(WORK, BEST)
     else:
@@ -160,14 +178,14 @@ def measure(path: str, note: str) -> int:
     if "error" in m:
         append({"iter": n, "decision": "measure-crash", "gate": "PASS",
                 "gate_detail": detail,
-                "note": f"{path} || {m['error'][:200]}".replace(chr(9), " ").replace(chr(10), " ")})
+                "note": f"{path} || {m['error'][:200]}"})
         print(json.dumps({"candidate": path, "decision": "crash",
                           "error": m["error"][-800:]}, indent=2))
         shutil.copy(BEST, WORK)
         return 1
     append({"iter": n, "decision": "measure", "gate": "PASS", "val_bpb": m["val_bpb"],
             "tok_per_s": m["tokens_per_sec"], "steps": m["steps"], "params": m["params"],
-            "gate_detail": detail, "note": f"{path} || {note}".replace(chr(9), " ")[:300]})
+            "gate_detail": detail, "note": f"{path} || {note}"[:300]})
     print(json.dumps({"candidate": path, **m, "gate": detail}, indent=2))
     shutil.copy(BEST, WORK)
     return 0
@@ -177,6 +195,11 @@ def baseline() -> int:
     shutil.copy(BEST, WORK)
     g = run_gate()
     m = run_train()
+    if "error" in m:
+        # No row: a baseline without a val_bpb would make best_bpb() raise on the
+        # next evaluate, and there is nothing to compare against anyway.
+        print(json.dumps({"decision": "baseline-crash", "error": m["error"][-800:]}, indent=2))
+        return 1
     append({"iter": 0, "decision": "baseline", "gate": "PASS" if g.get("passed") else "FAIL",
             "val_bpb": m["val_bpb"], "tok_per_s": m["tokens_per_sec"], "steps": m["steps"],
             "params": m["params"], "gate_detail": gate_detail(g), "note": "plain NumPy GPT baseline"})

@@ -26,6 +26,9 @@ two cannot see:
 
 from __future__ import annotations
 
+import re
+
+import numpy as np
 import pbt_gate
 import pytest
 from saboteurs import SABOTEURS, first_failing_property
@@ -99,3 +102,30 @@ def test_a_declarative_pass_is_a_judgement_not_an_abstention(monkeypatch, name: 
         {(r.property_name, str(r.verdict), r.detail) for r in seen if r.verdict is not Verdict.PASS}
     )
     assert {r.verdict for r in seen} == {Verdict.PASS}, not_passed
+
+
+def _raises(x):
+    msg = "a kernel that never runs on the gate's shapes"
+    raise RuntimeError(msg)
+
+
+def _integer_zeros(x):
+    return np.zeros(x.shape, dtype=np.int32)
+
+
+@pytest.mark.parametrize(
+    ("kernel", "reason"),
+    [
+        (_raises, r"produced no output on \d+ of \d+ cases"),
+        (_integer_zeros, r"declarative arm abstained on every group"),
+    ],
+    ids=["raises_everywhere", "integer_zeros"],
+)
+@pytest.mark.parametrize("task", ["softmax", "layernorm"])
+def test_a_candidate_the_gate_never_judged_is_refused(task: str, kernel, reason: str):
+    """Every arm counts only FAIL groups, so a kernel with no output fails no group on any arm,
+    which reads as a pass. The refusal is the only thing that rejects it."""
+    verdict = pbt_gate.check_task(kernel, task)
+    assert verdict.passed is False
+    assert re.search(reason, verdict.refused), verdict.refused
+
