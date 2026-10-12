@@ -56,7 +56,7 @@ approximate two-column layout and the log warns that the output is not submittab
       `[P]` to `[M]`.
 - [x] Commit the records the draft cites that were untracked:
       `docs/measurements/2026-10-02-why3-real-theories-symmetry.md`,
-      `proofs/why3-real-theories/`, `experiments/formal-rigidity/` (2026-10-11).
+      `proofs/why3-real-theories/`, `experiments/verification/formal-rigidity/` (2026-10-11).
 - [ ] Add the prover-in-the-toolkit results
       (`docs/measurements/2026-10-02-prover-in-the-toolkit-prereg.md`) once they are appended
       below that record's line, and not before.

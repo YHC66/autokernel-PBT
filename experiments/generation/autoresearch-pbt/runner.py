@@ -26,7 +26,7 @@ HERE = Path(__file__).resolve().parent
 #: fallback is loud: under the project's numpy<2 pin the same code takes ~6x fewer
 #: steps in the budget, so its val_bpb is not comparable with the recorded ledger.
 _LOCAL_PY = HERE / ".venv" / "bin" / "python"
-PY = _LOCAL_PY if _LOCAL_PY.exists() else HERE.parents[1] / ".venv" / "bin" / "python"
+PY = _LOCAL_PY if _LOCAL_PY.exists() else HERE.parents[2] / ".venv" / "bin" / "python"
 if PY != _LOCAL_PY:
     print(f"warning: {_LOCAL_PY} not found; using the project venv, whose numpy<2 "
           f"pin makes timings incomparable with results.tsv", file=sys.stderr)

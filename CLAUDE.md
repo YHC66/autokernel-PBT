@@ -3,13 +3,22 @@
 **PBT means *property-based testing*.** Not population-based training. An earlier draft used
 the latter; that framing was removed in full.
 
-The project compares **three oracle strategies** — reference, declarative, hybrid — over
-**byte-identical replayed executions**, measuring bug-catching power, false-positive rate,
-authoring cost, and cost-per-bug. Almost every convention below exists to keep one of those
-numbers honest.
+The project is the correctness layer for agent-written kernels, in the two task segments the
+paper is being planned around: **generation** (an agent writes or optimizes a kernel) and **translation** (an agent
+ports one between backends). Its instrument compares **oracle strategies** — `allclose`,
+reference, declarative, hybrid — over **byte-identical replayed executions**, measuring
+bug-catching power, false-positive rate, authoring cost, and cost-per-bug; the formal track
+(ADR 0002) is designed to add agent-written proofs whose claims are executed on PBT's cases. Almost every
+convention below exists to keep one of those numbers honest.
 
 Design: `docs/superpowers/specs/2026-08-14-kernel-property-oracle-layer-design.md`
-Phase 1 plan: `docs/superpowers/plans/2026-08-14-property-layer-phase-1.md`
+Formal design: `docs/superpowers/specs/2026-10-01-agent-formal-adherence-design.md`
+
+**Where things go.** Experiments live under `experiments/{generation,translation,verification}/`,
+one directory each with a README; dated results under `docs/measurements/`, pre-registered
+before the run. When a record lands, add its row to `experiments/README.md` and, if it changes
+what the project can claim, to `docs/findings.md`. The pipelines each segment is building toward
+are `docs/pipelines/generation.md` and `docs/pipelines/translation.md`.
 
 ---
 
@@ -46,12 +55,14 @@ body explaining **why**, not a changelog of what changed.
 
 ```bash
 pytest -m "not gpu" -q      # the whole suite; must be green and silent
+pytest experiments -q       # the experiments' own tests, outside testpaths; CI runs both
 ```
 
 - `filterwarnings = ["error"]` — **any warning is a failure.** Tests that legitimately provoke
   one opt out with `@pytest.mark.filterwarnings`, per-test, with a comment saying why.
-- Markers: `gpu`, `integration`, `spec`.
-- Each of `tests/spec/test_0004_*.py` through `test_0008_*.py` asserts every criterion in its
+- Markers: `gpu`, `integration`, `spec`, `formal` (compiles the Lean proofs; skipped without a
+  toolchain).
+- Each of `tests/spec/test_0004_*.py` through `test_0009_*.py` asserts every criterion in its
   feature's `acceptance.yaml` resolves to a **collectable** test node (0005 onward also reject a
   shared or file-only target). Adding a criterion that names a nonexistent test fails the suite.
   Features 0001 and 0002 have no such guard.
@@ -148,7 +159,7 @@ acceptance criteria for the declarative and hybrid arms, and wired `HybridOracle
    pins `numpy>=1.24,<2` and `scripts/gpu_bootstrap.sh` checks torch's numpy interop after
    install. Side effect: NumPy 1.x links OpenBLAS on macOS, not Accelerate, so CPU wall-clock
    numbers measured under NumPy 2.x do not reproduce in this project's venv (measured: 265 vs 1633
-   steps in the same budget). `experiments/autoresearch-pbt/` therefore has its own venv; see its
+   steps in the same budget). `experiments/generation/autoresearch-pbt/` therefore has its own venv; see its
    README.
 6. `src/autokernel_pbt/harness/correctness.py` still carries the five-stage skeleton the parent design §11 says the
    property layer replaces. It is load-bearing for features 0001 and 0002 and their acceptance

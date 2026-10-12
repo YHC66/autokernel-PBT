@@ -19,7 +19,7 @@ dependencies = [
   "jsonschema>=4.20",
   "safetensors>=0.4",
   # Bounded by the numpy pin above: pyarrow 26 requires NumPy >= 2 and fails at import
-  # under 1.x ("pyarrow requires NumPy 2.0 or newer"), which broke CI the day it shipped.
+  # under 1.x ("pyarrow requires NumPy 2.0 or newer"); CI went red on it in October 2026.
   "pyarrow>=15.0,<26",
 ]
 

@@ -1,7 +1,7 @@
 """Mechanical checks on one adherence sandbox: compile every Lean file, scan for escape hatches,
 read `#print axioms`, pull out the main theorem text, and list the kernel's verdict from RESULT.md.
 
-    .venv/bin/python experiments/oracle-research/evaluate_adherence.py <sandbox-dir> [...]
+    .venv/bin/python experiments/verification/oracle-research/evaluate_adherence.py <sandbox-dir> [...]
 
 What this does NOT do (no adapter exists): execute the agent's spec/model readings (C2–C4) or
 sample its axioms (C6). Those are judged by reading, and the record says so.

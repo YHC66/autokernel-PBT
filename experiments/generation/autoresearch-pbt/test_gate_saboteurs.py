@@ -3,7 +3,7 @@
 Run from the repository root. The experiment is outside ``testpaths``, so the main
 suite does not collect it:
 
-    .venv/bin/python -m pytest experiments/autoresearch-pbt -q
+    .venv/bin/python -m pytest experiments/generation/autoresearch-pbt -q
 
 What is pinned is a *baseline*, not a target. Three of these kernels are grossly wrong
 and the gate admits them, because its decisive arm is the declarative one and the

@@ -1,6 +1,6 @@
 """Copy each sandbox's durable artifacts into the repository, so the record outlives /private/tmp.
 
-    .venv/bin/python experiments/oracle-research/collect.py <dest-dir> <sandbox-dir> [...]
+    .venv/bin/python experiments/verification/oracle-research/collect.py <dest-dir> <sandbox-dir> [...]
 
 Kept per sandbox: README.md (the protocol text the agent saw), TASK/SANDBOX, RESULT.md, laws.py,
 admitted/, correct_variants/, extras/, every agent-written *.py and *.txt/*.md at the top level,

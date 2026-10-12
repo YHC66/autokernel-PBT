@@ -26,7 +26,7 @@ deductive proof about C or Ada numerical code reasons from.
 Read together: a verifier's standard axiomatization of a transcendental primitive has a symmetry
 group, and that group is exactly the set of wrong kernels its certificates cannot exclude. For
 `exp` it is a continuous one-parameter family (temperature); for `cos`/`sin` a discrete one
-(frequency aliasing); for `sqrt` it is trivial. `experiments/formal-rigidity/rigidity.py` is the
+(frequency aliasing); for `sqrt` it is trivial. `experiments/verification/formal-rigidity/rigidity.py` is the
 sampled, language-neutral audit that finds the same symmetries in milliseconds; the record is
 `docs/measurements/2026-10-02-why3-real-theories-symmetry.md`.
 

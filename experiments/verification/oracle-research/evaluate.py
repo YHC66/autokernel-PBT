@@ -1,6 +1,6 @@
 """Score one agent sandbox, blind to its arm: soundness, held-out completeness, Lean status.
 
-    .venv/bin/python experiments/oracle-research/evaluate.py <sandbox-dir> [...]
+    .venv/bin/python experiments/verification/oracle-research/evaluate.py <sandbox-dir> [...]
 
 Loads the sandbox's own ``gate.py`` (hence its ``laws.py`` and vendored property layer) by path,
 so the completed bundle under test is exactly the one the agent left behind, and runs every
