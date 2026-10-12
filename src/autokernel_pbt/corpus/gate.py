@@ -94,8 +94,9 @@ def admit(rows: list[ExecutionResult], *, reference_fn: Callable[..., Any]) -> b
     non-finite reference output is a harness defect, never evidence about the
     candidate. Such a group is UNVERIFIABLE -- neither judgeable nor broken -- and is
     counted as such, so a rejection can never say "matches the reference" about a
-    comparison it did not make. A wrong output shape is checked before either: it is
-    evidence that needs no test ratio, as it is for the reference arm.
+    comparison it did not make. A non-finite reference is checked first, since such a group
+    cannot anchor anything; a wrong output shape is checked next, before the exact-dtype test,
+    because it is evidence that needs no test ratio -- the order the reference arm uses.
     """
     judgeable: set[str] = set()
     broken: set[str] = set()

@@ -29,6 +29,7 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "src"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from autokernel_pbt.props.backends.base import Status
 from autokernel_pbt.props.backends.numpy_backend import NumpyBackend
 from autokernel_pbt.props.contract import load_contract, oracle_from_contract
 from autokernel_pbt.props.generator import Generator
@@ -66,6 +67,8 @@ class TaskVerdict:
     task: str
     passed: bool
     arms: list
+    #: Why the gate refused the candidate whatever its arms say; empty if it did not.
+    refused: str = ""
 
 
 def _rows_by_group(kernel, task):
@@ -97,10 +100,14 @@ def check_task(kernel, task_key: str) -> TaskVerdict:
     by_group = _rows_by_group(kernel, task)
 
     verdicts = []
+    judged = {}
     for name, arm in arms.items():
         failed, first = 0, ""
+        judged[name] = 0
         for gid, rows in by_group.items():
             results = arm.evaluate(rows)
+            if summary(results) is not Verdict.INCONCLUSIVE:
+                judged[name] += 1
             if summary(results) is Verdict.FAIL:
                 failed += 1
                 if not first:
@@ -120,7 +127,27 @@ def check_task(kernel, task_key: str) -> TaskVerdict:
     # (docs/measurements/2026-08-16-allclose-layernorm-false-positives.md), so a loop
     # gated on it cannot reach a correct kernel at all. Every arm is still reported.
     decisive = next(v for v in verdicts if v.arm == "declarative")
-    return TaskVerdict(task=task_key, passed=decisive.groups_failed == 0, arms=verdicts)
+    # Every arm counts only FAIL groups, so a candidate that never produced an output reads as
+    # 0/9 failed everywhere -- a pass. A kernel that raises on the gate's own shapes while
+    # running at the training shapes would game the loop that way. driver.run_task refuses an
+    # arm that judged nothing; the gate refuses that, and any case the kernel failed to run.
+    unrun = [(gid, r) for gid, rows in by_group.items() for r in rows if r.status != Status.OK]
+    refused = ""
+    if unrun:
+        gid, r = unrun[0]
+        total = sum(len(rows) for rows in by_group.values())
+        refused = (
+            f"the kernel produced no output on {len(unrun)} of {total} cases, first {gid} "
+            f"shape={r.case.shape}: {r.status}"
+        )
+    elif judged["declarative"] == 0:
+        refused = "the declarative arm abstained on every group, so nothing was judged"
+    return TaskVerdict(
+        task=task_key,
+        passed=decisive.groups_failed == 0 and not refused,
+        arms=verdicts,
+        refused=refused,
+    )
 
 
 def gate(module_name: str = "train") -> dict:

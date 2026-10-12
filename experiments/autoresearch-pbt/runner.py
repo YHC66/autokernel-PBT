@@ -115,6 +115,8 @@ def evaluate(note: str) -> int:
             for a in t["arms"]:
                 if a["arm"] == "declarative" and a["first_failure"]:
                     first = a["first_failure"]
+            if t.get("refused"):
+                first = f"{t['task']}: {t['refused']}"
         append({"iter": n, "decision": "reject-gate", "gate": "FAIL", "val_bpb": "",
                 "tok_per_s": "", "steps": "", "params": "",
                 "gate_detail": detail, "note": f"{note} || {first}"[:400]})
