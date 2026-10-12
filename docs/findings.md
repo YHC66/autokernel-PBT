@@ -69,8 +69,8 @@ Records: [`2026-08-19-false-positive-rate.md`](./measurements/2026-08-19-false-p
 karpathy/autoresearch's keep/revert loop, transplanted to a NumPy byte-level GPT with a fixed 60 s
 budget. The model's `softmax` and `layernorm` are gated by all four arms before `val_bpb` is
 computed, and the gate decides on the declarative arm. Over **26 candidates in 6 rounds**,
-`val_bpb` fell **2.829 → 2.228 (−21.2%, 3 seeds each)** at **+27.7% throughput**. The gate needed
-one 140-line module and costs milliseconds, offline. **Six saboteurs**, each a plausible
+`val_bpb` fell **2.829 → 2.228 (−21.2%, 3 seeds each)** at **+27.7% throughput**. The gate is one
+small module and costs milliseconds, offline. **Six saboteurs**, each a plausible
 optimization (no max-subtraction, a float16 accumulator, a dropped column; no centering, no
 divide, sample instead of population variance), were caught by every arm. The three that were timed run 1.11×, 1.76× and 2.40× faster
 than the correct kernel, which shows why a speed objective needs the gate.
