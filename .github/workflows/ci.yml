@@ -31,3 +31,8 @@ jobs:
         run: >-
           pytest -m "not gpu" --cov=autokernel_pbt --cov-report=term-missing
           --cov-fail-under=95
+
+      # Outside testpaths, so the step above never collects them: the gate's saboteur
+      # matrix and the rigidity audit, which pin results the paper quotes.
+      - name: Experiment tests
+        run: pytest experiments -q
