@@ -14,7 +14,9 @@ convention below exists to keep one of those numbers honest.
 Design: `docs/superpowers/specs/2026-08-14-kernel-property-oracle-layer-design.md`
 Formal design: `docs/superpowers/specs/2026-10-01-agent-formal-adherence-design.md`
 
-**Where things go.** Experiments live under `experiments/{generation,translation,verification}/`,
+**Where things go.** Recorded device runs live in `runs/`, version controlled, committed with the
+record that cites them (`runs/README.md`). Experiments live under
+`experiments/{generation,translation,verification}/`,
 one directory each with a README; dated results under `docs/measurements/`, pre-registered
 before the run. When a record lands, add its row to `experiments/README.md` and, if it changes
 what the project can claim, to `docs/findings.md`. The pipelines each segment is building toward

@@ -51,6 +51,7 @@ experiments/           self-contained experiments, by segment (index: experiment
 ├── translation/         proposed; nothing has run yet
 └── verification/        formal-rigidity, oracle-research: experiments on the correctness layer
 proofs/                Lean 4 proofs (Proposition 1; Why3's real theories), compiled by tests/proofs
+runs/                  every recorded GPU run (A10, Triton), scored offline by any oracle (runs/README.md)
 src/autokernel_pbt/
 ├── props/               the PBT core: generator, case groups, backends (NumPy, Triton),
 │                        execution and score tables, the four oracle arms, driver.run_task
