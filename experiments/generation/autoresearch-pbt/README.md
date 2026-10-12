@@ -33,7 +33,7 @@ uv venv --python 3.12 .venv
 uv pip install --python .venv/bin/python -r requirements.txt
 ```
 
-`autokernel_pbt` is imported from `../../src` by `pbt_gate.py`, not installed, so
+`autokernel_pbt` is imported from `../../../src` by `pbt_gate.py`, not installed, so
 the project's `numpy<2` pin never enters this environment. `runner.py` and
 `rigor_sweep.py` use `.venv/bin/python` here and warn if they fall back to the
 project's.
@@ -50,7 +50,9 @@ project's.
 The gate runs **before** the metric, and its decisive arm is the **declarative**
 one, not `allclose` — `allclose` false-positives on the baseline's own correct
 layernorm (5 of 9 groups), so a loop gated on it cannot accept its own starting
-point.
+point. A candidate whose kernel produces no output on some gate case, or on which
+the declarative arm judges no group at all, is refused outright: every arm counts
+only failed groups, so otherwise it would read as a clean pass.
 
 ## The saboteur matrix
 
@@ -63,7 +65,7 @@ Gate verdicts do not depend on the NumPy build, so either venv works here:
 
 ```bash
 .venv/bin/python saboteurs.py                                            # print the matrix
-cd ../.. && .venv/bin/python -m pytest experiments/autoresearch-pbt -q   # pin it
+cd ../../.. && .venv/bin/python -m pytest experiments/generation/autoresearch-pbt -q   # pin it
 ```
 
 The tests are outside the main suite's `testpaths`, so `pytest -m "not gpu"` does not

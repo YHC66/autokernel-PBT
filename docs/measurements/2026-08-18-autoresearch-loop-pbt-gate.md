@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-18
 **Instance:** Apple M4 Pro, 48 GB, macOS 26.6.1, NumPy 2.5.2 on Accelerate BLAS, CPU only
-**Harness:** `experiments/autoresearch-pbt/` — karpathy/autoresearch's loop (fixed wall-clock
+**Harness:** `experiments/generation/autoresearch-pbt/` — karpathy/autoresearch's loop (fixed wall-clock
 budget, keep/revert on one metric) transplanted to a NumPy byte-level GPT, with this project's
 oracle arms as the correctness gate
 **Why CPU:** no GPU was reachable for this session (`ssh lambda` timed out; no local torch or

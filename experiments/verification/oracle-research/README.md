@@ -35,5 +35,5 @@ own report — its claims, not an evaluation of them — with absolute paths red
 artifacts to be reconstructed.
 
 **No result has been appended below the pre-registration's line, and none of these reports may be
-quoted as a finding until one is.** `runs/` is gitignored repo-wide, so `reports.json` is
-force-tracked; next time, run `collect.py` the moment each agent finishes.
+quoted as a finding until one is.** Next time, run `collect.py` the moment each agent
+finishes.

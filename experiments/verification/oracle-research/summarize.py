@@ -1,6 +1,6 @@
 """Aggregate the oracle-research experiment: agent reports × blind evaluation, by task and arm.
 
-    .venv/bin/python experiments/oracle-research/summarize.py <reports.json> <eval-dir>
+    .venv/bin/python experiments/verification/oracle-research/summarize.py <reports.json> <eval-dir>
 
 ``reports.json`` is the list of ``{"cell": {task, arm, r, dir}, "report": {...}}`` objects the
 workflow returned; ``eval-dir`` holds one ``<sandbox-name>.json`` per sandbox from

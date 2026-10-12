@@ -2,7 +2,7 @@
 
 Run from the repository root (outside ``testpaths``, so the main suite does not collect it):
 
-    .venv/bin/python -m pytest experiments/formal-rigidity -q
+    .venv/bin/python -m pytest experiments/verification/formal-rigidity -q
 
 Each test is the sole catcher of one way the audit could rot: a symmetry the Lean file proves
 going unrecognized (sampling too tight, or a transformation implemented wrongly), a rejection

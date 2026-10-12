@@ -1,7 +1,7 @@
 """Grep the workflow's agent transcripts for reads outside the sandbox: the protocol's self-report
 check. Prints, per agent, the distinct outside paths that appear in tool inputs.
 
-    .venv/bin/python experiments/oracle-research/audit_transcripts.py <workflow-transcript-dir>
+    .venv/bin/python experiments/verification/oracle-research/audit_transcripts.py <workflow-transcript-dir>
 """
 
 from __future__ import annotations

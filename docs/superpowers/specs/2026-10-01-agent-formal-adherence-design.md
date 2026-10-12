@@ -10,7 +10,7 @@ first; the rest join through adapters.
 **Parent design:** `docs/superpowers/specs/2026-08-14-kernel-property-oracle-layer-design.md`
 (amends its §10, see §11)
 **Builds on:** `docs/measurements/2026-10-01-softmax-temperature-blind-spot.md`,
-`experiments/autoresearch-pbt/saboteurs.py`
+`experiments/generation/autoresearch-pbt/saboteurs.py`
 
 ---
 

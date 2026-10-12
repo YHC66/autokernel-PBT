@@ -1,7 +1,7 @@
 """Post-hoc, NOT pre-registered: every agent's completed bundle against every agent's admitted
 kernels for the same task.
 
-    .venv/bin/python experiments/oracle-research/cross_evaluate.py <task> <sandbox-dir> [...]
+    .venv/bin/python experiments/verification/oracle-research/cross_evaluate.py <task> <sandbox-dir> [...]
 
 The pre-registered completeness measure is the fixed held-out set in ``heldout.py``. This script
 asks a second question the agents' own output makes possible: pooling the wrong kernels all
