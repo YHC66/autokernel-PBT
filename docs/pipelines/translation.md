@@ -4,11 +4,23 @@
 > propose for the second task segment the paper is being planned around, grounded in what the shared substrate already
 > does. Each claim is marked as either *evidence we have* or *a gap*. Comments and changes are
 > welcome. Open a PR against this file.
+>
+> **Priority (decided 2026-10-11): GPU first.** The first backend pair is GPU to GPU, CUDA ↔
+> Triton on NVIDIA hardware, the stack this repository already records on. Cross-vendor GPU (CUDA
+> → HIP on AMD) comes next, and TPU (Pallas) and Trainium (NKI) after that.
 
 **The task.** An agent ports a kernel `K_src`, written for one backend, to `K_tgt` on another.
-Examples: CUDA or Triton on a GPU → a TPU kernel in Pallas/JAX; Triton → AWS Trainium via NKI;
-CUDA → Triton. The loop keeps a port only if it computes the same function as the source and
-meets the target's performance bar.
+In priority order: CUDA ↔ Triton on an NVIDIA GPU; CUDA → HIP on an AMD GPU; then a TPU kernel in
+Pallas/JAX, or Trainium via NKI. The loop keeps a port only if it computes the same function as
+the source and meets the target's performance bar.
+
+**What GPU first changes.** With both kernels on one device, both are recorded in the same
+session on byte-identical inputs, and the source's outputs are a reference on the same hardware.
+The ports still differ in the last bits, because a CUDA kernel and a Triton kernel reduce in
+different orders, with different tile widths, and may use different intrinsics (`__expf` and
+fast-math against `tl.exp`). That is the regime this repository has already measured on Triton:
+the `log2 n` ratio, the tile-aware bound `log2(tile) + n_tiles`, and the tile-tail defect. The
+first gap is a CUDA backend.
 
 **Why it is harder than generation, for the gate.**
 
@@ -95,10 +107,11 @@ a port.
 | Rows carry `backend`; a run is scored without a device | **built** |
 | NumPy (CPU) and Triton (GPU) backends | **built** |
 | Tier-1 laws transfer NumPy → Triton | **measured** |
-| A **TPU backend** (Pallas/JAX) or an **NKI backend** | **gap**: the first thing T1 needs on a new target |
+| A **CUDA C++ backend** (`kernels/cuda/` is empty), recording through the same launcher contract as Triton | **gap**: the first thing GPU-first translation needs; build it spec first, as feature 0007 built Triton's |
+| A **HIP backend**, then a **TPU backend** (Pallas/JAX) or an **NKI backend** | **gap**: later targets, in priority order |
 | A **cross-backend tolerance**: the `log2 n` ratio assumes pairwise reduction on *one* backend | **gap**: needs a derivation for the target's accumulation, as `log2(tile) + n_tiles` was derived for multi-tile Triton |
 | **Numerical characterization of the target** (rounding mode, accumulation order, accumulator width) | **gap**: none is published for Trainium (design open question 3). TPU matrix-unit precision modes are documented, but per-kernel accumulation is not |
-| **Completed law bundles** (log-ratio, affine-tie) | **gap**: E2. T2 is unsafe without them, because the current bundle admits ten wrong families |
+| **Completed law bundles** (log-ratio, affine-tie) | **gap**: E2. T2 is unsafe without them, because the current bundles admit wrong kernels (four recorded families, six more probed) |
 | A **translation mutation corpus**: plausible wrong ports | **gap**: see TE3 |
 | Formal adapters (0010), so one spec can be checked against two backends | **gap** |
 | Shrinker (Phase D) | **gap** |
@@ -108,9 +121,11 @@ a port.
 Each should be pre-registered under `docs/measurements/` before it runs, as the
 prover-in-the-toolkit experiment was.
 
-- **TE1: do the laws transfer to the target?** Repeat the first and at-scale hardware runs on a
-  TPU (and Trainium if available): the stock ladder kernels, ported, scored by every arm.
-  *Falsifier:* any Tier-1 law fails on a port that the cross-backend reference ratio accepts.
+- **TE1: do the laws transfer to the target?** First on GPU: port the stock Triton ladder
+  kernels to CUDA, record both on one NVIDIA GPU, and score both with every arm, using the
+  Triton run as the reference for the CUDA one. Then repeat on AMD, and later on a TPU or
+  Trainium. *Falsifier:* any Tier-1 law fails on a port that the cross-backend reference ratio
+  accepts.
 - **TE2: cross-backend calibration.** False-positive rate of `allclose`, the `log2 n` ratio, a
   target-aware ratio and the law bundle, measured on *correct* ports. This is the translation
   version of the 54-group measurement.
@@ -124,8 +139,9 @@ prover-in-the-toolkit experiment was.
 
 ## Open questions for the team
 
-1. **Which backend pair goes first?** CUDA/Triton → TPU (Pallas) is the most accessible. Triton →
-   NKI is the one the phase 3a design argued for, since both are Python tile DSLs.
+1. **Which direction first?** Decided: GPU first. Still open is whether to start with CUDA →
+   Triton, the common real-world port, or Triton → CUDA, which reuses the recorded Triton kernels
+   as the trusted source.
 2. **Which tasks?** The ladder (relu, softmax, layernorm) is what we have. The design names
    attention and GEMM as where translation becomes interesting, and GEMM needs the contraction
    length `K` passed into the ratio explicitly.

@@ -19,7 +19,7 @@ The current draft covers generation; translation is where the laws' case is stro
 | Segment | The agent… | The correctness question | Status | Pipelines |
 |---|---|---|---|---|
 | **Autokernel generation** | writes or optimizes a kernel for one backend | Is the faster kernel still the same function? | Gate built and measured; a gated optimization loop run on CPU; formal certificate core built | [G0–G5](docs/pipelines/generation.md) |
-| **Autokernel translation** | ports a kernel between backends: CUDA/Triton → TPU (Pallas), Triton → Trainium (NKI) | Does the port compute the source's function on hardware that rounds differently, often with no reference on the target? | **Proposed.** Laws already moved NumPy → Triton unchanged | [T0–T4](docs/pipelines/translation.md) |
+| **Autokernel translation** | ports a kernel between backends: GPU first (CUDA ↔ Triton on NVIDIA, then AMD), then TPU (Pallas) and Trainium (NKI) | Does the port compute the source's function when the two backends round differently, and often with no reference of its own on the target? | **Proposed.** Laws already moved NumPy → Triton unchanged | [T0–T4](docs/pipelines/translation.md) |
 
 Both segments share one substrate: seeded case groups with metamorphic partners, executed once per
 backend, recorded byte for byte, and scored offline by competing oracles.
@@ -51,6 +51,7 @@ experiments/           self-contained experiments, by segment (index: experiment
 ├── translation/         proposed; nothing has run yet
 └── verification/        formal-rigidity, oracle-research: experiments on the correctness layer
 proofs/                Lean 4 proofs (Proposition 1; Why3's real theories), compiled by tests/proofs
+runs/                  every recorded GPU run (A10, Triton), scored offline by any oracle (runs/README.md)
 src/autokernel_pbt/
 ├── props/               the PBT core: generator, case groups, backends (NumPy, Triton),
 │                        execution and score tables, the four oracle arms, driver.run_task
