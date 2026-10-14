@@ -166,3 +166,81 @@ def test_the_repo_s_kernels_wins_over_an_installed_kernels_distribution(tmp_path
     proc = _python(code, tmp_path)
     assert proc.returncode == 0, proc.stderr
     assert Path(proc.stdout.strip()).resolve() == (REPO_ROOT / "kernels" / "__init__.py").resolve()
+
+
+def _fake_cuda_kernel(toolchain):
+    from autokernel_pbt.props.backends.cuda_kernel import CudaKernel
+
+    def factory(n_cols: int) -> CudaKernel:
+        return CudaKernel(
+            kernel_id="fake_cuda",
+            source='extern "C" __global__ void k(const float* x, float* y, int n) {}',
+            entry="k",
+            grid=lambda shape, params: (shape[0],),
+            block=lambda shape, params: (32,),
+            launcher=lambda **kw: np.zeros_like(kw["x"]),
+            toolchain=toolchain,
+        )
+
+    return factory
+
+
+def test_the_cuda_backend_records_the_cuda_ports(monkeypatch, tmp_path, fake_toolchain):
+    """The criterion THE_RECORDER_RECORDS_THE_CUDA_PORTS.
+
+    `--backend cuda` must take the factories from `kernels.cuda.ladder` and run them
+    through CudaBackend -- and build the toolchain once, before the first case, so a
+    toolchain that cannot start stops the run with nothing recorded.
+    """
+    toolchain = fake_toolchain()
+    started = []
+
+    def default_toolchain():
+        started.append(True)
+        return toolchain
+
+    ladder = types.ModuleType("kernels.cuda.ladder")
+    ladder.KERNELS = {TASK: _fake_cuda_kernel(toolchain)}
+    ladder.default_toolchain = default_toolchain
+    monkeypatch.setitem(sys.modules, "kernels.cuda.ladder", ladder)
+    monkeypatch.setitem(sys.modules, "torch", _fake_torch())
+    monkeypatch.setattr(sys, "path", list(sys.path))
+    out = tmp_path / "cuda-run"
+    monkeypatch.setattr(
+        sys, "argv", ["gpu_record.py", "--task", TASK, "--backend", "cuda", "--out", str(out)]
+    )
+    spec = importlib.util.spec_from_file_location("gpu_record_under_test", SCRIPT)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    assert module.main() == 0
+
+    rows = ExecutionTable(out).read()
+    assert len(rows) == sum(len(group.cases) for group in _groups())
+    assert {row.telemetry["backend"] for row in rows} == {"cuda"}
+    assert {row.kernel_id for row in rows} == {"fake_cuda"}
+    assert {row.status for row in rows} == {Status.OK}
+    assert started == [True]
+    assert len(toolchain.compiles) == len(rows)
+
+
+def test_a_cuda_toolchain_that_cannot_start_records_nothing(monkeypatch, tmp_path):
+    def default_toolchain():
+        msg = "cuda-python is not importable (pip install cuda-python)"
+        raise ImportError(msg)
+
+    ladder = types.ModuleType("kernels.cuda.ladder")
+    ladder.KERNELS = {}
+    ladder.default_toolchain = default_toolchain
+    monkeypatch.setitem(sys.modules, "kernels.cuda.ladder", ladder)
+    monkeypatch.setattr(sys, "path", list(sys.path))
+    out = tmp_path / "cuda-run"
+    monkeypatch.setattr(
+        sys, "argv", ["gpu_record.py", "--task", TASK, "--backend", "cuda", "--out", str(out)]
+    )
+    spec = importlib.util.spec_from_file_location("gpu_record_under_test", SCRIPT)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    with pytest.raises(ImportError, match="pip install cuda-python"):
+        module.main()
+    assert not out.exists()
+    assert not (tmp_path / "cuda-run.partial").exists()

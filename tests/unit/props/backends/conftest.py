@@ -46,3 +46,63 @@ def device_stubs():
         for name in [name for name in sys.modules if _is_stubbed(name)]:
             del sys.modules[name]
         sys.modules.update(saved)
+
+
+class FakeToolchain:
+    """A `CudaToolchain` that compiles and launches nothing, and records every request.
+
+    `fail_compile` makes `compile` raise it; `artifact` overrides what a compile returns.
+    The default artifact carries a value for every attribute a real one has, so a test
+    that finds a CUDA field MISSING learns something about the code under test, not about
+    the fake.
+    """
+
+    ARCH_OPTION = "--gpu-architecture=compute_86"
+
+    def __init__(self, fail_compile: Exception | None = None, artifact=None, versions=None):
+        self.fail_compile = fail_compile
+        self.artifact = artifact
+        self._versions = versions
+        self.compiles: list[tuple[str, str, tuple[str, ...]]] = []
+        self.launches: list[dict] = []
+
+    def resolved_options(self, options):
+        return (*options, self.ARCH_OPTION)
+
+    def compile(self, source, entry, options):
+        from autokernel_pbt.props.backends.cuda_toolchain import CudaArtifact
+
+        self.compiles.append((source, entry, tuple(options)))
+        if self.fail_compile is not None:
+            raise self.fail_compile
+        if self.artifact is not None:
+            return self.artifact
+        return CudaArtifact(
+            entry=entry,
+            options=self.resolved_options(tuple(options)),
+            asm={"ptx": f"// ptx for {entry}\n{source}"},
+            # Every value distinct, so a field read from the wrong attribute cannot pass.
+            n_regs=24,
+            static_shared_bytes=48,
+            local_bytes=16,
+            max_threads_per_block=1024,
+            ptx_version=80,
+            binary_version=86,
+        )
+
+    def launch(self, artifact, *, grid, block, shared_bytes, args):
+        self.launches.append(
+            {"artifact": artifact, "grid": grid, "block": block, "shared_bytes": shared_bytes,
+             "args": args}
+        )
+
+    def versions(self):
+        if self._versions is not None:
+            return self._versions()
+        return {"nvrtc_version": "12.8", "cuda_bindings_version": "12.8.0"}
+
+
+@pytest.fixture
+def fake_toolchain():
+    """The `FakeToolchain` class; tests construct it with the behaviour they need."""
+    return FakeToolchain

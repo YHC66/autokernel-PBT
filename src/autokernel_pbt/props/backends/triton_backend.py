@@ -42,6 +42,7 @@ from autokernel_pbt.props.backends.base import (
     Status,
     kernel_inputs,
 )
+from autokernel_pbt.props.backends.device import cuda_device_facts
 from autokernel_pbt.props.backends.telemetry import MISSING, extract
 from autokernel_pbt.props.backends.triton_kernel import InputMutatedError, TritonKernel
 from autokernel_pbt.props.case import Case
@@ -199,48 +200,16 @@ class TritonBackend:
 def _default_device_probe() -> dict[str, Any]:
     """Device and toolchain facts, read once per execution.
 
-    Imports inside the function: this module must import cleanly on a machine with no
-    torch, so that every structural test runs on CPU.
+    The device fields are shared with the CUDA backend (`device.cuda_device_facts`), so a
+    translation pair recorded on one device describes it identically. Imports inside the
+    functions: this module must import cleanly on a machine with no torch, so that every
+    structural test runs on CPU.
     """
-    import torch
-
-    index = torch.cuda.current_device()
-    properties = torch.cuda.get_device_properties(index)
+    facts = cuda_device_facts()
     try:
         import triton
 
-        triton_version = triton.__version__
+        facts["triton_version"] = triton.__version__
     except ImportError:
-        triton_version = MISSING
-    return {
-        "device_name": properties.name,
-        "compute_capability": f"{properties.major}.{properties.minor}",
-        "multi_processor_count": properties.multi_processor_count,
-        "total_memory_bytes": properties.total_memory,
-        "driver_version": _driver_version(torch),
-        # The CUDA toolkit torch was BUILT against, which is not the driver.
-        "runtime_version": torch.version.cuda,
-        "torch_version": torch.__version__,
-        "triton_version": triton_version,
-    }
-
-
-def _driver_version(torch: Any) -> Any:
-    """The CUDA version the installed DRIVER supports, as "major.minor", or MISSING.
-
-    `torch.version.cuda` was recorded here before, which is the toolkit torch was built
-    with -- a property of the wheel, not of the machine -- so driver and runtime always
-    read identically and a driver mismatch was invisible in every artifact.
-
-    `cuDriverGetVersion`, which `_cuda_getDriverVersion` wraps, encodes 1000*major +
-    10*minor: 12090 is a 12.9 driver. It is formatted like `runtime_version` ("12.8")
-    so the two compare directly. A private torch API, so probed: absent, raising, zero
-    (no driver) or not an int all record MISSING rather than a guess.
-    """
-    try:
-        encoded = torch._C._cuda_getDriverVersion()
-    except Exception:  # noqa: BLE001 - probed, not asserted
-        return MISSING
-    if isinstance(encoded, bool) or not isinstance(encoded, int) or encoded <= 0:
-        return MISSING
-    return f"{encoded // 1000}.{encoded % 1000 // 10}"
+        facts["triton_version"] = MISSING
+    return facts

@@ -1,0 +1,100 @@
+feature_id: "0012"
+feature_name: cuda-backend
+version: 1
+
+criteria:
+  - id: CUDA_ADAPTER_SATISFIES_THE_BACKEND_PROTOCOL
+    description: CudaKernel is callable with numpy kwargs and returns a numpy array, as TritonKernel is
+    check:
+      type: unit_test
+      test: tests/unit/props/backends/test_cuda_kernel.py::test_adapter_is_callable_with_numpy_kwargs
+
+  - id: RECORDED_GEOMETRY_IS_THE_GEOMETRY_LAUNCHED
+    description: the launcher receives exactly the grid, block and shared-memory size recorded as telemetry
+    check:
+      type: unit_test
+      test: tests/unit/props/backends/test_cuda_kernel.py::test_the_launcher_receives_exactly_the_geometry_that_is_recorded
+
+  - id: THE_SOURCE_HASH_IDENTIFIES_THE_KERNEL_TEXT
+    description: editing the kernel source changes the hash; unreadable source is MISSING, never a name hash
+    check:
+      type: unit_test
+      test: tests/unit/props/backends/test_cuda_kernel.py::test_editing_the_kernel_source_changes_the_hash
+
+  - id: A_FAILED_CALL_REPORTS_NO_STALE_ARTIFACT
+    description: a call that fails to compile does not report the previous call's artifact or geometry
+    check:
+      type: unit_test
+      test: tests/unit/props/backends/test_cuda_kernel.py::test_a_failed_compile_does_not_report_the_previous_artifact
+
+  - id: CUDA_COMPILE_ERROR_IS_DISTINGUISHED_FROM_LAUNCH_ERROR
+    description: an NVRTC compile failure maps to COMPILE_ERROR by type, carrying the compiler log
+    check:
+      type: unit_test
+      test: tests/unit/props/backends/test_cuda_backend.py::test_a_compile_failure_maps_to_compile_error
+
+  - id: CUDA_STATUS_MAPPING_IS_TOTAL
+    description: every exception a CUDA kernel can raise reaches exactly one Status, and none escapes
+    check:
+      type: unit_test
+      test: tests/unit/props/backends/test_cuda_backend.py::test_status_mapping_is_total
+
+  - id: TELEMETRY_V2_DECLARES_THE_CUDA_FIELDS
+    description: schema version 2 declares the launch, compiled and device fields a CUDA execution needs
+    check:
+      type: unit_test
+      test: tests/unit/props/backends/test_telemetry.py::test_schema_v2_declares_the_cuda_fields
+
+  - id: A_CUDA_ARTIFACT_FILLS_ITS_FIELDS_AND_NO_OTHERS
+    description: a CUDA artifact populates registers, local and shared memory and the PTX hash, and leaves Triton-only fields MISSING
+    check:
+      type: unit_test
+      test: tests/unit/props/backends/test_cuda_backend.py::test_a_cuda_artifact_fills_its_fields_and_leaves_triton_s_missing
+
+  - id: THE_TOOLCHAIN_REFUSES_TO_START_BROKEN
+    description: a toolchain whose self-test kernel does not compile raises at construction, before any row is recorded
+    check:
+      type: unit_test
+      test: tests/unit/props/backends/test_cuda_toolchain.py::test_a_toolchain_that_cannot_compile_its_self_test_raises_at_construction
+
+  - id: NVRTC_COMPILE_FAILURE_IS_TYPED
+    description: a rejected source, or rejected options the kernel asked for, raises CudaCompilationError with the log; any other NVRTC failure raises CudaToolchainError
+    check:
+      type: unit_test
+      test: tests/unit/props/backends/test_cuda_toolchain.py::test_only_a_compilation_failure_is_a_compile_error
+
+  - id: KERNEL_ARGUMENTS_ARE_MARSHALLED_BY_EXPLICIT_TYPE
+    description: device buffers, np.int32 and np.float32 are marshalled; any other argument type is refused
+    check:
+      type: unit_test
+      test: tests/unit/props/backends/test_cuda_toolchain.py::test_an_argument_of_an_unmarshallable_type_is_refused
+
+  - id: THE_BLOCK_WIDTH_HONOURS_THE_LAUNCH_CONTRACT
+    description: every port launches a power-of-two block width within the device's thread limit, for every shape in use
+    check:
+      type: unit_test
+      test: tests/unit/props/backends/test_cuda_ladder.py::test_every_port_launches_a_power_of_two_width_within_the_limit
+
+  - id: THE_PORTS_REFUSE_INPUT_THEY_WOULD_MISREAD
+    description: a launcher refuses a non-float32 or non-2-D input instead of reinterpreting its bytes
+    check:
+      type: unit_test
+      test: tests/unit/props/backends/test_cuda_ladder.py::test_a_non_float32_input_is_refused_before_any_device_call
+
+  - id: A_TOOLCHAIN_FAILURE_IS_A_BAD_CALL
+    description: a CudaToolchainError is raised out of CudaBackend.run, never booked as the kernel's status
+    check:
+      type: unit_test
+      test: tests/unit/props/backends/test_cuda_backend.py::test_a_toolchain_failure_is_raised_not_booked_against_the_kernel
+
+  - id: SHARED_BYTES_MEANS_ONE_THING_ON_BOTH_SETUPS
+    description: on a CUDA row shared_bytes is the shared memory one block is given, static plus dynamic, as on a Triton row
+    check:
+      type: unit_test
+      test: tests/unit/props/backends/test_cuda_backend.py::test_shared_bytes_is_what_one_block_is_given_static_plus_dynamic
+
+  - id: THE_RECORDER_RECORDS_THE_CUDA_PORTS
+    description: gpu_record.py --backend cuda records the CUDA ports through CudaBackend
+    check:
+      type: unit_test
+      test: tests/unit/props/backends/test_gpu_record.py::test_the_cuda_backend_records_the_cuda_ports

@@ -7,6 +7,12 @@ it here would spend rented time on work that is free at home.
 
 Usage:
     python3 scripts/gpu_record.py --task softmax --out runs/gpu-softmax
+    python3 scripts/gpu_record.py --task softmax --backend cuda --out runs/cuda-softmax
+
+`--backend` selects the setup: `triton` (the default, so every command recorded before the
+flag existed still means what it meant) runs `kernels/triton/ladder.py`; `cuda` runs the
+CUDA ports in `kernels/cuda/`, compiled by NVRTC. With the same `--task` and `--seed` the
+two record byte-identical inputs, which is what a cross-setup comparison scores.
 
 If anything raises mid-run, every case group already recorded in full is written to
 `<out>.partial` before the error propagates, and the exit status is non-zero. `--out`
@@ -32,7 +38,6 @@ for _path in (_REPO_ROOT / "src", _REPO_ROOT):
         sys.path.insert(0, str(_path))
 
 from autokernel_pbt.props.backends.base import ExecutionResult
-from autokernel_pbt.props.backends.triton_backend import TritonBackend
 from autokernel_pbt.props.generator import Generator
 from autokernel_pbt.props.table import ExecutionTable
 from autokernel_pbt.props.tasks import TASKS
@@ -44,17 +49,16 @@ def main() -> int:
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--n-groups", type=int, default=None)
+    parser.add_argument("--backend", choices=("triton", "cuda"), default="triton")
     args = parser.parse_args()
 
-    from kernels.triton.ladder import KERNELS
+    kernels, backend = _setup(args.backend)
 
     task = TASKS[args.task]
     # Default to the whole domain: fewer groups than shapes makes Generator warn that
     # a boundary shape will never be exercised, and boundary coverage is the corpus's
     # main recall mechanism.
     n_groups = args.n_groups or len(task.domain.shapes)
-
-    backend = TritonBackend()
 
     results: list[ExecutionResult] = []
     try:
@@ -64,7 +68,7 @@ def main() -> int:
                 # One kernel per shape: BLOCK is derived from the row width, so a new
                 # shape means a new compiled artifact -- which is precisely why the
                 # compiled telemetry now varies instead of being constant.
-                kernel = KERNELS[args.task](case.shape[-1])
+                kernel = kernels[args.task](case.shape[-1])
                 result = backend.run(kernel, case)
                 result.kernel_id = kernel.kernel_id
                 # Stated correct, not "not stated": these are the reference ports, and
@@ -86,9 +90,32 @@ def main() -> int:
     statuses: dict[str, int] = {}
     for result in results:
         statuses[str(result.status)] = statuses.get(str(result.status), 0) + 1
-    print(json.dumps({"task": args.task, "rows": len(results), "status": statuses}, indent=2))
+    summary = {"task": args.task, "backend": args.backend, "rows": len(results), "status": statuses}
+    print(json.dumps(summary, indent=2))
     print(f"wrote {args.out}")
     return 0
+
+
+def _setup(name: str):
+    """The kernel factories and the backend for one setup.
+
+    Imported here, not at module scope: each setup's ladder imports its own toolchain, and
+    a machine with only one of them must still be able to record the other.
+
+    For CUDA the NVRTC toolchain is built *before* the first case, so a toolchain that
+    cannot start -- cuda-python missing, an architecture NVRTC does not know -- stops the
+    run with nothing recorded, instead of booking every row as a LAUNCH_ERROR.
+    """
+    if name == "cuda":
+        from autokernel_pbt.props.backends.cuda_backend import CudaBackend
+        from kernels.cuda.ladder import KERNELS, default_toolchain
+
+        default_toolchain()
+        return KERNELS, CudaBackend()
+    from autokernel_pbt.props.backends.triton_backend import TritonBackend
+    from kernels.triton.ladder import KERNELS
+
+    return KERNELS, TritonBackend()
 
 
 def _write_partial(out: Path, results: list[ExecutionResult]) -> None:

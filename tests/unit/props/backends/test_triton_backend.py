@@ -64,7 +64,7 @@ def test_a_successful_run_reports_ok_and_the_output():
 
 def test_telemetry_carries_the_schema_version_and_device_group():
     result = _backend().run(_kernel(), _case())
-    assert result.telemetry[TELEMETRY_SCHEMA_VERSION] == 1
+    assert result.telemetry[TELEMETRY_SCHEMA_VERSION] == 2
     assert result.telemetry["device_name"] == "fake"
 
 
