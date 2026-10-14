@@ -10,7 +10,7 @@ are indexed here by their records.
 experiments/
 ├── generation/          the agent writes or optimizes a kernel
 │   └── autoresearch-pbt/      a property-gated optimization loop, and the gate's saboteur matrix
-├── translation/         the agent ports a kernel between backends (proposed; nothing has run)
+├── translation/         a known kernel mapped to another setup (built; nothing has run on a device)
 └── verification/        the correctness layer itself: PBT oracles and formal proofs
     ├── formal-rigidity/       sampled symmetry audit of a verifier's axioms
     └── oracle-research/       does a prover in the toolkit change what an agent concludes?
@@ -37,10 +37,20 @@ toolchain is present. Results are recorded, dated and append-only, in
 
 ## Translation
 
-Nothing has run. The proposed pipelines (T0–T4) and experiments (TE1–TE4) are in
-[`docs/pipelines/translation.md`](../docs/pipelines/translation.md). The evidence so far is the
-cross-backend half of the hardware runs below, which show Tier-1 laws moving NumPy → Triton
-unchanged. See [`translation/README.md`](./translation/README.md).
+Known kernels mapped from one setup to another, with PBT and formal proofs as the gate. Nothing has
+run on a device; the infrastructure for the first pair (Triton → CUDA) is built and tested on CPU.
+The pipelines (T0–T4) and experiments (TE1–TE4) are in
+[`docs/pipelines/translation.md`](../docs/pipelines/translation.md); see
+[`translation/README.md`](./translation/README.md).
+
+| Experiment | Question | Status | Headline | Code | Record |
+|---|---|---|---|---|---|
+| Cross-setup consistency, proved | Do the known Triton ladder kernels and their CUDA ports compute the same function? | [M] | Yes in exact arithmetic, for every row width and power-of-two block width; the Triton tile needs `B ≥ n`, and drops the tail otherwise. Six theorems each in Lean, Rocq and Isabelle/HOL | [`proofs/cross-setup-reductions/`](../proofs/cross-setup-reductions/) | the directory README |
+| **TE1**: Triton → CUDA | Do the Tier-1 laws and the cross-setup ratio accept the correct CUDA port, where `allclose` does not? | [planned] | 8 predictions registered | `kernels/cuda/`, features 0012–0013 | [`2026-10-12-te1-triton-to-cuda-prereg`](../docs/measurements/2026-10-12-te1-triton-to-cuda-prereg.md) |
+| TE2–TE4 | Cross-setup calibration; a translation mutation corpus; the translation loop | [proposed] | — | — | [pipeline page](../docs/pipelines/translation.md) |
+
+The evidence before this segment had code of its own is the cross-backend half of the hardware
+runs below, which show Tier-1 laws moving NumPy → Triton unchanged.
 
 ## Verification layer (shared by both segments)
 

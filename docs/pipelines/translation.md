@@ -1,13 +1,37 @@
 # Autokernel translation: the pipelines we propose
 
-> **Status: proposed.** No translation pipeline has run yet. This page states the design we
-> propose for the second task segment the paper is being planned around, grounded in what the shared substrate already
-> does. Each claim is marked as either *evidence we have* or *a gap*. Comments and changes are
-> welcome. Open a PR against this file.
+> **Status: building; nothing has run on a device.** As of 2026-10-12 the first backend pair has
+> its infrastructure, all tested on CPU: a CUDA backend (feature 0012), scoring of a port against
+> the known kernel's recorded outputs (feature 0013), and a proof, in Lean, Rocq and Isabelle, that the
+> known Triton kernels and their CUDA ports compute the same function in exact arithmetic
+> (`proofs/cross-setup-reductions/`). TE1 is pre-registered
+> (`docs/measurements/2026-10-12-te1-triton-to-cuda-prereg.md`) and waits for a GPU session. Each
+> claim below is marked as evidence we have, built, or a gap. Comments and changes are welcome:
+> open a PR against this file.
 >
-> **Priority (decided 2026-10-11): GPU first.** The first backend pair is GPU to GPU, CUDA ↔
-> Triton on NVIDIA hardware, the stack this repository already records on. Cross-vendor GPU (CUDA
-> → HIP on AMD) comes next, and TPU (Pallas) and Trainium (NKI) after that.
+> **Priority (decided 2026-10-11): GPU first.** The first backend pair is GPU to GPU on NVIDIA
+> hardware, the stack this repository already records on. **The proposed direction is Triton →
+> CUDA** (2026-10-12, following the segment's framing of mapping *known* kernels): the recorded
+> Triton ladder is the known kernel. Cross-vendor GPU (CUDA →
+> HIP on AMD) comes next, and TPU (Pallas) and Trainium (NKI) after that.
+
+## The goal
+
+**Map known kernels from one setup to another, and use property-based testing and formal
+verification together so that the port is higher quality, more performant and consistent with
+the kernel it came from.** The three words name three different guarantees, and the two methods
+split them:
+
+| goal | what it means for a port | who establishes it |
+|---|---|---|
+| **consistent** | computes the same function as the known kernel | **formal proof** for the exact-arithmetic structure — reduction trees, masks and tails, strides, identities — in Lean, Rocq and Isabelle, of one shared statement; **PBT** for the floating-point gap, by the cross-setup ratio on byte-identical recorded inputs |
+| **higher quality** | correct, and no false alarm blocks a correct port | **PBT**: the Tier-1 laws and the calibrated ratio, which accept correct-but-different ports that `allclose` rejects; **FV** keeps the laws honest about what they admit (findings #4) |
+| **more performant** | meets or beats the target's performance bar | the loop's benchmark on the target, gated by the two above; proofs are post-hoc certificates, never the loop's filter (a hard proof gate is a known performance trap) |
+
+Each method checks the other. A proof is about a *model* of the kernel; PBT executes the model's
+claims against the recorded kernel (check C4 of the formal design), so a proof about the wrong
+model is caught. PBT samples; the proof covers every row width and every block width, including
+the ones the corpus never reaches.
 
 **The task.** An agent ports a kernel `K_src`, written for one backend, to `K_tgt` on another.
 In priority order: CUDA ↔ Triton on an NVIDIA GPU; CUDA → HIP on an AMD GPU; then a TPU kernel in
@@ -63,11 +87,11 @@ transfer?") for NumPy → Triton only.
 
 | ID | Equivalence check | Needs a target reference? | Status |
 |---|---|---|---|
-| **T0** | `allclose(K_tgt(x), K_src(x))` on shared inputs, or compile-and-compare | yes (the source's outputs) | the field default; the baseline arm |
-| **T1** | **Differential PBT across backends**: one seeded case set, recorded once on each device, scored offline with the normalized reference ratio, using `K_src`'s recorded outputs as the reference and a tolerance derived for *both* backends' accumulation | no (source outputs suffice) | [proposed]; record/replay and offline scoring exist, but it needs a target backend, a reference arm that scores against recorded source outputs (today's takes a reference function), and a cross-backend tolerance |
+| **T0** | `allclose(K_tgt(x), K_src(x))` on shared inputs, or compile-and-compare | yes (the source's outputs) | the field default; the baseline arm. [B] as `allclose_source` (feature 0013) |
+| **T1** | **Differential PBT across backends**: one seeded case set, recorded once on each device, scored offline with the normalized reference ratio, using `K_src`'s recorded outputs as the reference and a tolerance derived for *both* backends' accumulation | no (source outputs suffice) | [B] for CUDA: `reference_source` (feature 0013) scores a port against the source's recording, keyed by input bytes; the cross-backend tolerance is still the single-backend `log2 n` ratio until TE2 |
 | **T2** | **Law-only acceptance**: the completed Tier-1 bundle on the target alone | no | [proposed]; needs E2's completed bundles first |
 | **T3** | T1 + T2 + **Tier-2 target constraints** captured on the device | no | [proposed]; needs a target backend |
-| **T4** | T3 + **shared-spec certificates**: the source and the port are each proved to adhere to *one* spec, with the six checks run on each backend's own recorded cases | no | [proposed]; needs feature 0010 adapters |
+| **T4** | T3 + **consistency certificates**: the source and the port are proved to compute one spec's function — in Lean, Rocq and Isabelle — with the six checks run on each backend's own recorded cases | no | [proposed]; the reference certificate for the ladder exists (`proofs/cross-setup-reductions/`, Lean, Rocq and Isabelle); agent-written ones need feature 0010 adapters |
 
 The full loop:
 
@@ -107,13 +131,17 @@ a port.
 | Rows carry `backend`; a run is scored without a device | **built** |
 | NumPy (CPU) and Triton (GPU) backends | **built** |
 | Tier-1 laws transfer NumPy → Triton | **measured** |
-| A **CUDA C++ backend** (`kernels/cuda/` is empty), recording through the same launcher contract as Triton | **gap**: the first thing GPU-first translation needs; build it spec first, as feature 0007 built Triton's |
+| A **CUDA C++ backend**: NVRTC to PTX, the driver API, torch's buffers, telemetry schema v2 | **built, CPU-tested** (feature 0012); never executed on a device |
+| **CUDA ports of the known Triton ladder** (`kernels/cuda/`) | **built**; device tests in `tests/gpu/test_cuda_kernels.py` |
+| **Scoring a port against the known kernel's recorded outputs** (T0, T1), with the pairing refused unless inputs are byte-identical | **built** (feature 0013): `driver.score_translation`, `read_translation` |
+| **Proof that the known kernel and its port compute the same function** (exact arithmetic) | **built** in Lean, Rocq and Isabelle/HOL, six theorems each, one shared statement (`proofs/cross-setup-reductions/`) |
 | A **HIP backend**, then a **TPU backend** (Pallas/JAX) or an **NKI backend** | **gap**: later targets, in priority order |
-| A **cross-backend tolerance**: the `log2 n` ratio assumes pairwise reduction on *one* backend | **gap**: needs a derivation for the target's accumulation, as `log2(tile) + n_tiles` was derived for multi-tile Triton |
+| A **cross-backend tolerance**: the `log2 n` ratio assumes pairwise reduction on *one* backend | **gap**: TE2; TE1's P5 tests whether the single-backend ratio already suffices for Triton → CUDA |
 | **Numerical characterization of the target** (rounding mode, accumulation order, accumulator width) | **gap**: none is published for Trainium (design open question 3). TPU matrix-unit precision modes are documented, but per-kernel accumulation is not |
 | **Completed law bundles** (log-ratio, affine-tie) | **gap**: E2. T2 is unsafe without them, because the current bundles admit wrong kernels (four recorded families, six more probed) |
 | A **translation mutation corpus**: plausible wrong ports | **gap**: see TE3 |
-| Formal adapters (0010), so one spec can be checked against two backends | **gap** |
+| A **benchmark on the target**, so a port is kept only if it meets the performance bar | **gap**: wall-clock is recorded per row, which is not a benchmark |
+| Formal adapters (0010), so an *agent's* proof in each language is checked against two backends' recorded cases | **gap** |
 | Shrinker (Phase D) | **gap** |
 
 ## Proposed experiments
@@ -139,9 +167,10 @@ prover-in-the-toolkit experiment was.
 
 ## Open questions for the team
 
-1. **Which direction first?** Decided: GPU first. Still open is whether to start with CUDA →
-   Triton, the common real-world port, or Triton → CUDA, which reuses the recorded Triton kernels
-   as the trusted source.
+1. **Which direction first?** Decided: GPU first (2026-10-11). Proposed, and built for: Triton →
+   CUDA (2026-10-12), because the recorded Triton kernels are the known kernels the segment maps
+   from. CUDA → Triton, the common real-world port, would follow once a CUDA kernel is a
+   recorded, trusted source. Open to the team.
 2. **Which tasks?** The ladder (relu, softmax, layernorm) is what we have. The design names
    attention and GEMM as where translation becomes interesting, and GEMM needs the contraction
    length `K` passed into the ratio explicitly.

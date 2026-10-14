@@ -22,6 +22,10 @@ Every feature starts as a **spec** before code. Tests are written from **accepta
 | [0007](./features/0007-triton-backend/spec.md) | Triton backend and first hardware run | implemented |
 | [0008](./features/0008-corpus-and-metrics/spec.md) | Mutation corpus and metrics | implemented (Triton corpus; NumPy mutants in scope item 2 not yet built) |
 | [0009](./features/0009-formal-core/spec.md) | Formal adherence core | implemented |
+| [0012](./features/0012-cuda-backend/spec.md) | CUDA backend (NVRTC) and the CUDA ports of the ladder | implemented, CPU-tested; device path unexercised |
+| [0013](./features/0013-cross-setup-scoring/spec.md) | Cross-setup scoring: a port against the known kernel's recording | implemented |
+
+0010 and 0011 are reserved for the formal track's pilot adapters and pilot run (ADR 0002).
 
 ## Schemas
 

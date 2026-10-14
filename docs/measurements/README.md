@@ -23,6 +23,12 @@ the paths inside the records were updated to match. Nothing else in a record was
 | [2026-08-18-arm-differentiation-null-result](./2026-08-18-arm-differentiation-null-result.md) | 20 mutants, 3 corpora, 0 arm disagreements |
 | [2026-08-19-false-positive-rate](./2026-08-19-false-positive-rate.md) | `allclose` 10/54 on correct kernels; the other arms 0/54 |
 
+## Translation
+
+| Record | Headline |
+|---|---|
+| [2026-10-12-te1-triton-to-cuda-prereg](./2026-10-12-te1-triton-to-cuda-prereg.md) | Pre-registered: the known Triton ladder mapped to CUDA on one device; 8 predictions |
+
 ## Cross-backend transfer and hardware (evidence for translation)
 
 | Record | Headline |
