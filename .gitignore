@@ -44,3 +44,12 @@ reference/**/*.pdf
 
 # Agent worktrees
 .claude/worktrees/
+
+# Rocq build artefacts. tests/proofs compiles in a temporary copy; these appear only when a proof
+# is compiled by hand in place.
+proofs/**/*.vo
+proofs/**/*.vok
+proofs/**/*.vos
+proofs/**/*.glob
+proofs/**/.*.aux
+proofs/**/.lia.cache
