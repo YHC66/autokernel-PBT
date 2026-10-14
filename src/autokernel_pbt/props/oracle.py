@@ -72,6 +72,25 @@ _EXACT_DTYPE_DETAIL = "exact dtype: test ratio undefined"
 _EMPTY_DETAIL = "empty output: nothing to judge"
 
 
+class ReferenceUnavailable(Exception):
+    """The reference has no usable answer for this case, for a reason that is *data*.
+
+    Raised by a reference function, never by an arm. A recomputation from a trusted
+    implementation always has an answer; a *recorded* reference does not -- a source
+    kernel whose own execution of a case failed (`cross_setup.SourceRecording`) has
+    nothing to compare the port against there. Both reference arms catch exactly this
+    type and say INCONCLUSIVE with its message, which names the reference as the cause:
+
+    * FAIL would book the reference's failure against the kernel under test, a false
+      positive in the headline metric manufactured by the harness;
+    * propagating would abort a scoring pass over executions already paid for.
+
+    Caught narrowly, like `ExactDtypeError`: every other exception from a reference is a
+    harness defect and still propagates, because swallowing it could reduce an arm to a
+    silent no-op across a whole run.
+    """
+
+
 @runtime_checkable
 class Oracle(Protocol):
     """One strategy for turning recorded executions into verdicts.
@@ -323,8 +342,13 @@ class ReferenceOracle:
         # See the class docstring: suppressed so that an overflowing reference is one
         # INCONCLUSIVE row rather than a run-aborting exception under test config and
         # a silent FAIL under production config.
-        with np.errstate(all="ignore"):
-            expected = np.atleast_1d(np.asarray(self.reference_fn(**kernel_inputs(row.case))))
+        try:
+            with np.errstate(all="ignore"):
+                expected = np.atleast_1d(
+                    np.asarray(self.reference_fn(**kernel_inputs(row.case)))
+                )
+        except ReferenceUnavailable as exc:
+            return self._result(Verdict.INCONCLUSIVE, str(exc), case_id)
 
         # Validate the reference before comparing against it. residual_ratio answers
         # inf for a non-finite reference, and inf is a FAIL — so an unchecked reference
@@ -471,8 +495,13 @@ class AllcloseOracle:
         # filterwarnings=["error"], so a numpy overflow inside the reference would
         # raise under test config and pass silently under production config, in a
         # project whose central claim is that arms score identical executions.
-        with np.errstate(all="ignore"):
-            expected = np.atleast_1d(np.asarray(self.reference_fn(**kernel_inputs(row.case))))
+        try:
+            with np.errstate(all="ignore"):
+                expected = np.atleast_1d(
+                    np.asarray(self.reference_fn(**kernel_inputs(row.case)))
+                )
+        except ReferenceUnavailable as exc:
+            return self._result(Verdict.INCONCLUSIVE, str(exc), case_id)
 
         if expected.dtype.kind in "fc" and not np.all(np.isfinite(expected)):
             detail = "reference output is non-finite; the reference, not the kernel"
