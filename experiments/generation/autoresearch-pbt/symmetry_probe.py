@@ -30,7 +30,13 @@ from contextlib import contextmanager
 
 import numpy as np
 import pbt_gate
-from saboteurs import Saboteur, first_failing_property, log_ratio_spread_eps, unnormalized
+from saboteurs import (
+    _CAUGHT_BY_NO_ARM,
+    Saboteur,
+    first_failing_property,
+    log_ratio_spread_eps,
+    unnormalized,
+)
 
 from autokernel_pbt.props.oracle import (
     ALLCLOSE_PROPERTY,
@@ -80,8 +86,8 @@ def layernorm_undivided(x: np.ndarray) -> np.ndarray:
 # Seven of nine at most. The single-column rungs (1, 1) and (17, 1) make every kernel
 # below exactly right: a one-element softmax is 1.0 and a one-element layernorm is 0.0,
 # whatever symmetry is applied. Rolling rows is also the identity on the single-row
-# rung (1, 64), so a rolled kernel can be caught on six.
-_CAUGHT_BY_NO_ARM = {ALLCLOSE: (0, ""), REFERENCE: (0, ""), DECLARATIVE: (0, ""), HYBRID: (0, "")}
+# rung (1, 64), so a rolled kernel can be caught on six. Rows are axis -2 and columns
+# axis -1, so the symmetries mean the same thing on any batched shape.
 
 
 def _caught_only_against_a_reference(groups: int) -> dict[str, tuple[int, str]]:
@@ -114,14 +120,14 @@ PROBES: dict[str, Saboteur] = {
     "softmax_rows_rolled": Saboteur(
         "softmax, rows rolled by one",
         "softmax",
-        after(softmax_reference, lambda y: np.roll(y, 1, axis=0)),
+        after(softmax_reference, lambda y: np.roll(y, 1, axis=-2)),
         _caught_only_against_a_reference(6),
         True,
     ),
     "softmax_columns_reversed": Saboteur(
         "softmax, columns reversed",
         "softmax",
-        after(softmax_reference, lambda y: y[:, ::-1]),
+        after(softmax_reference, lambda y: y[..., ::-1]),
         _caught_only_against_a_reference(7),
         True,
     ),
@@ -145,7 +151,7 @@ PROBES: dict[str, Saboteur] = {
     "layernorm_columns_reversed": Saboteur(
         "LN, columns reversed",
         "layernorm",
-        after(layernorm_reference, lambda y: y[:, ::-1]),
+        after(layernorm_reference, lambda y: y[..., ::-1]),
         _caught_only_against_a_reference(7),
         True,
     ),
@@ -159,7 +165,7 @@ PROBES: dict[str, Saboteur] = {
     "layernorm_rows_rolled": Saboteur(
         "LN, rows rolled by one",
         "layernorm",
-        after(layernorm_reference, lambda y: np.roll(y, 1, axis=0)),
+        after(layernorm_reference, lambda y: np.roll(y, 1, axis=-2)),
         _caught_only_against_a_reference(6),
         True,
     ),
@@ -216,7 +222,15 @@ def main() -> None:
         f"numpy {np.__version__}, "
         f"GATE_SEED={pbt_gate.GATE_SEED}, GATE_GROUPS={pbt_gate.GATE_GROUPS}"
     )
-    header = ["row", "kernel", *ARMS, "gate", "declarative inconclusive", "log-ratio spread (eps)"]
+    header = [
+        "row",
+        "kernel",
+        *ARMS,
+        "gate",
+        # Counted once by the declarative arm and once by the hybrid arm's declarative half.
+        "declarative inconclusive (both halves)",
+        "log-ratio spread (eps)",
+    ]
     print("| " + " | ".join(header) + " |")
     print("|---" * len(header) + "|")
     for name, probe in PROBES.items():
