@@ -382,7 +382,7 @@ class RowsHaveConstantLogRatio:
        would pass: one judged entry has no spread.
 
     The threshold is ``DEFAULT_THRESH``, the project's one accuracy budget, chosen before any of
-    this law's numbers existed. Under it fast-exp (8.97) is admitted, as the reference arm already
+    this law's numbers existed. Under it fast-exp (17.2) is admitted, as the reference arm already
     admits it; correct kernels reach at most 1.43 and wrong outputs at least 6.38e6
     (``docs/measurements/2026-10-14-log-ratio-headroom-prereg.md``).
 
