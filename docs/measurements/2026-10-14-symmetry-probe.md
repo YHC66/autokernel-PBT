@@ -13,7 +13,8 @@ and the paper's Table 3 has quoted their counts since then, tagged `[P]` in `pap
 This record re-measures them from code that stays in the repo. The kernels are reconstructed from
 the table's row labels, and they stand in for the lost probe only because they reproduce its
 numbers. The expected counts were known before this run, and a throwaway check earlier the same
-day matched them, so this is a reproduction, not a blind prediction.
+day matched them, so this is a reproduction, not a blind prediction. That is also why it has no
+separate pre-registration: the counts it tests were published, in Table 3, before this run.
 
 **Headline.** The gate admits six more wrong kernels, each a correct kernel's output with one
 symmetry applied: softmax with its rows rolled or its columns reversed, and layernorm negated, with
@@ -128,8 +129,8 @@ law added, softmax is the only kernel the bundle admits.
 failed, first-failing property) and the gate's expected decision, and names the four declarative
 abstentions above. `test_symmetry_probe.py` asserts them in three tests of one assertion each, as
 `test_gate_saboteurs.py` does for the companion's matrix: the pairing, the decision, and the
-judgement (every declarative result a PASS except the named abstentions, with the result count
-pinned so an empty recording fails). Verified by breaking the gate six ways in memory, without
+judgement (every declarative result a PASS except the named abstentions, and an empty recording
+fails). Verified by breaking the gate six ways in memory, without
 editing any source file:
 
 | gate defect injected | test that fails | rows that fail |
