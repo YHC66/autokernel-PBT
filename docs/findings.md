@@ -28,7 +28,7 @@ affected.
 | 1 | A gate calibrated well enough to run a loop at all | PBT | G+T | `allclose` rejects **10/54** correct-kernel groups (0.185); the reference, declarative and hybrid arms reject **0/54** | [M] |
 | 2 | A cheap gate made an optimization loop safe | PBT | G | **−21.2% val_bpb** at **+27.7% throughput** over 26 candidates; 6 wrong optimizations caught, the 3 timed ones 1.11–2.40× faster than correct | [M] |
 | 3 | Laws ported across backends with no second implementation | PBT | T | Tier-1 laws moved NumPy → Triton **unchanged**: no false failure from 52 executions up to 29.4 M elements at 78% of peak bandwidth | [M] |
-| 4 | A gap in the laws became an exact characterization with a one-law fix | PBT + FV | G+T | The gate admits wrong kernels: **4** recorded softmax families [M], including a constant fill **52–54× faster** than softmax, and **6** more from a symmetry probe [P]. Proposition 1 characterizes the admitted set, and one added law per task closes it; the core is machine-checked in Lean (6 theorems) | [M], [P] |
+| 4 | A gap in the laws became an exact characterization with a one-law fix | PBT + FV | G+T | The gate admits wrong kernels: **4** recorded softmax families [M], including a constant fill **52–54× faster** than softmax, and **6** more from a symmetry probe [M]. Proposition 1 characterizes the admitted set, and one added law per task closes it; the core is machine-checked in Lean (6 theorems) | [M] |
 | 5 | Verifier axioms carry the same blind spot, and an audit finds it | FV | G+T | All **10** axioms of Why3's `real.ExpLog` hold for `exp(βx)`, so a Why3 softmax certificate holds at *some* temperature (9 theorems). A sampled audit finds the same symmetry in seconds per theory | [M] |
 | 6 | A certificate core that catches spec gaming by execution | FV × PBT | G (T next) | **6** checks, each the only catcher of one cheat; 20 conditions deleted one at a time, and each deletion was caught | [B] |
 | 7 | The reference arm's tolerance, derived rather than guessed | PBT | G+T | LAPACK's linear-`n` ratio drifts **127×** and is **1500×** blinder than `allclose`; `log2 n` catches everything `allclose` does, with **213–779×** headroom | [M] |
@@ -120,7 +120,7 @@ Record: [`2026-08-19-false-positive-rate.md`](./measurements/2026-08-19-false-po
 
 ## Formal verification
 
-### 4. From "the gate admits wrong kernels" to an exact characterization  [M], [P] · G+T
+### 4. From "the gate admits wrong kernels" to an exact characterization  [M] · G+T
 
 Every law in the softmax bundle (finite, in [0, 1], rows sum to one, shift invariance) holds for
 `softmax(βx)` at **every** real β. The gap was found by reasoning from the bundle's invariances,
@@ -131,9 +131,9 @@ decides on the declarative arm, so it admits:
   softmax(−x). `allclose`, the reference arm and the hybrid arm reject each on 7 of 9 groups, the
   most any arm can score on this ladder. The constant fill runs **52–54× faster** than the real
   softmax, so a loop optimizing kernel speed against this gate would converge to it.
-- **[P]** six more from a symmetry probe that is reproduced by a script but not yet recorded:
-  rolled rows and reversed columns on softmax, and −LN, reversed columns, sorted rows and rolled
-  rows on layernorm.
+- **[M]** six more from a symmetry probe, each a correct kernel's output with one symmetry
+  applied: rolled rows and reversed columns on softmax, and −LN, reversed columns, sorted rows
+  and rolled rows on layernorm. The other three arms reject each on 6 or 7 of 9 groups.
 
 **Proposition 1** characterizes the solution sets exactly. The softmax bundle admits precisely the
 shift-invariant maps into the simplex. Adding the **log-ratio law** (`log y_ij − x_ij` constant
@@ -149,6 +149,7 @@ so a proof from them is temperature-blind in exactly the way the test bundle is.
 axiom `1 + x ≤ exp x` restores rigidity. That became a design requirement: a rigidity audit of
 every primitive an agent axiomatizes.
 Records: [`2026-10-01-softmax-temperature-blind-spot.md`](./measurements/2026-10-01-softmax-temperature-blind-spot.md),
+[`2026-10-14-symmetry-probe.md`](./measurements/2026-10-14-symmetry-probe.md),
 [`2026-10-01-softmax-bundle-mechanized.md`](./measurements/2026-10-01-softmax-bundle-mechanized.md) ·
 proof: [`proofs/softmax-bundle/`](../proofs/softmax-bundle/).
 
