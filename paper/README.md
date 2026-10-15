@@ -60,9 +60,14 @@ approximate two-column layout and the log warns that the output is not submittab
 - [ ] Add the prover-in-the-toolkit results
       (`docs/measurements/2026-10-02-prover-in-the-toolkit-prereg.md`) once they are appended
       below that record's line, and not before.
-- [ ] Resolve every `% VERIFY` in `references.bib` against a primary source.
+- [ ] Resolve every `% VERIFY` in `references.bib` against a primary source. Every
+      arXiv entry is now checked (2026-10-14); left: `anderson1992lawn41`, `veritile2026`,
+      `liu2022atl`, the venue of `aggarwal2025alphaverus`, `disselkoen2024cedar`,
+      `anthropic2025skills`, `jordan2024muon`.
 - [ ] Re-run the prior-art search. The area produces about one competing preprint a
-      month (see `reference/PBT-property-based-testing/NOTES.md` §7.3).
+      month (see `reference/PBT-property-based-testing/NOTES.md` §7.3). Last run
+      2026-10-14, which added ProofWright, Dirigo, KernelBench-Verified, AutoKernel and
+      the hacker-fixer loops to Related Work; run it again right before submission.
 - [ ] Install the AAAI author kit, rebuild, and confirm the page count against the
       workshop's limit.
 - [ ] Replace "Anonymous Submission" only if the workshop is not double-blind.
