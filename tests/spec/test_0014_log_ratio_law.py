@@ -44,9 +44,7 @@ def test_0014_acceptance_file_is_wellformed(repo_root: Path):
         if c["check"]["type"] not in KNOWN_CHECK_TYPES
     ]
     assert not unknown, f"criteria use unknown check types: {unknown}"
-    targets = [
-        c["check"]["test"] for c in data["criteria"] if c["check"]["type"] == "unit_test"
-    ]
+    targets = [c["check"]["test"] for c in data["criteria"] if c["check"]["type"] == "unit_test"]
     # Two criteria sharing a node id both look traced while only one has independent
     # evidence — the same shape as a criterion certified by an assertion that never ran.
     assert len(targets) == len(set(targets)), f"criteria share test targets: {targets}"
