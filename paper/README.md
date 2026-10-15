@@ -51,9 +51,9 @@ approximate two-column layout and the log warns that the output is not submittab
 
 ## Before submission
 
-- [ ] Record the symmetry probe (the six rolled, reversed, sorted and negated rows of
+- [x] Record the symmetry probe (the six rolled, reversed, sorted and negated rows of
       Table 3) under `docs/measurements/`, and change its tag in `numbers.tex` from
-      `[P]` to `[M]`.
+      `[P]` to `[M]` (`docs/measurements/2026-10-14-symmetry-probe.md`, 2026-10-14).
 - [x] Commit the records the draft cites that were untracked:
       `docs/measurements/2026-10-02-why3-real-theories-symmetry.md`,
       `proofs/why3-real-theories/`, `experiments/verification/formal-rigidity/` (2026-10-11).

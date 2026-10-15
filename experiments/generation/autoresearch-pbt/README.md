@@ -16,6 +16,8 @@ results.tsv             the ledger
 rigor.json              the recorded multi-seed sweep (rigor_sweep.py refuses to overwrite it)
 requirements.txt        this loop's own environment
 saboteurs.py            the gate's saboteur matrix: kernels, and exactly which arms catch each
+symmetry_probe.py       six output symmetries of the correct kernels, which the gate admits
+test_symmetry_probe.py  pins that table, one assertion per gate defect
 test_gate_saboteurs.py  pins that matrix, one assertion per gate defect
 ```
 
@@ -65,6 +67,7 @@ Gate verdicts do not depend on the NumPy build, so either venv works here:
 
 ```bash
 .venv/bin/python saboteurs.py                                            # print the matrix
+.venv/bin/python symmetry_probe.py                                       # print the symmetry probe
 cd ../../.. && .venv/bin/python -m pytest experiments/generation/autoresearch-pbt -q   # pin it
 ```
 

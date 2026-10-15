@@ -37,6 +37,7 @@ the paths inside the records were updated to match. Nothing else in a record was
 |---|---|
 | [2026-08-18-autoresearch-loop-pbt-gate](./2026-08-18-autoresearch-loop-pbt-gate.md) | Property-gated loop: −21.2% val_bpb, 0 gate rejections, 6 saboteurs caught |
 | [2026-10-01-softmax-temperature-blind-spot](./2026-10-01-softmax-temperature-blind-spot.md) | The decisive arm admits softmax(βx), 1/n and softmax(−x) |
+| [2026-10-14-symmetry-probe](./2026-10-14-symmetry-probe.md) | The gate admits six output symmetries: rolled, reversed, sorted, negated |
 
 ## Formal verification
 
