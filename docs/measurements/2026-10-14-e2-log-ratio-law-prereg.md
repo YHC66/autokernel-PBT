@@ -130,3 +130,119 @@ completed gate admits on a group where the family's output differs from the refe
 - If a kernel cannot be loaded or run on an input, it is reported as such, not replaced.
 - The saboteur matrix's completed rows are recorded from what is measured. If a measured cell
   differs from P2–P4, the record says so; the rows are never edited to match a prediction.
+
+---
+
+## Results (appended 2026-10-14, after the registration above was committed)
+
+**Run:** `cd experiments/generation/e2-log-ratio-law && ../../../.venv/bin/python e2.py`, in the
+registered environment (Apple M4 Pro, Python 3.12.2, NumPy 1.26.4), about 3 s. The law is the
+one feature 0014 specifies, as implemented in `props/properties.py` on this branch. The script
+prints every table. The numbers below are its output, and nothing above the line was edited.
+
+| set | kernels × cases | result |
+|---|---|---|
+| A. saboteur matrix | 7 × 18 gate cases, both bundles | The completed gate **rejects** softmax(2x), softmax(0x), softmax(−x) and the 1/n fill: declarative 7/9 and hybrid 7/9, both through `rows_have_constant_log_ratio`. It admits `beta_1_correct` and fast-exp. The positive control is unchanged: 7/9 through `rows_sum_to_one`, rejected. Every current-bundle cell reproduces |
+| B. symmetry kernels | 2 × 18, both bundles | Rows rolled: 6/9 through the law. Columns reversed: 7/9. Both **rejected**; both admitted by the current gate |
+| C. loop candidates | 26 × 18, both bundles | All 26 **admitted**, declarative 0/9 each, no other arm moved. The law's worst ratio is 0.724 (0.72 for `r3_softmax_exact`), and **17.2** for fast-exp |
+| D. A10 runs | 30 executions, 21 groups | 0 groups failed under either bundle; the law abstained on 0 executions. Worst ratio **1.43** (`gpu-scale`; `gpu-softmax` 1.05, `gpu-tolerance_sweep` 1.19). `gpu-scale`'s 5 groups are INCONCLUSIVE under both bundles, because `shift_invariance` has no recorded partner there |
+| E. wide and masked rows | 29 correct × 16 inputs = 464 cases | **464/464 pass**, worst ratio **1.38** (the `exp2` analogue, wide σ = 4 at (16, 4096)). The stock kernel underflows on 10 of the 16 inputs (the wide ones at σ = 16 and 64, and the masked ones at σ = 16 or with −1e9 masks), with up to 63,478 zeros and 2,624 subnormals per input, and check 4 accepts every one. Every correct kernel puts exactly 0 on every −∞ entry |
+| E, wrong | 5 × 16 = 80 | 76 FAIL, every one on a case whose output differs from the reference's. 4 INCONCLUSIVE: softmax(−x) on the −∞ inputs, as registered (its output is NaN) |
+| E, fast-exp | 1 × 16 | 8 PASS (worst 9.71) and **8 FAIL**; see P10 |
+
+The completed gate's verdicts on the saboteur matrix are pinned by `test_gate_saboteurs.py`.
+`saboteurs.COMPLETED` was written from P2 before the law existed. The measured matrix differs
+from it in no cell, so no row needed re-recording beyond what P2 had predicted.
+
+### Predictions
+
+- **P0 holds for three of four numbers and fails for fast-exp.** Correct CPU kernels reach at
+  most 1.05 over 522 gate cases, the A10 1.43, and the weakest of 82 differing wrong cases
+  6.38e6, all as known. Fast-exp reaches **17.2**, not 8.97. The headroom record's 8.97 was the
+  per-range value of fast-exp's worst-*spread* case, (7, 129). Its worst *per-range* case is
+  (8, 8), at 17.19: a reporting defect in that record. An erratum is appended there. No verdict
+  changes, since 17.2 < 30 and fast-exp is still admitted. But its margin under the budget is
+  1.7×, not 3.3×.
+- **P1 holds.** Every current-bundle cell of sets A–D reproduces the known verdicts.
+- **P2 holds** in every cell.
+- **P3 holds.** The completed gate contradicts the current record in exactly 12 places: the
+  declarative cell, the hybrid cell and the admission of `beta_2`, `beta_0`, `beta_minus_1` and
+  `uniform_fill`. Nothing else in set A moves.
+- **P4 holds.** Rows rolled: 6/9 and 6/9 through the law, rejected. Columns reversed: 7/9 and 7/9,
+  rejected. Allclose and reference stay at 6 and 7.
+- **P5 holds.** All 26 loop candidates are admitted, with the declarative arm 0/9 and no other arm
+  changed.
+- **P6 holds.** No A10 group fails under the completed bundle, and the law is never INCONCLUSIVE
+  on an A10 execution.
+- **P7 holds.** All correct kernels pass every wide input, σ = 64 included (row ranges in the
+  hundreds). The worst ratio is 1.38, under the registered 3. Zeros and subnormals appear at
+  σ = 16 and 64, and none is rejected.
+- **P8 holds.** Every correct kernel puts exactly 0 on every −∞ entry and passes. With −1e9 masks,
+  every correct kernel outputs 0 there and passes.
+- **P9 holds.** Every wrong kernel fails every set-E case where its output is finite and differs,
+  76 of 76. The registered exception: softmax(−x) on −∞ masks gives NaN, so the law abstains (4).
+- **P10 fails.** Fast-exp fails 8 of the 16 set-E inputs. Wide rows fail at σ = 16, (64, 129), and
+  σ = 64 at both shapes, with spread ratios 2.0e6 to 7.0e6. All four −∞ inputs fail the masked
+  check. The −1e9 input at σ = 16, (64, 129), fails the spread check. Where it passes, its worst
+  ratio is 9.71.
+- **E2's falsifier does not fire.** No correct kernel failed the law on any case: 522 gate cases,
+  the 26 candidates' 468, 30 A10 executions, and 464 wide and masked cases. No family the current
+  gate admits passed the completed gate on a group where its output differs.
+
+### Why fast-exp fails on wide and masked rows (post hoc diagnostic, not in `e2.py`)
+
+`fast_exp` floors its argument at −126 in base 2, which is −87.3 in natural units. Wherever a true
+exp underflows, it returns exactly 2⁻¹²⁶ = 1.1754944e-38, the smallest *normal* float32. When a
+row's sum is close to 1, that value survives the division as a normal output where softmax is,
+for example, e^−115. The law judges every normal output, and log y − x there is off by up to the
+row's range: on wide σ = 16, (64, 129), 20 such entries, and on σ = 64, (16, 4096), 32,552. On
+−∞ masks it leaves about 1e-39 instead of 0 (1.4e-39 to 2.0e-39 on the first −∞ input), which its own docstring states ("causal to
+within 1e-38 rather than exactly"). The reference arm's budget is normwise and cannot see an
+absolute error of 1e-38. The law's budget is componentwise and relative on every normal output,
+plus exactly zero on a masked score, and it can.
+
+### What it says for E2
+
+1. **For softmax, the completed bundle meets E2's criterion on everything we hold.** Every family
+   Proposition 1(a) admits and the current gate admits is rejected by the completed gate:
+   softmax(βx) at β = 2, 0 and −1, the 1/n fill, rows rolled and columns reversed. The correct
+   kernel and the positive control are unchanged. No new false positive appears on the 26 loop
+   candidates or on the 21 recorded A10 groups. The paper's 54 device groups are only partly
+   answered, as registered: their `exp2` and reciprocal-multiply Triton runs are not versioned.
+2. **The range-aware bound holds far past every recorded range.** At row ranges in the hundreds,
+   with underflow and masking, correct kernels reach 1.38 against a budget of 30, a 22× margin.
+   The headroom record's worry, that a flat threshold runs out near a range of 20, does not apply
+   to this form.
+3. **The accuracy budget admits fast-exp only on the gate's domain.** At c = 30 it is admitted on
+   the gate's N(0, 1) cases (17.2), but rejected on rows that underflow or carry −∞ masks, which
+   are the inputs the model's real call site sends. E2's own text asks the gate to "cover the
+   inputs the real call site sends, including −∞ masked scores". Once the gate's domain does that,
+   fast-exp as written is rejected by the completed gate. Whether that is the intended accuracy
+   budget is the team's decision. *Hypothesis, untested:* a fast-exp that returned 0 below its
+   floor would pass.
+4. **E2 is started, not finished.** Layernorm's affine-tie law, the formal half, and masked or wide
+   inputs in the gate's own domain remain.
+
+### Deviations
+
+- **Set D's table gained a column after the first run.** The first run printed only the completed
+  bundle's INCONCLUSIVE count (5 on `gpu-scale`), which needed the current bundle's count beside
+  it to read. No statistic or verdict changed, and the two runs' output is otherwise
+  byte-identical.
+- **The fast-exp diagnostic above is post hoc,** run ad hoc after the numbers were seen. It is not
+  part of `e2.py`.
+- **The spec and two code comments cited fast-exp's ratio as 8.97,** taken from the headroom
+  record. They now cite 17.2, with the reason. c = 30 and every rule of the law are unchanged.
+
+### Threats to validity
+
+- **Wide and masked rows are CPU only.** The A10 rows reach a range of 8.4. Set E shows the bound's
+  headroom on NumPy kernels, and the device's behaviour at wide ranges is extrapolated from it.
+- **One device, one compiler, one Triton kernel,** as in the headroom record.
+- **The law was designed knowing the wrong families.** Its threshold was fixed before its numbers
+  existed (it is `DEFAULT_THRESH`), but its masking and underflow rules were written with them in
+  view. Set E's inputs and wrong-kernel list were registered before the run.
+- **Few distinct correct behaviours:** on every set-E input the worst correct kernel is the `exp2`
+  analogue, and the loop candidates all reach the stock kernel's ratio.
+- **Three significant figures:** the law reports its ratio at that precision, so P0 is checked at
+  that precision.

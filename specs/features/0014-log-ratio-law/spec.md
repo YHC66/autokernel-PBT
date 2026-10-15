@@ -17,7 +17,9 @@ The headroom record (`docs/measurements/2026-10-14-log-ratio-headroom-prereg.md`
 law's statistic on every softmax we hold. Its finding: a correct kernel's spread grows with the
 row's input range (r = 0.92 on the A10), so a flat threshold would run out on the wide rows a
 real call site sends. Normalized by (1 + row range), the worst cases are 1.43 eps for a correct
-kernel (A10; 1.05 on the CPU), 8.97 for fast-exp, and at least 6.38e6 for every wrong output.
+kernel (A10; 1.05 on the CPU), 17.2 for fast-exp, and at least 6.38e6 for every wrong output.
+(The headroom record printed 8.97 for fast-exp; E2 found that figure was taken from fast-exp's
+worst-spread case rather than its worst ratio, and the record carries an erratum.)
 
 ## The law's float form
 
@@ -61,13 +63,16 @@ A case with no anchored row is INCONCLUSIVE. A PASS reports the largest spread r
   eps · (a · range + b), with a between 1 and 2 and b a few units.
 - **The margins on everything recorded.** The worst correct kernel is 21× below c (1.43, on the
   A10), and the weakest wrong output is 2.1e5× above it (6.38e6).
-- **Fast-exp is admitted, and that is the stated budget.** Its ratio is 8.97: its exp is off by up
+- **Fast-exp is admitted, and that is the stated budget.** Its ratio is 17.2: its exp is off by up
   to 2.6e-6 relative, about 22 ulp. Under the same budget the reference arm, allclose and the
-  current bundle all admit it, so a c below 8.97 would make the completed arm the only one to
+  current bundle all admit it, so a c below 17.2 would make the completed arm the only one to
   reject it. That would be a stricter accuracy budget than the reference arm's, adopted inside a
-  law. The alternative was considered, with c between 1.43 and 8.97. It is not taken, because
-  the margin left for a correct device kernel would be at most 6× (8.97/1.43), on one GPU and
-  one Triton kernel.
+  law. The alternative was considered, with c between 1.43 and 17.2. It is not taken: c would
+  then be picked between two measured numbers, on one GPU and one Triton kernel, instead of fixed
+  in advance. E2 found the choice matters only on the gate's own domain. On rows that underflow,
+  or that carry −∞ masks, the law rejects this fast-exp at any c below about 2e6. Its argument
+  floor leaves the smallest normal float where softmax underflows, and about 1e-39 on a masked
+  score (`docs/measurements/2026-10-14-e2-log-ratio-law-prereg.md`, P10).
 
 ### Why the range is taken over judged entries only
 
