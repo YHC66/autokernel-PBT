@@ -166,3 +166,16 @@ so the 29 CPU kernels show only three distinct worst cases: 0.956, 4.8 and 7.29.
   extrapolation and point 3's bound are untested beyond that.
 - **Author-chosen wrong families,** as in the companion records.
 - **Few distinct correct behaviours** on the CPU: three distinct worst cases from 29 kernels.
+
+### Erratum (appended 2026-10-14, found by E2)
+
+Point 3 of "What it says for E2" gives fast-exp's spread / (1 + row range) as **8.97**. That
+value is the statistic on fast-exp's worst-*spread* case, (7, 129). `headroom.py` prints
+`reported[label].per_range`, where `reported[label] = worst(spreads)` is chosen by raw spread.
+Fast-exp's largest value of the statistic over its 18 gate cases is **17.19**, on (8, 8)
+(spread 43.7 eps over a row range of 2.89). The other three numbers in that point (1.43, 1.05,
+6.38e6) are true maxima and minima and are unaffected. So is every registered verdict above the
+line. With the corrected figure, the range of c that separates every case and rejects fast-exp is
+1.43 to 17.2, and fast-exp is admitted for any c from 17.2 to 6.38e6. Found and confirmed by
+`docs/measurements/2026-10-14-e2-log-ratio-law-prereg.md` (P0). `headroom.py` is left as it was,
+so that its output still matches the tables this record quotes.

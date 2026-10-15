@@ -226,7 +226,7 @@ COMPLETED: dict[str, tuple[Mapping[str, tuple[int, str]], bool]] = {
     "beta_0": (_CAUGHT_BY_THE_LOG_RATIO_LAW, False),
     "beta_minus_1": (_CAUGHT_BY_THE_LOG_RATIO_LAW, False),
     "uniform_fill": (_CAUGHT_BY_THE_LOG_RATIO_LAW, False),
-    # Admitted: its ratio is 8.97 against the stated budget of 30 (feature 0014's spec).
+    # Admitted: its ratio is 17.2 against the stated budget of 30 (feature 0014's spec).
     "fast_exp": (_CAUGHT_BY_NO_ARM, True),
     # Its log-ratios are exact, so the law passes it and the row-sum law still catches it.
     "unnormalized_positive_control": (_CAUGHT_THROUGH_ROW_SUMS, False),

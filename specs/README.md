@@ -22,7 +22,7 @@ Every feature starts as a **spec** before code. Tests are written from **accepta
 | [0007](./features/0007-triton-backend/spec.md) | Triton backend and first hardware run | implemented |
 | [0008](./features/0008-corpus-and-metrics/spec.md) | Mutation corpus and metrics | implemented (Triton corpus; NumPy mutants in scope item 2 not yet built) |
 | [0009](./features/0009-formal-core/spec.md) | Formal adherence core | implemented |
-| [0014](./features/0014-log-ratio-law/spec.md) | The log-ratio law, softmax's completing law (E2) | specified |
+| [0014](./features/0014-log-ratio-law/spec.md) | The log-ratio law, softmax's completing law (E2) | implemented (softmax; layernorm's affine tie not built) |
 
 ## Schemas
 
