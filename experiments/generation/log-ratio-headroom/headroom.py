@@ -29,7 +29,7 @@ sys.path.insert(0, str(LOOP))
 import pbt_gate  # puts src/ on the path
 from saboteurs import softmax_beta, uniform_fill, unnormalized
 
-from autokernel_pbt.props.backends.base import OUTPUT_NAME, PRIMARY_INPUT
+from autokernel_pbt.props.backends.base import OUTPUT_NAME, PRIMARY_INPUT, Status
 from autokernel_pbt.props.table import ExecutionTable
 from autokernel_pbt.props.tasks import SOFTMAX, softmax_reference
 
@@ -74,12 +74,17 @@ def spread(case_id: str, x: np.ndarray, y: np.ndarray) -> Spread:
     lo = np.min(np.where(positive, d, np.inf), axis=-1)
     rows = np.where(positive.any(axis=-1), hi - lo, 0.0)
     worst = int(np.argmax(rows))
-    per_range = rows / (1.0 + np.ptp(x2, axis=-1))
+    # The range over the same entries the spread reads, so a zero output or a masked input
+    # cannot make it inf or NaN.
+    xs = np.where(positive & np.isfinite(x2), x2, np.nan)
+    with np.errstate(invalid="ignore"):
+        ranges = np.nan_to_num(np.nanmax(xs, axis=-1) - np.nanmin(xs, axis=-1))
+    per_range = rows / (1.0 + ranges)
     return Spread(
         case_id=case_id,
         shape=tuple(x.shape),
         eps=float(rows[worst]) / EPS32,
-        row_range=float(np.ptp(x2[worst])),
+        row_range=float(ranges[worst]),
         zeros=zeros,
         subnormals=subnormals,
         per_range=float(np.max(per_range)) / EPS32,
@@ -99,9 +104,13 @@ def on_gate_cases(kernel: Kernel) -> list[Spread]:
 
 def on_device_run(name: str) -> list[Spread]:
     """A recorded A10 run, read offline; its inputs and outputs are the recorded bytes."""
+    rows = ExecutionTable(REPO / "runs" / name).read()
+    failed = [r.case.case_id for r in rows if r.status != Status.OK]
+    if failed:
+        msg = f"{name}: executions without an output: {failed}"
+        raise ValueError(msg)
     return [
-        spread(r.case.case_id, r.case.tensors[PRIMARY_INPUT], r.outputs[OUTPUT_NAME])
-        for r in ExecutionTable(REPO / "runs" / name).read()
+        spread(r.case.case_id, r.case.tensors[PRIMARY_INPUT], r.outputs[OUTPUT_NAME]) for r in rows
     ]
 
 
@@ -149,8 +158,9 @@ WRONG: dict[str, Kernel] = {
     "constant 1/n fill": uniform_fill,
     # The symmetry probe's two softmax rows (docs/measurements/2026-10-14-symmetry-probe.md),
     # built the same way: the reference's output with one symmetry applied.
-    "rows rolled by one": lambda x: np.roll(softmax_reference(x), 1, axis=0),
-    "columns reversed": lambda x: np.ascontiguousarray(softmax_reference(x)[:, ::-1]),
+    # Rows are axis -2 and columns axis -1, so both mean the same on a batched shape.
+    "rows rolled by one": lambda x: np.roll(softmax_reference(x), 1, axis=-2),
+    "columns reversed": lambda x: np.ascontiguousarray(softmax_reference(x)[..., ::-1]),
 }
 
 
@@ -166,8 +176,13 @@ def worst(spreads: Iterable[Spread]) -> Spread:
 
 
 def least_multicolumn(spreads: Iterable[Spread]) -> Spread:
-    """A wrong family's weakest case among those it can be caught on: one-column rows are
-    softmax's identity, and a rolled one-row case is the kernel's identity too."""
+    """A wrong family's weakest case with a nonzero spread, as the pre-registration worded it.
+
+    This drops one-column cases (spread 0 by definition) and nothing else. It does NOT drop
+    cases where the kernel happens to equal the reference, such as rolling the rows of a
+    one-row input; that is why P4 and P5 fail as registered. The post-hoc criterion, output
+    differs from the reference, is ``Spread.differs`` and is reported separately.
+    """
     return min((s for s in spreads if s.eps > 0), key=lambda s: s.eps)
 
 

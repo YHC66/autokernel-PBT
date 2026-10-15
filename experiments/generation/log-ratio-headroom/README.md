@@ -30,4 +30,5 @@ and `runs/gpu-scale`. It needs no GPU and takes a few seconds.
 
 ```
 headroom.py   the statistic, the kernel list, and the tables the record quotes
+test_headroom.py  pins the record's numbers: 7.29 (CPU), 12.3 (A10), 2.67e7 (wrong), no underflow
 ```
