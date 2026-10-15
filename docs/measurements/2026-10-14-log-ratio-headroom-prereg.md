@@ -89,3 +89,80 @@ scales with the row range).
 - If a kernel cannot be loaded or run, it is reported as such, not replaced.
 
 ---
+
+## Results (appended 2026-10-14, after the registration above was committed)
+
+**Run:** `cd experiments/generation/log-ratio-headroom && ../../../.venv/bin/python headroom.py`,
+in the registered environment (Apple M4 Pro, Python 3.12.2, NumPy 1.26.4). The script prints
+every case; the numbers below are its summary. Nothing above the line was edited.
+
+| kernels | cases | worst spread (eps) | where |
+|---|---|---|---|
+| correct, CPU: the reference, the float32 stock kernel, the `exp2` and reciprocal-multiply analogues, `best/train.py`, and the 24 non-fast-exp files in `candidates/` (29 kernels) | 522 | **7.29** | `exp2` analogue, (7, 129) |
+| correct, A10: the stock Triton softmax in `gpu-softmax`, `gpu-tolerance_sweep`, `gpu-scale` | 30 | **12.3** | `softmax_at_scale`, (1024, 8192) |
+| fast-exp (reported) | 18 | 48 | (7, 129) |
+| exp(x − max), undivided (reported) | 18 | 4.3 | (7, 129) |
+| wrong families, weakest case with nonzero spread, as registered | — | **0.681** | rows rolled by one, (1, 64) |
+| wrong families, weakest case whose output differs from the reference (post hoc) | — | 2.67e7 | softmax(2x) and the fill, (8, 8) |
+
+Zero and subnormal outputs across all 552 correct cases: **0 and 0**. All 24 candidate files,
+`best/train.py` and the reciprocal-multiply analogue reach the stock kernel's 4.8 eps exactly,
+so the 29 CPU kernels show only three distinct worst cases: 0.956, 4.8 and 7.29.
+
+### Predictions
+
+- **P1 holds, narrowly.** The largest correct CPU spread is 7.29 eps, under the registered 8. It
+  is the `exp2` analogue; every other correct NumPy kernel is at or below 4.8.
+- **P2 holds.** The largest A10 spread is 12.3 eps, under 30.
+- **P3 holds.** No correct case, CPU or device, underflows to zero or to a subnormal.
+- **P4 fails as registered.** Every correct case is accepted at 30, and fast-exp (48) is
+  rejected. But one wrong-family case is accepted: rows rolled by one, on the single-row rung
+  (1, 64), at 0.681 eps. On that case rolling the rows is the identity, so the kernel's output
+  equals the reference's exactly; the symmetry probe already counts it as uncatchable by every
+  arm (6 of 9). The registered wording, "every multi-column group", should have excluded it and
+  did not. With a criterion chosen **after** seeing the numbers, counting only cases where a wrong
+  kernel's output differs from the reference's, every wrong case is rejected, the weakest at
+  2.67e7 eps.
+- **P5 fails as registered** for the same case: margin 0.0554. On the post-hoc criterion the
+  margin is 2.17e6, above the registered 10⁶.
+- **The falsifier** fires as registered, on that same case, and on no case where a kernel is
+  actually wrong.
+
+### What it says for E2
+
+1. **On everything recorded, one threshold works.** At 30 eps the log-ratio statistic accepts
+   every correct softmax we hold, the A10 runs included, and rejects every wrong output and
+   fast-exp. No underflow handling was needed on these domains.
+2. **The device headroom is small, and it shrinks with the input's range.** It is 2.4× (12.3
+   against 30). Across the 26 multi-column A10 executions the spread rises with the worst row's
+   input range (max x − min x): Pearson r = 0.92, about 1.6 eps per unit of range, over ranges
+   1.97 to 8.40. Extrapolated, a correct Triton softmax reaches 30 eps near a range of 20. The
+   gate draws N(0, 1) rows; real attention scores are not N(0, 1) and can span more than that.
+   **If the trend holds, a raw threshold of 30 would raise false alarms at a real call site.**
+3. **Exploratory, not registered:** the spread divided by (1 + row range) is at most 1.43 on the
+   A10 and 1.05 on the CPU, 8.97 for fast-exp, and at least 6.38e6 for every differing wrong
+   case. A range-aware bound, spread ≤ c · (1 + range) eps, separates every case here for any c
+   between 1.43 and 8.97, and admits fast-exp too for any c up to 6.38e6. This is the float form
+   E2 should test first, on inputs with a wider range than any recorded here.
+4. **Hypothesis, untested:** the range dependence comes from computing exp as exp2(x · log2 e),
+   where rounding the product adds an error that grows with |x − max x|. The NumPy `exp2`
+   analogue shows the same pattern on the same cases (7.29 eps against the stock kernel's 4.8).
+
+### Deviations
+
+- **Post-hoc criterion** for which wrong cases count: output not equal to the reference's. It is
+  reported beside the registered verdict, not instead of it.
+- **Post-hoc exploratory statistic,** spread / (1 + row range), with the linear fit above. The
+  registered statistic, threshold and kernel list did not change, and the script's registered
+  tables print the same bytes with and without the additions.
+- **The two symmetry kernels are built in `headroom.py`,** the same way as in
+  `symmetry_probe.py`, because this branch does not contain that script yet.
+
+### Threats to validity
+
+- **One device, one compiler, one Triton kernel:** an A10, Triton 3.3.0, the stock softmax. The
+  correct Triton rewrites are measured only as NumPy analogues.
+- **Narrow inputs.** Every recorded row range is 8.4 or less, and nothing is masked. Point 2's
+  extrapolation and point 3's bound are untested beyond that.
+- **Author-chosen wrong families,** as in the companion records.
+- **Few distinct correct behaviours** on the CPU: three distinct worst cases from 29 kernels.

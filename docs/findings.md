@@ -164,6 +164,10 @@ Mechanizing it found two things the paper proof did not say. Completeness uses *
 so a proof from them is temperature-blind in exactly the way the test bundle is. The tangent
 axiom `1 + x ≤ exp x` restores rigidity. That became a design requirement: a rigidity audit of
 every primitive an agent axiomatizes.
+A float form of the log-ratio law is measured offline in
+[`2026-10-14-log-ratio-headroom-prereg.md`](./measurements/2026-10-14-log-ratio-headroom-prereg.md): at 30 eps it accepts every correct softmax we
+hold, the A10 runs included (at most 12.3), and rejects every wrong output (at least 2.67e7).
+The device spread grows with each row's input range, so the headroom on wider inputs is open.
 Records: [`2026-10-01-softmax-temperature-blind-spot.md`](./measurements/2026-10-01-softmax-temperature-blind-spot.md),
 [`2026-10-01-softmax-bundle-mechanized.md`](./measurements/2026-10-01-softmax-bundle-mechanized.md) ·
 proof: [`proofs/softmax-bundle/`](../proofs/softmax-bundle/).

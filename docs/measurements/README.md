@@ -43,6 +43,7 @@ the paths inside the records were updated to match. Nothing else in a record was
 |---|---|
 | [2026-08-18-autoresearch-loop-pbt-gate](./2026-08-18-autoresearch-loop-pbt-gate.md) | Property-gated loop: −21.2% val_bpb, 0 gate rejections, 6 saboteurs caught |
 | [2026-10-01-softmax-temperature-blind-spot](./2026-10-01-softmax-temperature-blind-spot.md) | The decisive arm admits softmax(βx), 1/n and softmax(−x) |
+| [2026-10-14-log-ratio-headroom-prereg](./2026-10-14-log-ratio-headroom-prereg.md) | One log-ratio threshold (30 eps) separates every correct softmax, A10 runs included, from every wrong one; device headroom shrinks with row range |
 
 ## Formal verification
 
