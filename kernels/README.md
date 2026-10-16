@@ -7,10 +7,10 @@ Kernels under test, per-task contracts, and the mutation corpus. NumPy reference
 
 ```
 kernels/
-├── triton/ladder.py # stock Triton kernels for the ladder tasks
+├── triton/ladder.py # stock Triton kernels for the ladder tasks: the known kernels
+├── cuda/            # CUDA C++ ports of the Triton ladder (one .cu per kernel) + ladder.py
 ├── mutants/         # blinded/grown mutation corpus + correct-but-different variants
 ├── tasks/<task>/acceptance.yaml   # the declarative arm's contract per task
-└── cuda/            # CUDA extensions (future; empty)
 ```
 
 Mutant bodies are recorded verbatim from blinded authoring agents. Do not edit them — see

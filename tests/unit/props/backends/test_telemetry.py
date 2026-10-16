@@ -168,3 +168,56 @@ def test_a_probe_location_that_raises_is_treated_as_absent():
             raise RuntimeError(msg)
 
     assert probe(_Raising(), ("n_regs", "num_regs")) == 32
+
+
+#: The keys version 2 added for the CUDA backend (feature 0012), by group.
+_V2_KEYS = {
+    "launch": ("block", "dynamic_shared_bytes", "compile_options", "kernel_params"),
+    "compiled": (
+        "local_bytes",
+        "static_shared_bytes",
+        "max_threads_per_block",
+        "ptx_version",
+        "binary_version",
+    ),
+    "device": ("nvrtc_version", "cuda_bindings_version"),
+}
+
+
+def test_schema_v2_declares_the_cuda_fields():
+    """The criterion TELEMETRY_V2_DECLARES_THE_CUDA_FIELDS.
+
+    Version 1 had nowhere to put a CUDA launch: `extract` copies only declared launch
+    keys, so a block size handed to it was dropped without a trace -- on the one record a
+    re-run cannot recover. The version moved with the keys, so a reader can tell a run
+    taken before they existed from one where they were unavailable.
+    """
+    assert SCHEMA_VERSION == 2
+    for keys in _V2_KEYS.values():
+        for key in keys:
+            assert key in declared_keys(), key
+
+    # Declared is not enough: every v2 value handed in must come out, distinct per key,
+    # through the one function that builds a row's telemetry.
+    launch = {key: f"launch:{key}" for key in _V2_KEYS["launch"]}
+    device = {key: f"device:{key}" for key in _V2_KEYS["device"]}
+    compiled = type("Artifact", (), {key: f"compiled:{key}" for key in _V2_KEYS["compiled"]})
+    out = extract(compiled(), device=device, launch=launch)
+    for group, keys in _V2_KEYS.items():
+        for key in keys:
+            assert out[key] == f"{group}:{key}", key
+
+
+def test_a_launch_key_handed_in_is_kept_not_dropped():
+    # The defect version 2 fixes, stated as behaviour rather than as a key list.
+    out = extract(None, device={}, launch={"block": [256], "dynamic_shared_bytes": 1024})
+    assert out["block"] == [256]
+    assert out["dynamic_shared_bytes"] == 1024
+
+
+def test_a_triton_artifact_reports_none_of_the_cuda_compiled_fields():
+    # Probed by their own names only, so nothing on a CompiledKernel can be misread as a
+    # CUDA attribute -- above all, nothing becomes `local_bytes` but local memory.
+    out = extract(_Compiled(), device={}, launch={})
+    for key in _V2_KEYS["compiled"]:
+        assert out[key] is MISSING, key

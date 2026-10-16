@@ -31,6 +31,8 @@ rate itself is computed by whoever reads them.
 
 from __future__ import annotations
 
+import json
+import os
 import time
 from collections.abc import Callable
 from dataclasses import replace
@@ -38,13 +40,20 @@ from pathlib import Path
 
 import numpy as np
 
-from autokernel_pbt.props.backends.base import Backend, ExecutionResult
+from autokernel_pbt.props.backends.base import TELEMETRY_BACKEND, Backend, ExecutionResult
 from autokernel_pbt.props.backends.numpy_backend import NumpyBackend
 from autokernel_pbt.props.contract import (
     CONTRACT_FILENAME,
     KERNEL_TASKS_DIR,
     load_contract,
     oracle_from_contract,
+)
+from autokernel_pbt.props.cross_setup import (
+    SourceAllcloseOracle,
+    SourceHybridOracle,
+    SourceRecording,
+    SourceReferenceOracle,
+    pair_runs,
 )
 from autokernel_pbt.props.generator import Generator
 from autokernel_pbt.props.oracle import AllcloseOracle, HybridOracle, Oracle, ReferenceOracle
@@ -59,8 +68,17 @@ from autokernel_pbt.props.verdict import PropertyResult, Verdict, summarize
 #: diffable -- while ``arm_order`` decides the order they are *evaluated* in.
 ARM_NAMES = ("allclose", "reference", "declarative", "hybrid")
 
+#: The arms that judge a port against the recorded source kernel (feature 0013): T0, the
+#: field's default; T1, the normalized ratio; and the law bundle before T1.
+SOURCE_ARM_NAMES = ("allclose_source", "reference_source", "hybrid_source")
+#: Every arm a translation run is scored with, in the order they are persisted.
+TRANSLATION_ARM_NAMES = (*ARM_NAMES, *SOURCE_ARM_NAMES)
+#: Written beside a translation run's `scores.parquet`: which source run it was judged
+#: against, by fingerprint, so a re-recorded source is detectable.
+PAIRING_FILE = "pairing.json"
 
-def arm_order(seed: int) -> list[str]:
+
+def arm_order(seed: int, names: tuple[str, ...] = ARM_NAMES) -> list[str]:
     """The order to evaluate arms in for this run.
 
     ``elapsed_s`` is order-biased: the arm that runs second inherits everything the
@@ -86,9 +104,13 @@ def arm_order(seed: int) -> list[str]:
     one seed would make every repetition evaluate the arms identically and leave the
     position bias fully systematic for exactly that measurement, while varying the
     corpus seed to shake the order would confound arm position with the inputs.
+
+    ``names`` defaults to the four arms; translation scoring passes its seven
+    (``TRANSLATION_ARM_NAMES``). The default draws exactly what it always drew, so every
+    seed still gives the four-arm order it gave before the parameter existed.
     """
     rng = np.random.default_rng([seed, 0xA6])
-    return [ARM_NAMES[index] for index in rng.permutation(len(ARM_NAMES))]
+    return [names[index] for index in rng.permutation(len(names))]
 
 
 def contract_path(task: Task, repo_root: Path) -> Path:
@@ -305,11 +327,29 @@ def read_run(run_dir: Path | str) -> tuple[list[ExecutionResult], list[ArmScores
 
     Returns ``(rows, arms)``. A run with a table but no scores yet is not an error and
     returns ``(rows, [])``; a run with neither returns ``([], [])``.
+
+    A run scored against a source run (``score_translation``) is refused here: its source
+    arms judged one recording of *another* run, which only ``read_translation`` checks.
     """
+    rows, arms, _ = _read_run(run_dir)
+    judged_against_source = sorted({arm.arm for arm in arms} & set(SOURCE_ARM_NAMES))
+    if judged_against_source:
+        msg = (
+            f"run {Path(run_dir)} was scored against a source run (arms "
+            f"{judged_against_source}); those verdicts are statements about one recording "
+            f"of the source, which this read cannot check -- read it with "
+            f"read_translation(target_dir, source_dir)"
+        )
+        raise ValueError(msg)
+    return rows, arms
+
+
+def _read_run(run_dir: Path | str) -> tuple[list[ExecutionResult], list[ArmScores], str]:
+    """``read_run``'s checks, also returning the rows' fingerprint from the same read."""
     rows, recorded = ExecutionTable(run_dir).read_with_fingerprint()
     arms, judged = ScoreTable(run_dir).read_with_fingerprint()
     if not arms:
-        return rows, arms
+        return rows, arms, recorded
 
     if not rows:
         msg = (
@@ -334,7 +374,7 @@ def read_run(run_dir: Path | str) -> tuple[list[ExecutionResult], list[ArmScores
             f"report a rate about neither run"
         )
         raise ValueError(msg)
-    return rows, arms
+    return rows, arms, recorded
 
 
 def run_task(
@@ -451,8 +491,6 @@ def run_task(
     # read: it is the identity of *these* rows, whatever is on disk by the time the
     # scores are written.
     recorded, fingerprint = ExecutionTable(run_dir).read_groups_with_fingerprint()
-    rows = [row for group_rows in recorded.values() for row in group_rows]
-    group_of_case = {row.case.case_id: row.case.group_id for row in rows}
 
     # Built before the clock starts, and outside every arm's measurement, so the
     # contract load is not charged to the declarative arm's cost.
@@ -477,6 +515,27 @@ def run_task(
     # cost and on a different corpus at once. Defaults to `seed` so a single run is
     # still reproducible from its seed alone.
     order = arm_order(seed if arm_order_seed is None else arm_order_seed)
+    _evaluate_and_write(recorded, fingerprint, by_name, order, ARM_NAMES, run_dir)
+
+
+def _evaluate_and_write(
+    recorded: dict[str, list[ExecutionResult]],
+    fingerprint: str,
+    by_name: dict[str, Oracle],
+    order: list[str],
+    names: tuple[str, ...],
+    run_dir: Path | str,
+) -> None:
+    """Evaluate every arm over one read of the table, verify the join, write the scores.
+
+    The second half of ``run_task``, shared with ``score_translation`` so that the two
+    score by one procedure: same timing bracket, same group keying, same join checks.
+    ``order`` is the evaluation order (``arm_order``); ``names`` the canonical order the
+    arms are persisted in.
+    """
+    group_of_case = {
+        row.case.case_id: row.case.group_id for group_rows in recorded.values() for row in group_rows
+    }
     arms: list[Oracle] = [by_name[name] for name in order]
 
     scored: list[ArmScores] = []
@@ -510,10 +569,148 @@ def run_task(
     # order is whatever arm_order() chose, so two runs of the same task under
     # different seeds produce score files whose rows are permuted for reasons
     # unrelated to the data, and any diff or fingerprint of the two sees noise.
-    scored.sort(key=lambda arm: ARM_NAMES.index(arm.arm))
+    scored.sort(key=lambda arm: names.index(arm.arm))
+    rows = [row for group_rows in recorded.values() for row in group_rows]
     _verify_join(rows, scored)
     # The identity of the corpus the arms judged, from the read that produced it — not
     # a second read of the table now. A re-record landing during scoring would make a
     # second read name *its* corpus, and these scores would then pair with executions
     # they never saw. Stamped this way they pair with nothing, which `read_run` reports.
     ScoreTable(run_dir).write(scored, corpus_fingerprint=fingerprint)
+
+
+def score_translation(
+    *,
+    task: Task,
+    source_dir: Path | str,
+    target_dir: Path | str,
+    repo_root: Path,
+    reference_fn: Callable[..., np.ndarray],
+    arm_order_seed: int = 0,
+    require_known_source: bool = True,
+) -> None:
+    """Score a port's recorded run against the known kernel's, and against the reference.
+
+    Seven arms judge the target run's rows, from one read: the four of ``run_task``
+    against ``reference_fn`` -- is the port correct? -- and the three ``SOURCE_ARM_NAMES``
+    against the source run's recorded outputs -- does the port compute what the kernel it
+    was mapped from computes, on byte-identical inputs? Both questions over the same
+    executions, so T0, T1 and T2 (``declarative``) are compared exactly as the four arms
+    always have been.
+
+    Nothing is scored until ``pair_runs`` has accepted the pair. The scores are written
+    into ``target_dir`` stamped with the target's fingerprint, as ``run_task`` stamps
+    them, and ``PAIRING_FILE`` beside them records the source's. Read the result back with
+    ``read_translation``, which re-checks both.
+    """
+    source_groups, source_fingerprint = ExecutionTable(source_dir).read_groups_with_fingerprint()
+    recorded, fingerprint = ExecutionTable(target_dir).read_groups_with_fingerprint()
+    source_rows = [row for group_rows in source_groups.values() for row in group_rows]
+    rows = [row for group_rows in recorded.values() for row in group_rows]
+    if not rows:
+        msg = f"target run {Path(target_dir)} has no recorded rows to score"
+        raise ValueError(msg)
+    pair_runs(
+        source_rows,
+        rows,
+        source_fingerprint=source_fingerprint,
+        target_fingerprint=fingerprint,
+        require_known_source=require_known_source,
+    )
+    if rows[0].case.task_id != task.task_id:
+        msg = f"the runs record task {rows[0].case.task_id!r}, not {task.task_id!r}"
+        raise ValueError(msg)
+
+    recording = SourceRecording(source_rows, fingerprint=source_fingerprint)
+    declarative = oracle_from_contract(load_contract(contract_path(task, repo_root)))
+    reference = ReferenceOracle(reference_fn)
+    source_reference = SourceReferenceOracle(recording)
+    by_name: dict[str, Oracle] = {
+        "allclose": AllcloseOracle(reference_fn),
+        "reference": reference,
+        "declarative": declarative,
+        "hybrid": HybridOracle(declarative=declarative, reference=reference),
+        "allclose_source": SourceAllcloseOracle(recording),
+        "reference_source": source_reference,
+        "hybrid_source": SourceHybridOracle(declarative=declarative, reference=source_reference),
+    }
+    order = arm_order(arm_order_seed, TRANSLATION_ARM_NAMES)
+    # The old pairing goes BEFORE the new scores are written. Scores and pairing are two
+    # files; a crash between their writes must leave a run that refuses to be read, never
+    # one whose scores judged one source and whose pairing names another.
+    (Path(target_dir) / PAIRING_FILE).unlink(missing_ok=True)
+    _evaluate_and_write(recorded, fingerprint, by_name, order, TRANSLATION_ARM_NAMES, target_dir)
+    _write_pairing(
+        Path(target_dir),
+        {
+            "task_id": task.task_id,
+            "source_dir": str(source_dir),
+            "source_fingerprint": source_fingerprint,
+            "target_fingerprint": fingerprint,
+            "source_kernel_ids": sorted({row.kernel_id for row in source_rows}),
+            "target_kernel_ids": sorted({row.kernel_id for row in rows}),
+            "source_backends": sorted(
+                {str(row.telemetry.get(TELEMETRY_BACKEND)) for row in source_rows}
+            ),
+            "target_backends": sorted({str(row.telemetry.get(TELEMETRY_BACKEND)) for row in rows}),
+            "scored_arms": list(TRANSLATION_ARM_NAMES),
+            # Whether the known-kernel premise was waived: a source not stated correct
+            # makes every source arm a comparison with an unknown kernel.
+            "require_known_source": require_known_source,
+        },
+    )
+
+
+def read_translation(
+    target_dir: Path | str, source_dir: Path | str
+) -> tuple[list[ExecutionResult], list[ArmScores], dict]:
+    """A translation run's rows, scores and pairing, refusing a pair that has gone stale.
+
+    ``read_run`` already refuses scores that do not belong to the target's rows. This adds
+    the source: the source arms' verdicts are statements about one recording of the
+    source, and if ``source_dir`` now holds a different one -- re-recorded, or another
+    run copied over it -- they describe outputs nobody can inspect any more.
+    """
+    rows, arms, target_now = _read_run(target_dir)
+    pairing_path = Path(target_dir) / PAIRING_FILE
+    has_source_arms = any(arm.arm in SOURCE_ARM_NAMES for arm in arms)
+    if not pairing_path.exists():
+        if has_source_arms:
+            msg = (
+                f"run {Path(target_dir)} has source-arm scores and no {PAIRING_FILE}; "
+                f"the source they were judged against cannot be identified"
+            )
+            raise ValueError(msg)
+        msg = f"run {Path(target_dir)} was not scored as a translation (no {PAIRING_FILE})"
+        raise ValueError(msg)
+    pairing = json.loads(pairing_path.read_text())
+    if pairing.get("target_fingerprint") != target_now:
+        msg = (
+            f"{PAIRING_FILE} in {Path(target_dir)} pairs target corpus "
+            f"{pairing.get('target_fingerprint')!r}, but the run now holds {target_now!r}"
+        )
+        raise ValueError(msg)
+    scored = [arm.arm for arm in arms]
+    if scored != pairing.get("scored_arms"):
+        msg = (
+            f"the scores in {Path(target_dir)} are arms {scored}, but {PAIRING_FILE} was "
+            f"written for {pairing.get('scored_arms')}: the run was re-scored after pairing"
+        )
+        raise ValueError(msg)
+    _, source_now = ExecutionTable(source_dir).read_with_fingerprint()
+    if pairing.get("source_fingerprint") != source_now:
+        msg = (
+            f"the source run {Path(source_dir)} is corpus {source_now!r}, but these scores "
+            f"were judged against {pairing.get('source_fingerprint')!r}: the source was "
+            f"re-recorded or replaced after scoring, so the source arms describe outputs "
+            f"no longer on disk"
+        )
+        raise ValueError(msg)
+    return rows, arms, pairing
+
+
+def _write_pairing(run_dir: Path, pairing: dict) -> None:
+    """Write ``PAIRING_FILE`` atomically, so a crash leaves the old pairing or the new."""
+    tmp = run_dir / f".{PAIRING_FILE}.tmp"
+    tmp.write_text(json.dumps(pairing, indent=2, sort_keys=True) + "\n")
+    os.replace(tmp, run_dir / PAIRING_FILE)

@@ -101,3 +101,16 @@ def rates_from_run(run_dir: Path | str) -> dict[str, ArmRates]:
 
     _, arms = read_run(run_dir)
     return {arm.arm: arm_rates(arm) for arm in arms}
+
+
+def rates_from_translation(target_dir: Path | str, source_dir: Path | str) -> dict[str, ArmRates]:
+    """Every arm's rates for a port scored against a source run (``score_translation``).
+
+    Goes through `driver.read_translation`, which refuses the pair if the source has been
+    re-recorded since scoring: the source arms' verdicts are statements about one
+    recording of it. `rates_from_run` refuses such a run for that reason.
+    """
+    from autokernel_pbt.props.driver import read_translation
+
+    _, arms, _ = read_translation(target_dir, source_dir)
+    return {arm.arm: arm_rates(arm) for arm in arms}

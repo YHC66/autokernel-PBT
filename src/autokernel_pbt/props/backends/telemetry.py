@@ -32,7 +32,18 @@ import numpy as np
 #: Bump when a field is added or its meaning changes. Recorded on every row so a
 #: later reader can distinguish a run taken before a field existed from one where the
 #: field was genuinely unavailable -- without it the two are the same absence.
-SCHEMA_VERSION = 1
+#:
+#: 1 -- feature 0007, the Triton backend. Every recorded run in `runs/` carries it.
+#: 2 -- feature 0012, the CUDA backend: adds the launch keys a CUDA launch has and a
+#:      Triton launch does not (`block`, `dynamic_shared_bytes`, `compile_options`,
+#:      `kernel_params`), the driver's function attributes (`local_bytes`,
+#:      `static_shared_bytes`, `max_threads_per_block`, `ptx_version`,
+#:      `binary_version`) and the NVRTC toolchain versions. Version 1 had nowhere to
+#:      put a block size: `extract` copies only declared launch keys, so it would have
+#:      been dropped silently. No existing key changed meaning: `shared_bytes` is the
+#:      shared memory one block is given, on a Triton row (`metadata.shared`, all of
+#:      it dynamic) and on a CUDA row (static plus dynamic, summed by the backend).
+SCHEMA_VERSION = 2
 
 TELEMETRY_SCHEMA_VERSION = "telemetry_schema_version"
 
@@ -71,6 +82,19 @@ _COMPILED_FIELDS: dict[str, tuple[str, ...]] = {
     "shared_bytes": ("shared", "metadata.shared", "metadata.shared_mem"),
     "num_warps": ("num_warps", "metadata.num_warps"),
     "num_stages": ("num_stages", "metadata.num_stages"),
+    # Version 2, read off a CUDA artifact (`cuda_toolchain.CudaArtifact`), which carries
+    # them under exactly these names. A Triton CompiledKernel has none of them, so they
+    # are MISSING on a Triton row. `local_bytes` is per-thread local memory, which
+    # includes register spills but is not a spill count -- recorded under its own name
+    # so that it can never be read as `n_spills`.
+    "local_bytes": ("local_bytes",),
+    # Static shared memory only (`__shared__` arrays of fixed size). Not `shared_bytes`:
+    # a kernel using `extern __shared__` has 0 here and its real allocation in the
+    # launch's dynamic shared memory.
+    "static_shared_bytes": ("static_shared_bytes",),
+    "max_threads_per_block": ("max_threads_per_block",),
+    "ptx_version": ("ptx_version",),
+    "binary_version": ("binary_version",),
 }
 
 #: Groups the backend supplies directly rather than probing off the artifact.
@@ -83,8 +107,21 @@ _DEVICE_KEYS = (
     "runtime_version",
     "torch_version",
     "triton_version",
+    # Version 2: the CUDA backend's toolchain. MISSING on a Triton row.
+    "nvrtc_version",
+    "cuda_bindings_version",
 )
-_LAUNCH_KEYS = ("grid", "constexprs")
+#: `grid` and `constexprs` are Triton's launch (version 1). The rest are a CUDA launch's
+#: (version 2): threads per block, the dynamic shared memory it was given, the NVRTC
+#: options it was compiled with, and its scalar parameters other than shapes.
+_LAUNCH_KEYS = (
+    "grid",
+    "constexprs",
+    "block",
+    "dynamic_shared_bytes",
+    "compile_options",
+    "kernel_params",
+)
 _DERIVED_KEYS = ("ptx_hash",)
 
 #: Facts the backend observes about the execution rather than reads off an artifact.

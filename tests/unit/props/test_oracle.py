@@ -34,6 +34,7 @@ from autokernel_pbt.props.oracle import (
     HybridOracle,
     Oracle,
     ReferenceOracle,
+    ReferenceUnavailable,
     summary,
     validate_property_set,
 )
@@ -928,3 +929,28 @@ def test_allclose_arm_rejects_an_empty_group():
     with pytest.raises(ValueError, match="allclose"):
         _allclose().evaluate([])
 
+
+
+@pytest.mark.parametrize("arm", [ReferenceOracle, AllcloseOracle])
+def test_reference_unavailable_is_inconclusive_and_nothing_else_is_swallowed(arm):
+    """The criterion REFERENCE_UNAVAILABLE_IS_CAUGHT_NARROWLY.
+
+    A recorded reference has no answer where the source's own execution failed. FAIL
+    would book the source's failure against the kernel; propagating would abort the
+    scoring pass. Every other exception from a reference is a harness defect and must
+    still propagate, or a broken reference reduces the arm to a silent no-op.
+    """
+
+    def unavailable(**_: np.ndarray) -> np.ndarray:
+        raise ReferenceUnavailable("the source, not the port, has no answer here")
+
+    (result,) = arm(unavailable).evaluate([_row(X, _softmax(X))])
+    assert result.verdict is Verdict.INCONCLUSIVE
+    assert result.detail == "the source, not the port, has no answer here"
+    assert result.case_id == "c-base"
+
+    def broken(**_: np.ndarray) -> np.ndarray:
+        raise ValueError("a defect in the reference itself")
+
+    with pytest.raises(ValueError, match="a defect in the reference itself"):
+        arm(broken).evaluate([_row(X, _softmax(X))])

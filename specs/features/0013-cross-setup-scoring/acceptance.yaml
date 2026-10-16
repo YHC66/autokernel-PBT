@@ -1,0 +1,94 @@
+feature_id: "0013"
+feature_name: cross-setup-scoring
+version: 1
+
+criteria:
+  - id: THE_SOURCE_ANSWERS_FOR_THE_SAME_INPUT_BYTES
+    description: a source recording returns the source's recorded output for byte-identical inputs
+    check:
+      type: unit_test
+      test: tests/unit/props/test_cross_setup.py::test_the_recording_answers_with_the_source_output_for_the_same_input_bytes
+
+  - id: AN_INPUT_THE_SOURCE_NEVER_SAW_IS_A_BAD_CALL
+    description: inputs differing from every recorded source input by even one byte raise UnpairedInputError
+    check:
+      type: unit_test
+      test: tests/unit/props/test_cross_setup.py::test_an_input_the_source_never_saw_is_refused
+
+  - id: A_FAILED_SOURCE_ROW_IS_INCONCLUSIVE_NAMING_THE_SOURCE
+    description: where the source's execution failed, the source arms say INCONCLUSIVE and blame the source
+    check:
+      type: unit_test
+      test: tests/unit/props/test_cross_setup.py::test_a_case_the_source_failed_is_inconclusive_for_the_port
+
+  - id: REFERENCE_UNAVAILABLE_IS_CAUGHT_NARROWLY
+    description: both reference arms map ReferenceUnavailable to INCONCLUSIVE and let every other exception propagate
+    check:
+      type: unit_test
+      test: tests/unit/props/test_oracle.py::test_reference_unavailable_is_inconclusive_and_nothing_else_is_swallowed
+
+  - id: AN_ARM_CANNOT_CORRUPT_THE_SOURCE
+    description: the recording hands out copies, so an arm writing into an answer changes no later answer
+    check:
+      type: unit_test
+      test: tests/unit/props/test_cross_setup.py::test_an_arm_cannot_corrupt_the_source_recording
+
+  - id: AN_AMBIGUOUS_SOURCE_IS_REFUSED
+    description: two source rows with identical inputs and different answers are refused at construction
+    check:
+      type: unit_test
+      test: tests/unit/props/test_cross_setup.py::test_two_answers_for_one_input_are_refused
+
+  - id: PAIRING_REQUIRES_ONE_CORPUS
+    description: runs differing in task, case ids, group structure or any input byte are refused, each with its own message
+    check:
+      type: unit_test
+      test: tests/unit/props/test_cross_setup.py::test_pairing_refuses_runs_over_different_corpora
+
+  - id: PAIRING_REQUIRES_A_KNOWN_SOURCE
+    description: a source not stated correct is refused unless explicitly allowed, and a run cannot be its own source
+    check:
+      type: unit_test
+      test: tests/unit/props/test_cross_setup.py::test_pairing_requires_a_known_source_other_than_the_target
+
+  - id: TRANSLATION_SCORING_WRITES_SEVEN_ARMS_AND_THE_PAIRING
+    description: score_translation scores every recorded group with all seven arms and records the pair
+    check:
+      type: unit_test
+      test: tests/integration/test_translation_scoring.py::test_a_correct_port_is_scored_by_seven_arms_and_the_pair_is_recorded
+
+  - id: A_WRONG_PORT_IS_CAUGHT_AGAINST_THE_SOURCE
+    description: a port that drops a row's tail fails the source arms on the groups where the tail exists
+    check:
+      type: unit_test
+      test: tests/integration/test_translation_scoring.py::test_a_tail_dropping_port_is_caught_against_the_source
+
+  - id: SOURCE_ARMS_JUDGE_AGAINST_THE_SOURCE
+    description: where the source and the reference disagree, the source arms follow the source and the reference arms the reference, in both directions
+    check:
+      type: unit_test
+      test: tests/integration/test_translation_scoring.py::test_the_source_arms_judge_against_the_source_and_not_the_reference
+
+  - id: A_HALF_WRITTEN_TRANSLATION_IS_REFUSED
+    description: a crash between writing the scores and writing the pairing leaves a run that read_translation refuses for every source
+    check:
+      type: unit_test
+      test: tests/integration/test_translation_scoring.py::test_a_crash_between_the_scores_and_the_pairing_leaves_an_unreadable_run
+
+  - id: READ_RUN_REFUSES_SOURCE_ARMS
+    description: read_run, and so metrics.rates_from_run, refuses a run scored against a source, which only read_translation can check
+    check:
+      type: unit_test
+      test: tests/integration/test_translation_scoring.py::test_read_run_refuses_a_run_scored_against_a_source
+
+  - id: A_RE_RECORDED_SOURCE_INVALIDATES_THE_PAIR
+    description: read_translation refuses a pair whose source run was re-recorded after scoring
+    check:
+      type: unit_test
+      test: tests/integration/test_translation_scoring.py::test_read_translation_refuses_a_re_recorded_source
+
+  - id: THE_FOUR_ARM_ORDER_IS_UNCHANGED
+    description: arm_order over the four original arms is identical to before for every seed
+    check:
+      type: unit_test
+      test: tests/unit/props/test_cross_setup.py::test_the_four_arm_order_is_unchanged_by_the_generalization

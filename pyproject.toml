@@ -32,6 +32,12 @@ dev = [
 gpu = [
   "torch>=2.2",
   "triton>=3.0",
+  # NVRTC and the driver API, for the CUDA backend (feature 0012). Its major must match the
+  # CUDA major torch was built for: 13.x needs a CUDA 13 driver and drops `cuda.cuda`.
+  # Bounded to the 12.x stack this project records on; scripts/gpu_bootstrap.sh installs
+  # the major matching torch, which is what a CUDA 13 instance needs. 12.9 is the floor
+  # because earlier 12.x bindings do not find a pip-installed NVRTC.
+  "cuda-python>=12.9,<13",
 ]
 
 [project.scripts]

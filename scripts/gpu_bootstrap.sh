@@ -33,6 +33,19 @@ PY
 echo "== installing the project (torch and triton come from Lambda Stack) =="
 python3 -m pip install --quiet -e ".[dev]"
 
+echo "== installing cuda-python for the CUDA backend, matched to torch's CUDA major =="
+# NVRTC and the driver API for the CUDA ports (feature 0012). Pinned to the CUDA major
+# torch was built for: a 13.x binding against a 12.x stack is not a combination anyone
+# has recorded on. The device tests below compile a self-test kernel through it, so a
+# binding that cannot find NVRTC stops the bootstrap here, not mid-recording.
+CUDA_MAJOR="$(python3 -c 'import torch; print(torch.version.cuda.split(".")[0])')"
+python3 -m pip install --quiet "cuda-python==${CUDA_MAJOR}.*"
+python3 - <<'PYCUDA'
+from kernels.cuda.ladder import default_toolchain
+toolchain = default_toolchain()
+print(f"  nvrtc {toolchain.versions()}  arch {toolchain.arch}: OK")
+PYCUDA
+
 echo "== verifying torch<->numpy interop survived the install =="
 # The failure this guards is silent: pip upgrading numpy past torch's ABI leaves
 # torch importable but unable to convert arrays, and the Triton backend calls

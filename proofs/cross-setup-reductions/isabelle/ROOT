@@ -1,0 +1,5 @@
+session CrossSetup = HOL +
+  sessions
+    "HOL-Library"
+  theories
+    CrossSetup
