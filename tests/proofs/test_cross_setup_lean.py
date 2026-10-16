@@ -33,6 +33,8 @@ AUDITED = tuple(
 )
 STANDARD = {"propext", "Classical.choice", "Quot.sound"}
 _AXIOMS = re.compile(r"'(?P<name>\S+)' depends on axioms: \[(?P<axioms>[^\]]*)\]")
+#: What `#print axioms` says of a theorem resting on none: audited, with nothing beyond.
+_NO_AXIOMS = re.compile(r"'(?P<name>\S+)' does not depend on any axioms")
 _ESCAPES = re.compile(r"\b(sorry|admit|axiom|native_decide)\b")
 
 
@@ -63,6 +65,7 @@ def test_the_lean_consistency_proof_compiles_on_standard_axioms_only():
         m["name"]: set(filter(None, map(str.strip, m["axioms"].split(","))))
         for m in _AXIOMS.finditer(done.stdout)
     }
+    audited.update({m["name"]: set() for m in _NO_AXIOMS.finditer(done.stdout)})
     missing = [name for name in AUDITED if name not in audited]
     assert not missing, f"not audited by #print axioms: {missing}"
     beyond = {name: axioms - STANDARD for name, axioms in audited.items() if axioms - STANDARD}

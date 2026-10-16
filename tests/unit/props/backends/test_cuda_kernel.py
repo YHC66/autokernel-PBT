@@ -110,6 +110,32 @@ def test_the_launcher_is_part_of_the_kernel_s_identity(fake_toolchain):
     assert _adapter(toolchain).source_hash != _adapter(toolchain, launcher=other).source_hash
 
 
+def _closing_over(captured):
+    def launch(**kw):
+        return np.zeros_like(kw["x"]) + len(captured)
+
+    return launch
+
+
+def test_values_the_launcher_closed_over_are_part_of_the_kernel_s_identity(fake_toolchain):
+    # The ladder's `_row_launcher(scalars)` returns one body for every port; `scalars` alone
+    # decides which parameters follow `n_cols`, in what order. Two launchers with one
+    # source and different captured values launch different argument lists.
+    toolchain = fake_toolchain()
+    plain = _adapter(toolchain, launcher=_closing_over(())).source_hash
+    eps = _adapter(toolchain, launcher=_closing_over(("eps",))).source_hash
+    assert isinstance(plain, str)
+    assert eps != plain
+    assert _adapter(toolchain, launcher=_closing_over(("eps",))).source_hash == eps
+
+
+def test_a_launcher_closing_over_an_object_hashes_to_missing(fake_toolchain):
+    # An object's repr can carry its address, which would give one launcher a different
+    # hash in every process: an identity that never matches is worse than none.
+    toolchain = fake_toolchain()
+    assert _adapter(toolchain, launcher=_closing_over([object()])).source_hash is MISSING
+
+
 def test_a_failed_compile_does_not_report_the_previous_artifact(fake_toolchain):
     """The criterion A_FAILED_CALL_REPORTS_NO_STALE_ARTIFACT.
 

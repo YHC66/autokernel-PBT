@@ -40,7 +40,7 @@ from pathlib import Path
 
 import numpy as np
 
-from autokernel_pbt.props.backends.base import Backend, ExecutionResult
+from autokernel_pbt.props.backends.base import TELEMETRY_BACKEND, Backend, ExecutionResult
 from autokernel_pbt.props.backends.numpy_backend import NumpyBackend
 from autokernel_pbt.props.contract import (
     CONTRACT_FILENAME,
@@ -649,8 +649,10 @@ def score_translation(
             "target_fingerprint": fingerprint,
             "source_kernel_ids": sorted({row.kernel_id for row in source_rows}),
             "target_kernel_ids": sorted({row.kernel_id for row in rows}),
-            "source_backends": sorted({str(row.telemetry.get("backend")) for row in source_rows}),
-            "target_backends": sorted({str(row.telemetry.get("backend")) for row in rows}),
+            "source_backends": sorted(
+                {str(row.telemetry.get(TELEMETRY_BACKEND)) for row in source_rows}
+            ),
+            "target_backends": sorted({str(row.telemetry.get(TELEMETRY_BACKEND)) for row in rows}),
             "scored_arms": list(TRANSLATION_ARM_NAMES),
             # Whether the known-kernel premise was waived: a source not stated correct
             # makes every source arm a comparison with an unknown kernel.

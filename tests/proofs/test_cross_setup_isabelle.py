@@ -39,8 +39,6 @@ def test_the_isabelle_consistency_proof_builds_without_cheating(tmp_path):
     isabelle = shutil.which("isabelle")
     if isabelle is None:
         pytest.skip("isabelle is not installed")
-    if not THEORY.exists():
-        pytest.skip("the Isabelle proof has not been written yet")
     source = THEORY.read_text()
     assert not _ESCAPES.search(source), "an escape hatch is in the source"
     for name in AUDITED:

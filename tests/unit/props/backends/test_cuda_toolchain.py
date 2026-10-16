@@ -30,12 +30,18 @@ REJECTED = "this source does not compile"
 BAD_OPTION = "--not-an-nvrtc-option"
 MANGLED = "mangled_entry"
 UNLOADABLE = "this ptx does not load"
+#: A source whose load fails for a reason that is not its image: a context an earlier
+#: kernel's fault left dead.
+DEAD_CONTEXT = "this ptx loads into a dead context"
+#: An entry point whose lookup fails for a reason other than NOT_FOUND.
+LOOKUP_FAULT = "lookup_in_a_dead_context"
 INTERNAL = "this source trips an internal NVRTC error"
 COMPILER_LOG = 'kernel.cu(1): error: expected a ";"'
 
 
 class CUresult(enum.Enum):
     CUDA_SUCCESS = 0
+    CUDA_ERROR_OUT_OF_MEMORY = 2
     CUDA_ERROR_INVALID_PTX = 218
     CUDA_ERROR_NOT_FOUND = 500
     CUDA_ERROR_LAUNCH_FAILED = 719
@@ -128,6 +134,7 @@ class FakeDriver:
         self.launch_result = CUresult.CUDA_SUCCESS
         self.sync_result = CUresult.CUDA_SUCCESS
         self.loads = 0
+        self.unloaded: list = []
         self.unavailable: set[str] = set()
 
     def CUstream(self, handle):
@@ -153,12 +160,20 @@ class FakeDriver:
         self.loads += 1
         if UNLOADABLE.encode() in ptx:
             return CUresult.CUDA_ERROR_INVALID_PTX, None
+        if DEAD_CONTEXT.encode() in ptx:
+            return CUresult.CUDA_ERROR_ILLEGAL_ADDRESS, None
         return CUresult.CUDA_SUCCESS, {"ptx": ptx}
 
     def cuModuleGetFunction(self, module, name):
         if name.decode() == MANGLED:
             return CUresult.CUDA_ERROR_NOT_FOUND, None
+        if name.decode() == LOOKUP_FAULT:
+            return CUresult.CUDA_ERROR_OUT_OF_MEMORY, None
         return CUresult.CUDA_SUCCESS, ("function", name.decode())
+
+    def cuModuleUnload(self, module):
+        self.unloaded.append(module)
+        return (CUresult.CUDA_SUCCESS,)
 
     def cuFuncGetAttribute(self, attribute, function):
         if attribute.name in self.unavailable:
@@ -261,6 +276,30 @@ def test_an_entry_point_that_is_not_extern_c_is_a_compile_error():
 def test_ptx_the_driver_cannot_load_is_a_compile_error():
     with pytest.raises(CudaCompilationError, match="CUDA_ERROR_INVALID_PTX"):
         _toolchain().compile(f"// {UNLOADABLE}\n{SOURCE}", "k", ())
+
+
+def test_a_load_failure_that_does_not_reject_the_image_is_not_a_compile_error():
+    # After a kernel faults, the context is dead and the next load returns that fault.
+    # The kernel being loaded never had it: a COMPILE_ERROR here would charge it a fault
+    # class, and differ from the LAUNCH_ERROR the Triton row beside it records.
+    with pytest.raises(RuntimeError, match="does not reject the image") as raised:
+        _toolchain().compile(f"// {DEAD_CONTEXT}\n{SOURCE}", "k", ())
+    assert not isinstance(raised.value, (CudaCompilationError, CudaToolchainError))
+
+
+def test_only_a_missing_entry_point_blames_the_kernel_s_linkage():
+    # NOT_FOUND is a mangled name. Any other lookup failure is not the kernel's, and must
+    # not tell a translating agent its port lacks extern "C". Either way the module that
+    # will never be used is released.
+    bindings = _bindings()
+    toolchain = _toolchain(bindings)
+    with pytest.raises(RuntimeError, match="CUDA_ERROR_OUT_OF_MEMORY") as raised:
+        toolchain.compile(SOURCE, LOOKUP_FAULT, ())
+    assert not isinstance(raised.value, (CudaCompilationError, CudaToolchainError))
+    assert len(bindings.driver.unloaded) == 1
+    with pytest.raises(CudaCompilationError, match='extern "C"'):
+        toolchain.compile(SOURCE, MANGLED, ())
+    assert len(bindings.driver.unloaded) == 2
 
 
 def test_the_artifact_carries_the_attributes_the_ptx_and_the_resolved_options():

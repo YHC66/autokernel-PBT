@@ -12,7 +12,9 @@ A CUDA kernel reaches the device in three steps, and each has its own failure cl
 2. **The driver loads the PTX** and looks up the entry point. A port whose entry point is
    not `extern "C"` compiles cleanly and then has no function of that name: its name was
    C++-mangled. That is a real translation defect, and it never became runnable, so it is
-   a compile error too.
+   a compile error too, as is PTX the driver rejects. Any other failure here -- a context
+   left dead by an earlier kernel's fault, out of memory -- is not this kernel's, and is
+   a plain `RuntimeError`, booked as a launch error would be in that context.
 3. **The driver launches it** on torch's current stream, against torch's device buffers.
    A failed launch, or an asynchronous fault surfaced by the synchronize after it, is a
    launch error: a plain `RuntimeError`, which the backend books as LAUNCH_ERROR.
@@ -55,6 +57,16 @@ _PROGRAM_NAME = b"kernel.cu"
 #: and the reason is the toolchain's -- so it is raised as a bad call, not recorded.
 _SELF_TEST_SOURCE = 'extern "C" __global__ void autokernel_self_test(float* y) { y[0] = 1.0f; }'
 _SELF_TEST_ENTRY = "autokernel_self_test"
+
+#: `cuModuleLoadData` results that reject the image itself: the PTX does not assemble for
+#: this device (the driver runs ptxas on it), or the driver cannot use what it produced.
+#: Probed by name, like the attributes; a member a release lacks never matches.
+_IMAGE_REJECTED = (
+    "CUDA_ERROR_INVALID_PTX",
+    "CUDA_ERROR_INVALID_IMAGE",
+    "CUDA_ERROR_NO_BINARY_FOR_GPU",
+    "CUDA_ERROR_UNSUPPORTED_PTX_VERSION",
+)
 
 #: telemetry field -> CUfunction_attribute member name. `SHARED_SIZE_BYTES` is *static*
 #: shared memory only; the dynamic shared memory a launch is given is not an attribute of
@@ -326,19 +338,49 @@ class NvrtcToolchain:
         return buffer.rstrip(b"\x00").decode("utf-8", errors="replace").strip()
 
     def _load(self, ptx: bytes, entry: str) -> Any:
+        """Load the PTX and resolve the entry point; a compile error only if the KERNEL is why.
+
+        The driver reports more than the image through these calls. After a kernel faults
+        (an illegal address), the context is dead and every later call returns that
+        fault, this one included; a load can also run out of memory. Booked as
+        COMPILE_ERROR, either would charge a fault class to a kernel that never had it,
+        and differ from the Triton row recorded beside it. So only a rejected image, or a
+        missing entry point, is the kernel's; any other code is a plain RuntimeError,
+        which the backend books as LAUNCH_ERROR -- as a launch in that context would be.
+        """
         driver = self._driver
         err, module = driver.cuModuleLoadData(ptx)
         if err != driver.CUresult.CUDA_SUCCESS:
-            msg = f"the driver could not load the PTX: {_name(err)}"
-            raise CudaCompilationError(msg)
+            if self._is(err, _IMAGE_REJECTED):
+                msg = f"the driver could not load the PTX: {_name(err)}"
+                raise CudaCompilationError(msg)
+            msg = f"cuModuleLoadData failed: {_name(err)}, which does not reject the image"
+            raise RuntimeError(msg)
         err, function = driver.cuModuleGetFunction(module, entry.encode("utf-8"))
         if err != driver.CUresult.CUDA_SUCCESS:
-            msg = (
-                f"no entry point {entry!r} in the compiled module ({_name(err)}); a kernel "
-                f'declared without extern "C" compiles, and its name is C++-mangled'
-            )
-            raise CudaCompilationError(msg)
+            self._unload(module)
+            if self._is(err, ("CUDA_ERROR_NOT_FOUND",)):
+                msg = (
+                    f"no entry point {entry!r} in the compiled module ({_name(err)}); a "
+                    f'kernel declared without extern "C" compiles, and its name is '
+                    f"C++-mangled"
+                )
+                raise CudaCompilationError(msg)
+            msg = f"cuModuleGetFunction({entry!r}) failed: {_name(err)}"
+            raise RuntimeError(msg)
         return function
+
+    def _is(self, err: Any, members: tuple[str, ...]) -> bool:
+        """Whether `err` is one of the named CUresult members this binding release has."""
+        result = self._driver.CUresult
+        return any(hasattr(result, name) and err == getattr(result, name) for name in members)
+
+    def _unload(self, module: Any) -> None:
+        """Release a module that will never be used. In a dead context this fails too."""
+        try:
+            self._driver.cuModuleUnload(module)
+        except Exception:  # noqa: BLE001, S110 - cleanup must not mask the classification
+            pass
 
     def _attribute(self, function: Any, member: str) -> Any:
         driver = self._driver

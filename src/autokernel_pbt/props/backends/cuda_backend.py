@@ -20,8 +20,9 @@ The status mapping:
   and every later kernel would fail the same way. A bad call; the recorder keeps the
   completed groups in `<out>.partial` before the error propagates.
 * anything else -> LAUNCH_ERROR. That includes a launcher refusing an input it would
-  misread, a failed `cuLaunchKernel`, and an asynchronous fault surfaced by the
-  synchronize after it.
+  misread, a failed `cuLaunchKernel`, an asynchronous fault surfaced by the synchronize
+  after it, and a module load that failed for a reason other than its image (a context
+  an earlier kernel left dead).
 
 Execution is not bitwise reproducible across launches in general, and nothing here relies
 on it: the recorded execution is the one every arm scores.

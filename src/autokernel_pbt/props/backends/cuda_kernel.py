@@ -40,6 +40,13 @@ def _no_shared_memory(block: tuple[int, ...], params: dict[str, Any]) -> int:
     return 0
 
 
+def _plain(value: Any) -> bool:
+    """Whether `repr(value)` is the same in every process: scalars, and tuples of them."""
+    if isinstance(value, tuple):
+        return all(_plain(item) for item in value)
+    return value is None or isinstance(value, (bool, int, float, str, bytes))
+
+
 class CudaKernel:
     """One CUDA kernel, callable as `kernel(**numpy_inputs) -> np.ndarray`.
 
@@ -88,14 +95,24 @@ class CudaKernel:
         runs too, and they are recorded separately, as `compile_options`. Unreadable
         launcher source is MISSING, never a hash of its name -- the defect `TritonKernel`
         once shipped, where editing a kernel body left its hash unchanged.
+
+        A launcher's source does not include the values it closed over, and those can
+        decide what runs: `kernels/cuda/ladder.py`'s `_row_launcher(scalars)` returns one
+        body for every port, and `scalars` alone sets which parameters follow `n_cols` and
+        in what order. Captured plain data is hashed by value. Anything else captured is
+        MISSING: its `repr` may carry an address, which would give one launcher a
+        different hash in every process.
         """
         if not isinstance(self.source, str):
             return MISSING
         try:
             launcher_source = inspect.getsource(self.launcher)
+            captured = inspect.getclosurevars(self.launcher).nonlocals
         except (OSError, TypeError):
             return MISSING
-        material = f"{self.source}\n{self.entry}\n{launcher_source}"
+        if not all(_plain(value) for value in captured.values()):
+            return MISSING
+        material = f"{self.source}\n{self.entry}\n{launcher_source}\n{sorted(captured.items())!r}"
         return hashlib.sha256(material.encode("utf-8")).hexdigest()[:HASH_CHARS]
 
     def launch_telemetry(self) -> dict[str, Any]:
