@@ -3,9 +3,16 @@
 
 \paragraph{Checking LLM-generated kernels.}
 KernelBench scores kernels by \allclose against a PyTorch reference
-\citep{ouyang2025kernelbench}. Agents exploit such checks \citep{lange2025robust}, kernels
-that pass are often wrong \citep{sarkar2026illusion}, and boundary shapes find more bugs
-than adversarial values \citep{sarkar2026inputs}. Declarative kernel contracts
+\citep{ouyang2025kernelbench}. Agents exploit such checks \citep{lange2025robust}, down to
+bypasses keyed on the test's tensor values that only hidden input distributions expose
+\citep{zhang2026kbverified}. Kernels that pass are often wrong \citep{sarkar2026illusion}:
+symbolic checking finds \dirigoBuggy{} buggy kernels among \dirigoKernels{} AI-written ones
+that all passed differential testing \citep{biberstein2026outputspace}. Boundary shapes
+find more bugs than adversarial values \citep{sarkar2026inputs}, and agent loops such as
+AutoKernel gate each candidate on a staged test harness \citep{jaber2026autokernel}.
+Hacker--fixer agent loops harden a verifier one exploit at a time
+\citep{zhong2026hackerfixer}; Proposition~\ref{prop:softmax} names the one law that
+closes a whole admitted family. Declarative kernel contracts
 \citep{veit2026contracts,shah2026contract} and tensor property skeletons
 \citep{qiu2026propilot} exist as concepts. A taxonomy of \isstaBugs{} real tile-program
 bugs \citep{rathnasuriya2026tile} supplies our mutants' fault classes. LLM test oracles
@@ -27,7 +34,10 @@ completeness as something to check, not assume. Tolerances follow LAPACK's test 
 
 \paragraph{Formal methods and verifier-guided agents.}
 VOLTA checks GPU kernel equivalence for a statically analyzable class, treating floats
-as reals \citep{dubey2025volta}. VeriTile reasons about Triton-style kernels in Lean~4
+as reals \citep{driscoll2025volta}. ProofWright has agents verify LLM-written CUDA kernels,
+proving memory and thread safety for most of those generated for KernelBench's first
+level, and equivalence for an element-wise class \citep{chatterjee2025proofwright}.
+VeriTile reasons about Triton-style kernels in Lean~4
 \citep{veritile2026,demoura2021lean4}, and ATL verifies tensor scheduling rewrites
 \citep{liu2022atl}. A proof gate on kernel code is costly: the best provable GEMM an agent
 produced ran at \provableGemm$\times$ against \testedGemm$\times$ for the best tested one
@@ -35,8 +45,8 @@ produced ran at \provableGemm$\times$ against \testedGemm$\times$ for the best t
 \citep{loughridge2024dafnybench,bursuc2025vericoding}, agent-written specs have been scored
 against held-out ground truth \citep{ye2025verina,thakur2025clever}, and verifier feedback
 helps \citep{aggarwal2025alphaverus}. Industry pairs proven models with differential
-testing \citep{disselkoen2024cedar}. None of this targets numerical GPU kernels or
-profiles how agents game their own specs.
+testing \citep{disselkoen2024cedar}. None of this executes an agent-written spec, model and
+axioms on the cases a gate ran, or profiles how agents game specs they write themselves.
 
 \paragraph{Skills and loops.}
 Agent skills package procedures an agent loads on demand \citep{anthropic2025skills}.
