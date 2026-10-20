@@ -13,6 +13,7 @@ import types
 import numpy as np
 import pytest
 
+from autokernel_pbt.props.backends import device
 from autokernel_pbt.props.backends.base import OUTPUT_NAME, Status
 from autokernel_pbt.props.backends.telemetry import MISSING, TELEMETRY_SCHEMA_VERSION
 from autokernel_pbt.props.backends.triton_backend import (
@@ -300,8 +301,8 @@ def test_an_unencodable_launch_value_survives_the_table_write(tmp_path):
     assert row.telemetry["constexprs"] is None
 
 
-def _fake_torch(*, driver: object) -> types.ModuleType:
-    """torch as `_default_device_probe` sees it, with a chosen driver query."""
+def _fake_torch() -> types.ModuleType:
+    """torch as `_default_device_probe` sees it."""
     torch = types.ModuleType("torch")
     torch.__version__ = "2.7.0"
     # The CUDA toolkit torch was BUILT against -- not the installed driver.
@@ -312,34 +313,60 @@ def _fake_torch(*, driver: object) -> types.ModuleType:
     torch.cuda = types.SimpleNamespace(
         current_device=lambda: 0, get_device_properties=lambda index: properties
     )
-    torch._C = types.SimpleNamespace()
-    if driver is not None:
-        torch._C._cuda_getDriverVersion = driver
     return torch
 
 
-def test_driver_version_is_the_installed_driver_not_torch_s_build_toolkit(monkeypatch):
-    # cuDriverGetVersion encodes 1000*major + 10*minor; 12090 is a CUDA 12.9 driver.
+class _FakeLibcuda:
+    """libcuda as `driver_version` calls it: writes the encoded version, returns a status."""
+
+    def __init__(self, encoded: int, status: int = 0) -> None:
+        self._encoded = encoded
+        self._status = status
+
+    def cuDriverGetVersion(self, out):
+        out._obj.value = self._encoded
+        return self._status
+
+
+@pytest.mark.parametrize(("encoded", "expected"), [(12090, "12.9"), (13000, "13.0")])
+def test_driver_version_is_the_installed_driver_not_torch_s_build_toolkit(
+    monkeypatch, encoded, expected
+):
+    # cuDriverGetVersion encodes 1000*major + 10*minor; 12090 is a CUDA 12.9 driver, and
+    # 13000 is what the 580.105.08 driver on the first A6000 session reported.
     # Recorded in runtime_version's own "major.minor" form so the two compare directly.
-    monkeypatch.setitem(sys.modules, "torch", _fake_torch(driver=lambda: 12090))
+    monkeypatch.setitem(sys.modules, "torch", _fake_torch())
     monkeypatch.setitem(sys.modules, "triton", None)
+    monkeypatch.setattr(device, "_load_libcuda", lambda: _FakeLibcuda(encoded))
     probed = _default_device_probe()
-    assert probed["driver_version"] == "12.9"
+    assert probed["driver_version"] == expected
     assert probed["runtime_version"] == "12.8"
 
 
-def _raises():
-    msg = "no CUDA driver"
-    raise RuntimeError(msg)
+def test_the_driver_is_asked_even_when_torch_has_its_own_private_query(monkeypatch):
+    # torch 2.7.0 has no `torch._C._cuda_getDriverVersion`; where a torch does, it is not
+    # the source of record -- the driver library is, for both backends alike.
+    torch = _fake_torch()
+    torch._C = types.SimpleNamespace(_cuda_getDriverVersion=lambda: 12090)
+    monkeypatch.setitem(sys.modules, "torch", torch)
+    monkeypatch.setitem(sys.modules, "triton", None)
+    monkeypatch.setattr(device, "_load_libcuda", lambda: _FakeLibcuda(13000))
+    assert _default_device_probe()["driver_version"] == "13.0"
+
+
+def _no_libcuda():
+    msg = "libcuda.so.1: cannot open shared object file"
+    raise OSError(msg)
 
 
 @pytest.mark.parametrize(
-    "driver",
-    [None, _raises, lambda: 0, lambda: "12090"],
-    ids=["query-absent", "query-raises", "no-driver", "not-an-int"],
+    "load",
+    [_no_libcuda, lambda: _FakeLibcuda(12090, status=3), lambda: _FakeLibcuda(0)],
+    ids=["no-driver-library", "call-fails", "no-driver"],
 )
-def test_an_unreadable_driver_version_is_missing(monkeypatch, driver):
+def test_an_unreadable_driver_version_is_missing(monkeypatch, load):
     # Never torch's build-time toolkit as a stand-in: that is the mislabel being fixed.
-    monkeypatch.setitem(sys.modules, "torch", _fake_torch(driver=driver))
+    monkeypatch.setitem(sys.modules, "torch", _fake_torch())
     monkeypatch.setitem(sys.modules, "triton", None)
+    monkeypatch.setattr(device, "_load_libcuda", load)
     assert _default_device_probe()["driver_version"] is MISSING
