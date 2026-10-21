@@ -1,0 +1,28 @@
+{
+  "require_known_source": true,
+  "scored_arms": [
+    "allclose",
+    "reference",
+    "declarative",
+    "hybrid",
+    "allclose_source",
+    "reference_source",
+    "hybrid_source"
+  ],
+  "source_backends": [
+    "triton"
+  ],
+  "source_dir": "runs/te1-triton-softmax",
+  "source_fingerprint": "c573aac2ede9429484829bfff0b99173-41a2ce6152ce8feb398901638828ea716edd7fcd5579fef295b7e57504fe15d5",
+  "source_kernel_ids": [
+    "softmax_triton"
+  ],
+  "target_backends": [
+    "cuda"
+  ],
+  "target_fingerprint": "78117f9e36154fd5aa20bf0c8b9cb0b3-41a2ce6152ce8feb398901638828ea716edd7fcd5579fef295b7e57504fe15d5",
+  "target_kernel_ids": [
+    "softmax_cuda"
+  ],
+  "task_id": "softmax"
+}

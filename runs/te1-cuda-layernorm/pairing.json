@@ -1,0 +1,28 @@
+{
+  "require_known_source": true,
+  "scored_arms": [
+    "allclose",
+    "reference",
+    "declarative",
+    "hybrid",
+    "allclose_source",
+    "reference_source",
+    "hybrid_source"
+  ],
+  "source_backends": [
+    "triton"
+  ],
+  "source_dir": "runs/te1-triton-layernorm",
+  "source_fingerprint": "df81dd7f76124145828c31c6f6ed721d-fdcebf10587fba24cbfd74f5630b7b57eecbac3ecfba1b81de6ecb1fb56f6f99",
+  "source_kernel_ids": [
+    "layernorm_triton"
+  ],
+  "target_backends": [
+    "cuda"
+  ],
+  "target_fingerprint": "fadaf8310c0244dd8cc10357e3967972-fdcebf10587fba24cbfd74f5630b7b57eecbac3ecfba1b81de6ecb1fb56f6f99",
+  "target_kernel_ids": [
+    "layernorm_cuda"
+  ],
+  "task_id": "layernorm"
+}

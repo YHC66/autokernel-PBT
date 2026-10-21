@@ -1,0 +1,28 @@
+{
+  "require_known_source": true,
+  "scored_arms": [
+    "allclose",
+    "reference",
+    "declarative",
+    "hybrid",
+    "allclose_source",
+    "reference_source",
+    "hybrid_source"
+  ],
+  "source_backends": [
+    "triton"
+  ],
+  "source_dir": "runs/te1-triton-relu",
+  "source_fingerprint": "e745fa6ef23b456580460b6b338450fb-192e1a4a87d3c33b613e84f04a282a8f8768102153de17b7242071de342544a2",
+  "source_kernel_ids": [
+    "relu_triton"
+  ],
+  "target_backends": [
+    "cuda"
+  ],
+  "target_fingerprint": "36a3b2c090344ee893248a7ad764d8a1-192e1a4a87d3c33b613e84f04a282a8f8768102153de17b7242071de342544a2",
+  "target_kernel_ids": [
+    "relu_cuda"
+  ],
+  "task_id": "relu"
+}
