@@ -1,0 +1,326 @@
+{
+  "relu": {
+    "rows": 9,
+    "groups": 9,
+    "arms": {
+      "allclose": {
+        "groups": {
+          "PASS": 9
+        }
+      },
+      "reference": {
+        "groups": {
+          "PASS": 9
+        },
+        "ratio_min_median_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "n_ratios": 9
+      },
+      "declarative": {
+        "groups": {
+          "PASS": 9
+        }
+      },
+      "hybrid": {
+        "groups": {
+          "PASS": 9
+        }
+      },
+      "allclose_source": {
+        "groups": {
+          "PASS": 9
+        }
+      },
+      "reference_source": {
+        "groups": {
+          "PASS": 9
+        },
+        "ratio_min_median_max": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "n_ratios": 9
+      },
+      "hybrid_source": {
+        "groups": {
+          "PASS": 9
+        }
+      }
+    },
+    "bitwise_equal_fraction": 1.0,
+    "elements": 1811,
+    "multi_column_cases_not_bitwise_equal": 0
+  },
+  "softmax": {
+    "rows": 18,
+    "groups": 9,
+    "arms": {
+      "allclose": {
+        "groups": {
+          "PASS": 9
+        }
+      },
+      "reference": {
+        "groups": {
+          "PASS": 9
+        },
+        "ratio_min_median_max": [
+          0.0,
+          0.0847,
+          0.327
+        ],
+        "n_ratios": 18
+      },
+      "declarative": {
+        "groups": {
+          "PASS": 9
+        }
+      },
+      "hybrid": {
+        "groups": {
+          "PASS": 9
+        }
+      },
+      "allclose_source": {
+        "groups": {
+          "PASS": 9
+        }
+      },
+      "reference_source": {
+        "groups": {
+          "PASS": 9
+        },
+        "ratio_min_median_max": [
+          0.0,
+          0.14400000000000002,
+          0.299
+        ],
+        "n_ratios": 18
+      },
+      "hybrid_source": {
+        "groups": {
+          "PASS": 9
+        }
+      }
+    },
+    "bitwise_equal_fraction": 0.37189398122584205,
+    "elements": 3622,
+    "multi_column_cases_not_bitwise_equal": 14
+  },
+  "layernorm": {
+    "rows": 18,
+    "groups": 9,
+    "arms": {
+      "allclose": {
+        "groups": {
+          "FAIL": 5,
+          "PASS": 4
+        },
+        "failing": [
+          [
+            "layernorm-g00000",
+            "allclose_matches_reference",
+            "allclose(rtol=1e-05, atol=1e-08) rejected the output"
+          ],
+          [
+            "layernorm-g00001",
+            "allclose_matches_reference",
+            "allclose(rtol=1e-05, atol=1e-08) rejected the output"
+          ],
+          [
+            "layernorm-g00002",
+            "allclose_matches_reference",
+            "allclose(rtol=1e-05, atol=1e-08) rejected the output"
+          ],
+          [
+            "layernorm-g00004",
+            "allclose_matches_reference",
+            "allclose(rtol=1e-05, atol=1e-08) rejected the output"
+          ],
+          [
+            "layernorm-g00005",
+            "allclose_matches_reference",
+            "allclose(rtol=1e-05, atol=1e-08) rejected the output"
+          ]
+        ]
+      },
+      "reference": {
+        "groups": {
+          "PASS": 9
+        },
+        "ratio_min_median_max": [
+          0.0,
+          0.16599999999999998,
+          1.0
+        ],
+        "n_ratios": 18
+      },
+      "declarative": {
+        "groups": {
+          "INCONCLUSIVE": 2,
+          "PASS": 7
+        }
+      },
+      "hybrid": {
+        "groups": {
+          "INCONCLUSIVE": 2,
+          "PASS": 7
+        }
+      },
+      "allclose_source": {
+        "groups": {
+          "FAIL": 2,
+          "PASS": 7
+        },
+        "failing": [
+          [
+            "layernorm-g00004",
+            "allclose_matches_reference",
+            "allclose(rtol=1e-05, atol=1e-08) rejected the output"
+          ],
+          [
+            "layernorm-g00005",
+            "allclose_matches_reference",
+            "allclose(rtol=1e-05, atol=1e-08) rejected the output"
+          ]
+        ]
+      },
+      "reference_source": {
+        "groups": {
+          "PASS": 9
+        },
+        "ratio_min_median_max": [
+          0.0,
+          0.22999999999999998,
+          0.986
+        ],
+        "n_ratios": 18
+      },
+      "hybrid_source": {
+        "groups": {
+          "INCONCLUSIVE": 2,
+          "PASS": 7
+        }
+      }
+    },
+    "bitwise_equal_fraction": 0.44947542794036444,
+    "elements": 3622,
+    "multi_column_cases_not_bitwise_equal": 14
+  },
+  "tolerance_sweep": {
+    "rows": 7,
+    "groups": 7,
+    "arms": {
+      "allclose": {
+        "groups": {
+          "PASS": 7
+        }
+      },
+      "reference": {
+        "groups": {
+          "PASS": 7
+        },
+        "ratio_min_median_max": [
+          0.0379,
+          0.0552,
+          0.327
+        ],
+        "n_ratios": 7
+      },
+      "declarative": {
+        "groups": {
+          "PASS": 7
+        }
+      },
+      "hybrid": {
+        "groups": {
+          "PASS": 7
+        }
+      },
+      "allclose_source": {
+        "groups": {
+          "PASS": 7
+        }
+      },
+      "reference_source": {
+        "groups": {
+          "PASS": 7
+        },
+        "ratio_min_median_max": [
+          0.0552,
+          0.0819,
+          0.0997
+        ],
+        "n_ratios": 7
+      },
+      "hybrid_source": {
+        "groups": {
+          "PASS": 7
+        }
+      }
+    },
+    "bitwise_equal_fraction": 0.2527977696931351,
+    "elements": 101152,
+    "multi_column_cases_not_bitwise_equal": 7
+  },
+  "softmax_at_scale": {
+    "rows": 10,
+    "groups": 5,
+    "arms": {
+      "allclose": {
+        "groups": {
+          "PASS": 5
+        }
+      },
+      "reference": {
+        "groups": {
+          "PASS": 5
+        },
+        "ratio_min_median_max": [
+          0.0479,
+          0.0667,
+          0.1
+        ],
+        "n_ratios": 10
+      },
+      "declarative": {
+        "groups": {
+          "PASS": 5
+        }
+      },
+      "hybrid": {
+        "groups": {
+          "PASS": 5
+        }
+      },
+      "allclose_source": {
+        "groups": {
+          "PASS": 5
+        }
+      },
+      "reference_source": {
+        "groups": {
+          "PASS": 5
+        },
+        "ratio_min_median_max": [
+          0.0546,
+          0.0957,
+          0.201
+        ],
+        "n_ratios": 10
+      },
+      "hybrid_source": {
+        "groups": {
+          "PASS": 5
+        }
+      }
+    },
+    "bitwise_equal_fraction": 0.28821228231702534,
+    "elements": 58720256,
+    "multi_column_cases_not_bitwise_equal": 10
+  }
+}

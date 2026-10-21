@@ -6,15 +6,15 @@ it came from, and performant on the target. GPU comes first: Triton → CUDA on 
 CUDA → HIP on AMD, and later TPU (Pallas/JAX) and Trainium (NKI). The pipelines (T0–T4) and
 experiments (TE1–TE4) are in [`docs/pipelines/translation.md`](../../docs/pipelines/translation.md).
 
-**Nothing has run on a device yet.** What exists, all tested on CPU:
+**The first pair has run on a device once:** TE1, 2026-10-20, one RTX A6000. What exists:
 
 | piece | where | status |
 |---|---|---|
-| CUDA backend: NVRTC, the driver API, telemetry schema v2 | `src/autokernel_pbt/props/backends/cuda_*.py`, feature [0012](../../specs/features/0012-cuda-backend/spec.md) | [B] |
-| CUDA ports of the known Triton ladder | [`kernels/cuda/`](../../kernels/cuda/) | [B] |
-| Scoring a port against the known kernel's recording (T0 `allclose_source`, T1 `reference_source`) | `src/autokernel_pbt/props/cross_setup.py`, `driver.score_translation`, feature [0013](../../specs/features/0013-cross-setup-scoring/spec.md) | [B] |
+| CUDA backend: NVRTC, the driver API, telemetry schema v2 | `src/autokernel_pbt/props/backends/cuda_*.py`, feature [0012](../../specs/features/0012-cuda-backend/spec.md) | [M]: 62 of 62 rows `ok` on device in TE1, after one telemetry fix (`driver_version`) |
+| CUDA ports of the known Triton ladder | [`kernels/cuda/`](../../kernels/cuda/) | [M]: correct on device against float64 and against the known kernel (TE1) |
+| Scoring a port against the known kernel's recording (T0 `allclose_source`, T1 `reference_source`) | `src/autokernel_pbt/props/cross_setup.py`, `driver.score_translation`, feature [0013](../../specs/features/0013-cross-setup-scoring/spec.md) | [M]: TE1 |
 | Proof that the Triton kernels and the CUDA ports compute the same function, exact arithmetic | [`proofs/cross-setup-reductions/`](../../proofs/cross-setup-reductions/): Lean, Rocq and Isabelle/HOL, six theorems each | [M] (machine-checked) |
-| **TE1**: Triton → CUDA on one device | [pre-registration](../../docs/measurements/2026-10-12-te1-triton-to-cuda-prereg.md), [runbook](../../docs/runbooks/2026-10-12-te1-translation-session.md) | [planned] |
+| **TE1**: Triton → CUDA on one device | [pre-registration and results](../../docs/measurements/2026-10-12-te1-triton-to-cuda-prereg.md), [runbook](../../docs/runbooks/2026-10-12-te1-translation-session.md), [`te1/`](./te1/) | [M]: all 8 predictions hold |
 
 Earlier evidence for the segment: Tier-1 laws moved NumPy → Triton unchanged on an A10
 ([`first-hardware-run`](../../docs/measurements/2026-08-17-first-hardware-run.md),

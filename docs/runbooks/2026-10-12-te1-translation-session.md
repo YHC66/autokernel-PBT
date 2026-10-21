@@ -27,7 +27,7 @@ comparable with the August runs.
 ssh lambda
 git clone https://github.com/suv11235/autokernel-PBT.git
 cd autokernel-PBT
-git checkout translation-cuda-backend   # until it is merged
+git checkout main                       # translation-cuda-backend merged as PR #16
 ./scripts/gpu_bootstrap.sh
 ```
 
@@ -46,6 +46,7 @@ means:
 | a compiled field MISSING in `test_compiled_telemetry_is_populated_on_device` | an attribute name moved in this binding release | add the location in `cuda_toolchain._ATTRIBUTES` and re-run |
 | a status other than `compile_error` for the uncompilable kernel | NVRTC's result codes differ from what `_ptx` checks | fix the classification, re-run |
 | `TypeError` from `cuLaunchKernel` | the kernel-parameter convention differs in this release | adjust `marshal`'s pointer type, re-run |
+| `driver_version came back MISSING on device` | the driver probe could not read the driver (seen 2026-10-20: torch 2.7.0 has no `torch._C._cuda_getDriverVersion`; fixed by asking libcuda) | check `device.driver_version` against `cuDriverGetVersion`, re-run |
 
 Debugging on the clock is the one avoidable cost, but these fixes are small and are only cheap now.
 Commit any fix on the branch before recording, so the recorded `kernel_source_hash` and the code

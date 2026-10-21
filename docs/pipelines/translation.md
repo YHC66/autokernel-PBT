@@ -1,13 +1,16 @@
 # Autokernel translation: the pipelines we propose
 
-> **Status: building; nothing has run on a device.** As of 2026-10-12 the first backend pair has
-> its infrastructure, all tested on CPU: a CUDA backend (feature 0012), scoring of a port against
-> the known kernel's recorded outputs (feature 0013), and a proof, in Lean, Rocq and Isabelle, that the
-> known Triton kernels and their CUDA ports compute the same function in exact arithmetic
-> (`proofs/cross-setup-reductions/`). TE1 is pre-registered
-> (`docs/measurements/2026-10-12-te1-triton-to-cuda-prereg.md`) and waits for a GPU session. Each
-> claim below is marked as evidence we have, built, or a gap. Comments and changes are welcome:
-> open a PR against this file.
+> **Status: the first pair has run on a device once.** The first backend pair has its
+> infrastructure: a CUDA backend (feature 0012), scoring of a port against the known kernel's
+> recorded outputs (feature 0013), and a proof, in Lean, Rocq and Isabelle, that the known Triton
+> kernels and their CUDA ports compute the same function in exact arithmetic
+> (`proofs/cross-setup-reductions/`). **TE1 ran on 2026-10-20** on one RTX A6000, and all eight
+> pre-registered predictions hold (P2 only after a telemetry fix made before any row was
+> recorded): on a correct port T1 and the Tier-1 laws reject nothing, and T0 rejects 2 of 9
+> layernorm groups
+> (`docs/measurements/2026-10-12-te1-triton-to-cuda-prereg.md`). Each claim below is marked as
+> evidence we have, built, or a gap. Comments and changes are welcome: open a PR against this
+> file.
 >
 > **Priority (decided 2026-10-11): GPU first.** The first backend pair is GPU to GPU on NVIDIA
 > hardware, the stack this repository already records on. **The proposed direction is Triton →
@@ -131,12 +134,12 @@ a port.
 | Rows carry `backend`; a run is scored without a device | **built** |
 | NumPy (CPU) and Triton (GPU) backends | **built** |
 | Tier-1 laws transfer NumPy → Triton | **measured** |
-| A **CUDA C++ backend**: NVRTC to PTX, the driver API, torch's buffers, telemetry schema v2 | **built, CPU-tested** (feature 0012); never executed on a device |
-| **CUDA ports of the known Triton ladder** (`kernels/cuda/`) | **built**; device tests in `tests/gpu/test_cuda_kernels.py` |
-| **Scoring a port against the known kernel's recorded outputs** (T0, T1), with the pairing refused unless inputs are byte-identical | **built** (feature 0013): `driver.score_translation`, `read_translation` |
+| A **CUDA C++ backend**: NVRTC to PTX, the driver API, torch's buffers, telemetry schema v2 | **measured** (feature 0012): 62 of 62 rows `ok` on an RTX A6000 in TE1 |
+| **CUDA ports of the known Triton ladder** (`kernels/cuda/`) | **measured**: correct on device (TE1); device tests in `tests/gpu/test_cuda_kernels.py` |
+| **Scoring a port against the known kernel's recorded outputs** (T0, T1), with the pairing refused unless inputs are byte-identical | **measured** (feature 0013, TE1): `driver.score_translation`, `read_translation` |
 | **Proof that the known kernel and its port compute the same function** (exact arithmetic) | **built** in Lean, Rocq and Isabelle/HOL, six theorems each, one shared statement (`proofs/cross-setup-reductions/`) |
 | A **HIP backend**, then a **TPU backend** (Pallas/JAX) or an **NKI backend** | **gap**: later targets, in priority order |
-| A **cross-backend tolerance**: the `log2 n` ratio assumes pairwise reduction on *one* backend | **gap**: TE2; TE1's P5 tests whether the single-backend ratio already suffices for Triton → CUDA |
+| A **cross-backend tolerance**: the `log2 n` ratio assumes pairwise reduction on *one* backend | **not yet needed for the ladder**: in TE1 the single-backend ratio accepts the correct port with a largest ratio of 0.986, against a threshold of 30. TE2 measures it more widely |
 | **Numerical characterization of the target** (rounding mode, accumulation order, accumulator width) | **gap**: none is published for Trainium (design open question 3). TPU matrix-unit precision modes are documented, but per-kernel accumulation is not |
 | **Completed law bundles** (log-ratio, affine-tie) | **gap**: E2. T2 is unsafe without them, because the current bundles admit wrong kernels (four recorded families, six more probed) |
 | A **translation mutation corpus**: plausible wrong ports | **gap**: see TE3 |
