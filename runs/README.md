@@ -12,10 +12,23 @@ over these runs again on a CPU, at any time, without hardware.
 | `gpu-layernorm/` | layernorm (with `shift_rows` partners) | 18 | 9 | 2026-08-17 | same |
 | `gpu-tolerance_sweep/` | tolerance_sweep | 7 | 7 | 2026-08-17 | same |
 | `gpu-scale/` | softmax_at_scale, up to 29.4 M elements | 5 | 5 | 2026-08-17 | [at-scale hardware run](../docs/measurements/2026-08-17-at-scale-hardware-run.md) |
+| `te1-{triton,cuda}-relu/` | relu | 9 each | 9 | 2026-10-20 | [TE1](../docs/measurements/2026-10-12-te1-triton-to-cuda-prereg.md) |
+| `te1-{triton,cuda}-softmax/` | softmax (with `shift_rows` partners) | 18 each | 9 | 2026-10-20 | [TE1](../docs/measurements/2026-10-12-te1-triton-to-cuda-prereg.md) |
+| `te1-{triton,cuda}-layernorm/` | layernorm (with `shift_rows` partners) | 18 each | 9 | 2026-10-20 | [TE1](../docs/measurements/2026-10-12-te1-triton-to-cuda-prereg.md) |
+| `te1-{triton,cuda}-tolerance_sweep/` | tolerance_sweep | 7 each | 7 | 2026-10-20 | [TE1](../docs/measurements/2026-10-12-te1-triton-to-cuda-prereg.md) |
+| `te1-{triton,cuda}-softmax_at_scale/` | softmax_at_scale (with partners) | 10 each | 5 | 2026-10-20 | [TE1](../docs/measurements/2026-10-12-te1-triton-to-cuda-prereg.md) |
 
 All five ran on one Lambda Cloud NVIDIA A10 (sm_86, 72 SMs) with Triton 3.3.0, PyTorch 2.7.0 and
 CUDA 12.8, seed 42. Every execution's status is `ok`. `gpu-scale/` is 224 MB, and its largest
 payload is 64 MB. Everything else totals about 1 MB.
+
+The `te1-*` runs are one translation pair per task: the known Triton kernel (`te1-triton-*`) and its
+CUDA port (`te1-cuda-*`), recorded on byte-identical inputs in one session on a Lambda Cloud NVIDIA
+RTX A6000 (sm_86, 84 SMs). The stack was Triton 3.3.0, PyTorch 2.7.0 built against CUDA 12.8,
+NVRTC 12.8, a driver reporting CUDA 13.0, and seed 42. Every execution's status is `ok`. They carry
+telemetry schema v2 and the current on-disk format. Each `te1-cuda-*` directory also holds its
+seven-arm scores and the `pairing.json` that names its source. Each `softmax_at_scale` run is
+448 MB, with a largest payload of 64 MB; the other eight total about 2 MB.
 
 ## Reading a run
 

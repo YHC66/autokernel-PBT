@@ -14,7 +14,7 @@ autokernel translation (an agent ports a kernel between backends) · **G+T** bot
 [`pipelines/`](./pipelines/) for how each result feeds a pipeline.
 
 **Scope of every device number:** one NVIDIA A10 (sm_86), Triton 3.3.0, PyTorch 2.7.0, float32,
-seed 42. The optimization loop ran on CPU (NumPy kernels on an Apple M4 Pro). Rates are per
+seed 42, except result 9, which ran on one NVIDIA RTX A6000 (also sm_86) with the same versions. The optimization loop ran on CPU (NumPy kernels on an Apple M4 Pro). Rates are per
 *case group*. A kernel that is correct on the ladder's two single-column shapes can fail at most
 7 of 9 groups, so absolute detection rates are understated. Comparisons between arms are not
 affected.
@@ -33,6 +33,7 @@ affected.
 | 6 | A certificate core that catches spec gaming by execution | FV × PBT | G (T next) | **6** checks, each the only catcher of one cheat; 20 conditions deleted one at a time, and each deletion was caught | [B] |
 | 7 | The reference arm's tolerance, derived rather than guessed | PBT | G+T | LAPACK's linear-`n` ratio drifts **127×** and is **1500×** blinder than `allclose`; `log2 n` catches everything `allclose` does, with **213–779×** headroom | [M] |
 | 8 | A metamorphic partner caught a "correct" kernel that was wrong | PBT | G | `E[x²]−E[x]²` layernorm passes plain inputs (ratio < 0.2) and fails the shifted partner (**48.1** against a threshold of 30) | [M] |
+| 9 | A port judged against the kernel it came from, with no false alarm | PBT | T | Triton ladder → CUDA on one device: the port differs bitwise on **55–75%** of reduction elements, yet T1 (`reference_source`) and the Tier-1 laws reject **0** groups, with T1's largest ratio **0.986** against 30. T0 (`allclose_source`) rejects **2/9** layernorm groups | [M] |
 
 The one-line version: **PBT's gain is calibration, not detection. FV's gain is completeness. Each
 checks the other.** The law bundle and the normalized reference catch the same bugs as `allclose`
@@ -115,6 +116,21 @@ row mean is large and the two terms nearly cancel, they reach 34.3, 48.1 and `in
 threshold of 30. The catch belongs to the transform, not to any one arm: all four arms see it
 because the case group put the shifted input in front of them.
 Record: [`2026-08-19-false-positive-rate.md`](./measurements/2026-08-19-false-positive-rate.md) §3.
+
+### 9. Translation: a correct port, judged against the known kernel  [M] · T
+
+TE1 mapped the known Triton ladder to CUDA C++ and recorded both setups on byte-identical inputs
+in one session, on one RTX A6000. The port is correct, and it is not the same computation: only
+25–45% of the output elements of each reduction task are bitwise equal to the known kernel's,
+because the two kernels reduce in different orders. Judged against the known kernel's recording,
+the normalized ratio (T1) rejects 0 groups. Its largest ratio is 0.986, on layernorm, where each
+kernel's own largest distance from float64 is 1.00. The Tier-1 laws also reject 0 groups, so the laws transfer to
+a second backend unchanged, as they did NumPy → Triton (result 3). `allclose` against the known
+kernel (T0) rejects 2 of 9 layernorm groups, the translation analogue of result 1. All eight
+pre-registered predictions hold. One of them, P2, held only after a telemetry probe was fixed
+before any row was recorded. Not established: detection of wrong ports (TE3) and any agent doing
+the porting (TE4).
+Record: [`2026-10-12-te1-triton-to-cuda-prereg.md`](./measurements/2026-10-12-te1-triton-to-cuda-prereg.md).
 
 ---
 
@@ -223,5 +239,5 @@ spec: [`specs/features/0009-formal-core/`](../specs/features/0009-formal-core/).
 Pre-registered in the paper (§5) and [`experiments/README.md`](../experiments/README.md): **E1**
 agent-written adherence proofs across 7 languages, **E2** complete the bundles and re-gate, **E3**
 red-team the gate with a speed objective and a hidden checker, **E4** return formal feedback to the
-agent. Translation experiments **TE1–TE4** are proposed in
+agent. Translation: **TE1** has run (result 9); **TE2–TE4** are proposed in
 [`pipelines/translation.md`](./pipelines/translation.md).

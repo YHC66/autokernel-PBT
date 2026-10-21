@@ -37,8 +37,8 @@ toolchain is present. Results are recorded, dated and append-only, in
 
 ## Translation
 
-Known kernels mapped from one setup to another, with PBT and formal proofs as the gate. Nothing has
-run on a device; the infrastructure for the first pair (Triton → CUDA) is built and tested on CPU.
+Known kernels mapped from one setup to another, with PBT and formal proofs as the gate. The first
+pair (Triton → CUDA) has run on a device once, in TE1 (2026-10-20, one RTX A6000).
 The pipelines (T0–T4) and experiments (TE1–TE4) are in
 [`docs/pipelines/translation.md`](../docs/pipelines/translation.md); see
 [`translation/README.md`](./translation/README.md).
@@ -46,7 +46,7 @@ The pipelines (T0–T4) and experiments (TE1–TE4) are in
 | Experiment | Question | Status | Headline | Code | Record |
 |---|---|---|---|---|---|
 | Cross-setup consistency, proved | Do the known Triton ladder kernels and their CUDA ports compute the same function? | [M] | Yes in exact arithmetic, for every row width and power-of-two block width; the Triton tile needs `B ≥ n`, and drops the tail otherwise. Six theorems each in Lean, Rocq and Isabelle/HOL | [`proofs/cross-setup-reductions/`](../proofs/cross-setup-reductions/) | the directory README |
-| **TE1**: Triton → CUDA | Do the Tier-1 laws and the cross-setup ratio accept the correct CUDA port, where `allclose` does not? | [planned] | 8 predictions registered | `kernels/cuda/`, features 0012–0013 | [`2026-10-12-te1-triton-to-cuda-prereg`](../docs/measurements/2026-10-12-te1-triton-to-cuda-prereg.md) |
+| **TE1**: Triton → CUDA | Do the Tier-1 laws and the cross-setup ratio accept the correct CUDA port, where `allclose` does not? | [M] | All 8 predictions hold (P2 after a telemetry fix made before recording). On a correct port, T1 and the laws reject **0** groups, T1's largest ratio is **0.986**, and T0 rejects **2/9** layernorm groups. Outputs are bitwise equal on 25–45% of reduction elements | `kernels/cuda/`, features 0012–0013, [`translation/te1/`](./translation/te1/) | [`2026-10-12-te1-triton-to-cuda-prereg`](../docs/measurements/2026-10-12-te1-triton-to-cuda-prereg.md) |
 | TE2–TE4 | Cross-setup calibration; a translation mutation corpus; the translation loop | [proposed] | — | — | [pipeline page](../docs/pipelines/translation.md) |
 
 The evidence before this segment had code of its own is the cross-backend half of the hardware

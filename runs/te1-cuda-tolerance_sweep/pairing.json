@@ -1,0 +1,28 @@
+{
+  "require_known_source": true,
+  "scored_arms": [
+    "allclose",
+    "reference",
+    "declarative",
+    "hybrid",
+    "allclose_source",
+    "reference_source",
+    "hybrid_source"
+  ],
+  "source_backends": [
+    "triton"
+  ],
+  "source_dir": "runs/te1-triton-tolerance_sweep",
+  "source_fingerprint": "6090e4d91bf64132ab8db0003622596a-da740e1ee20810d5ec7b9601696fd42275ab889ee5ce8fc11ab4d4b98e496b0d",
+  "source_kernel_ids": [
+    "softmax_triton"
+  ],
+  "target_backends": [
+    "cuda"
+  ],
+  "target_fingerprint": "2cdd9654788d43f7a3d22096cdda7689-da740e1ee20810d5ec7b9601696fd42275ab889ee5ce8fc11ab4d4b98e496b0d",
+  "target_kernel_ids": [
+    "softmax_cuda"
+  ],
+  "task_id": "tolerance_sweep"
+}

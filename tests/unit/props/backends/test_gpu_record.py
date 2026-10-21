@@ -49,7 +49,6 @@ def _fake_torch() -> types.ModuleType:
     torch.cuda = types.SimpleNamespace(
         current_device=lambda: 0, get_device_properties=lambda index: properties
     )
-    torch._C = types.SimpleNamespace(_cuda_getDriverVersion=lambda: 12090)
     return torch
 
 
