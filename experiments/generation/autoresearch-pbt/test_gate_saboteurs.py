@@ -36,7 +36,14 @@ from collections.abc import Mapping
 import numpy as np
 import pbt_gate
 import pytest
-from saboteurs import COMPLETED, SABOTEURS, first_failing_property
+from saboteurs import (
+    COMPLETED,
+    LAYERNORM_ABSTENTIONS,
+    LAYERNORM_COMPLETED,
+    LAYERNORM_SABOTEURS,
+    SABOTEURS,
+    first_failing_property,
+)
 
 from autokernel_pbt.props.oracle import DeclarativeOracle
 from autokernel_pbt.props.verdict import Verdict
@@ -130,6 +137,75 @@ def test_a_declarative_pass_is_a_judgement_not_an_abstention(monkeypatch, name: 
     assert {r.verdict for r in seen} == {Verdict.PASS}, not_passed
 
 
+def _recorded_layernorm(name: str, bundle: str) -> tuple[Mapping[str, tuple[int, str]], bool]:
+    """(expected per arm, admitted), as recorded for ``bundle``."""
+    if bundle == "current":
+        return LAYERNORM_SABOTEURS[name].expected, LAYERNORM_SABOTEURS[name].admitted
+    return LAYERNORM_COMPLETED[name]
+
+
+def test_every_layernorm_saboteur_is_recorded_under_both_bundles():
+    """Feature 0015. Softmax's reason applies: a stale row would be read by no test, and a missing
+    one would leave a kernel unpinned under the bundle E2 measures."""
+    assert LAYERNORM_COMPLETED.keys() == LAYERNORM_SABOTEURS.keys()
+
+
+@pytest.mark.parametrize("bundle", BUNDLES)
+@pytest.mark.parametrize("name", sorted(LAYERNORM_SABOTEURS))
+def test_each_layernorm_saboteur_is_caught_by_exactly_its_paired_arms(name: str, bundle: str):
+    """Equality over all four arms, with the property that caught it. Rolled rows differ from the
+    others only by the group count, and the positive control only by the property."""
+    saboteur = LAYERNORM_SABOTEURS[name]
+    verdict = pbt_gate.check_task(saboteur.kernel, saboteur.task, bundle=bundle)
+    observed = {a.arm: (a.groups_failed, first_failing_property(a)) for a in verdict.arms}
+    assert observed == _recorded_layernorm(name, bundle)[0]
+
+
+@pytest.mark.parametrize("bundle", BUNDLES)
+@pytest.mark.parametrize("name", sorted(LAYERNORM_SABOTEURS))
+def test_the_gate_admits_exactly_the_layernorm_saboteurs_it_is_recorded_admitting(
+    name: str, bundle: str
+):
+    """The decision, which no arm's row carries, and the positive control is the row that stops a
+    gate that admits everything from satisfying this test."""
+    saboteur = LAYERNORM_SABOTEURS[name]
+    verdict = pbt_gate.check_task(saboteur.kernel, saboteur.task, bundle=bundle)
+    assert verdict.passed is _recorded_layernorm(name, bundle)[1]
+
+
+@pytest.mark.parametrize(
+    ("name", "bundle"),
+    sorted(
+        (n, b)
+        for n in LAYERNORM_SABOTEURS
+        for b in BUNDLES
+        if _recorded_layernorm(n, b)[0]["declarative"] == (0, "")
+    ),
+)
+def test_a_layernorm_declarative_pass_is_a_judgement_not_an_abstention(
+    monkeypatch, name: str, bundle: str
+):
+    """As softmax's test, but layernorm's unit-variance law abstains on two rungs by design, on the
+    correct kernel too. Equality with that named set, so a new abstention fails, the affine-tie law
+    abstaining on those rungs included, and so does the old one going away."""
+    seen = []
+    original = DeclarativeOracle.evaluate
+
+    def evaluate(self, rows):
+        results = original(self, rows)
+        seen.extend(results)
+        return results
+
+    monkeypatch.setattr(DeclarativeOracle, "evaluate", evaluate)
+    saboteur = LAYERNORM_SABOTEURS[name]
+    pbt_gate.check_task(saboteur.kernel, saboteur.task, bundle=bundle)
+
+    assert any(r.verdict is Verdict.PASS for r in seen)
+    not_passed = {(r.property_name, r.case_id) for r in seen if r.verdict is not Verdict.PASS}
+    assert not_passed == LAYERNORM_ABSTENTIONS
+    assert all(r.verdict is Verdict.INCONCLUSIVE for r in seen if r.verdict is not Verdict.PASS)
+
+
 def _raises(x):
     msg = "a kernel that never runs on the gate's shapes"
     raise RuntimeError(msg)
@@ -156,10 +232,17 @@ def test_a_candidate_the_gate_never_judged_is_refused(task: str, kernel, reason:
     assert re.search(reason, verdict.refused), verdict.refused
 
 
-@pytest.mark.parametrize(("task", "bundle"), [("layernorm", "completed"), ("softmax", "final")])
+@pytest.mark.parametrize(("task", "bundle"), [("layernorm", "final"), ("softmax", "final")])
 def test_a_bundle_the_task_does_not_have_is_refused(task: str, bundle: str):
-    """Layernorm's completing law is not built, and a misspelled bundle names nothing. Either is a
-    bad call, so it raises; falling back to the current bundle would report its verdicts under
-    the completed bundle's name."""
+    """A misspelled bundle names nothing. That is a bad call, so it raises; falling back to the
+    current bundle would report its verdicts under another bundle's name."""
     with pytest.raises(ValueError, match=f"no {bundle!r} bundle for task {task!r}"):
         pbt_gate.check_task(SABOTEURS["beta_1_correct"].kernel, task, bundle=bundle)
+
+
+def test_a_named_bundle_with_no_file_is_refused(monkeypatch, tmp_path):
+    """Every task has a completed contract now, so a task without one takes a missing file. It is
+    still refused, never answered with the current bundle under the completed bundle's name."""
+    monkeypatch.setattr(pbt_gate, "REPO", tmp_path)
+    with pytest.raises(ValueError, match="no 'completed' bundle for task 'layernorm'"):
+        pbt_gate.check_task(SABOTEURS["beta_1_correct"].kernel, "layernorm", bundle="completed")

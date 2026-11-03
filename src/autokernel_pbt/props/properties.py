@@ -636,6 +636,94 @@ class RowsHaveUnitVariance:
         return _result(self, Verdict.PASS, f"max|var-1|={worst:.3g}", case_id=case_id)
 
 
+class RowsHaveAffineTie:
+    """In each row, a layernorm output is an increasing affine function of its input.
+
+    Layernorm's completing law (feature 0015, the paper's Proposition 1(c)). Every other layernorm
+    law reads an output alone or compares two outputs, so the bundle admits -LN, every output
+    permutation and row-wise sorting. This one ties the output to its input: for each row there is
+    an s > 0 with y_j - y_k = (x_j - x_k) / s.
+
+    Two checks, because the law says two things, and neither implies the other. The least-squares
+    residual tests that the row is affine at all. It leaves the slope free, because the law only
+    says some s exists, and zero mean and unit variance pin it. So -LN, whose tie is exact, has the
+    ratio of a correct kernel and only the slope rejects it, as does a zeroed buffer, which has no
+    residual. The undivided kernel passes both and stays the unit-variance law's.
+
+    The bound is eps * max |y|, with no range term. The errors in a kernel's mean and scale are row
+    constants, which the fit absorbs, so what remains is the rounding of one subtraction and one
+    division, each relative to the entry itself. ``tiny`` is the floor where y has lost relative
+    precision. See ``specs/features/0015-affine-tie-law/spec.md``.
+    """
+
+    name = "rows_have_affine_tie"
+    tier = TIER_PORTABLE
+    tolerance_free = False
+    defers_nonfinite_to = OutputsAreFinite.name
+
+    def check(self, row: ExecutionResult) -> PropertyResult:
+        case_id = row.case.case_id
+        if not _usable(row):
+            return _result(self, Verdict.INCONCLUSIVE, _unusable_detail(row), case_id=case_id)
+        y = row.outputs[OUTPUT_NAME]
+        if reason := _unjudgeable(y):
+            return _result(self, Verdict.INCONCLUSIVE, reason, case_id=case_id)
+        if not np.all(np.isfinite(y)):
+            return _result(self, Verdict.INCONCLUSIVE, _NONFINITE_DETAIL, case_id=case_id)
+        if y.dtype.kind != "f":
+            return _result(self, Verdict.INCONCLUSIVE, _EXACT_DTYPE_DETAIL, case_id=case_id)
+        x = row.case.tensors.get(PRIMARY_INPUT)
+        if x is None or x.shape != y.shape:
+            detail = "no primary input of the output's shape to tie it to"
+            return _result(self, Verdict.INCONCLUSIVE, detail, case_id=case_id)
+        if x.dtype.kind not in "fiu":
+            # A complex input cast to float64 loses its imaginary part, and under
+            # filterwarnings=["error"] the ComplexWarning would abort the pass.
+            detail = f"input dtype {x.dtype} is not real-valued"
+            return _result(self, Verdict.INCONCLUSIVE, detail, case_id=case_id)
+
+        width = y.shape[-1] if y.ndim else 1
+        x2 = np.asarray(x, dtype=np.float64).reshape(-1, width)
+        y2 = np.asarray(y, dtype=np.float64).reshape(-1, width)
+        if not np.all(np.isfinite(x2)):
+            detail = "input contains NaN or an infinity; the law is undefined there"
+            return _result(self, Verdict.INCONCLUSIVE, detail, case_id=case_id)
+
+        info = np.finfo(y.dtype)
+        eps, tiny = float(info.eps), float(info.tiny)
+        # Exact, unlike a variance: a constant row's rounded mean would give it a nonzero center.
+        varying = np.max(x2, axis=-1) > np.min(x2, axis=-1)
+        # Only float64 values near its limits can overflow or underflow here. That is bad data,
+        # read off the result below, and the warning would abort the pass.
+        with np.errstate(all="ignore"):
+            xc = np.where(varying[:, None], x2 - np.mean(x2, axis=-1, keepdims=True), 0.0)
+            yc = y2 - np.mean(y2, axis=-1, keepdims=True)
+            slopes = np.sum(xc * yc, axis=-1) / np.where(varying, np.sum(xc * xc, axis=-1), 1.0)
+            residuals = np.max(np.abs(yc - slopes[:, None] * xc), axis=-1)
+            ratios = residuals / (eps * np.max(np.abs(y2), axis=-1) + tiny)
+        if not (np.all(np.isfinite(slopes)) and np.all(np.isfinite(ratios))):
+            detail = "values too extreme for float64 arithmetic; the tie cannot be computed"
+            return _result(self, Verdict.INCONCLUSIVE, detail, case_id=case_id)
+
+        worst = int(np.argmax(ratios))
+        if not within_threshold(float(ratios[worst])):
+            detail = (
+                f"affine-tie test ratio {ratios[worst]:.3g} >= {DEFAULT_THRESH} at row {worst}: "
+                f"the output is {residuals[worst]:.3g} from any affine function of its input"
+            )
+            return _result(self, Verdict.FAIL, detail, case_id=case_id)
+
+        falling = np.flatnonzero(varying & (slopes <= 0.0))
+        if falling.size:
+            k = int(falling[0])
+            detail = (
+                f"slope {slopes[k]:.3g} at row {k}; the law makes each output rise with its input"
+            )
+            return _result(self, Verdict.FAIL, detail, case_id=case_id)
+
+        return _result(self, Verdict.PASS, f"ratio={ratios[worst]:.3g}", case_id=case_id)
+
+
 # Name -> class, so Task 13 can build a property set from a kernel's acceptance.yaml
 # by name. Keyed off each class's own ``name`` rather than a hand-written literal, so
 # the registry key and the recorded ``property_name`` cannot disagree.
@@ -648,6 +736,7 @@ CASE_PROPERTY_REGISTRY: dict[str, type[CaseProperty]] = {
         RowsHaveConstantLogRatio,
         RowsHaveZeroMean,
         RowsHaveUnitVariance,
+        RowsHaveAffineTie,
     )
 }
 GROUP_PROPERTY_REGISTRY: dict[str, type[GroupProperty]] = {

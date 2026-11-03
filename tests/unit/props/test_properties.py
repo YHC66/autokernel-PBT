@@ -150,6 +150,7 @@ def test_registries_are_keyed_by_property_name():
         "rows_have_constant_log_ratio",
         "rows_have_zero_mean",
         "rows_have_unit_variance",
+        "rows_have_affine_tie",
     }
     assert set(GROUP_PROPERTY_REGISTRY) == {"shift_invariance"}
 
