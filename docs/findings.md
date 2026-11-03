@@ -175,6 +175,12 @@ reversed. It raises no new false positive on the 26 loop candidates, the 21 reco
 464 CPU cases with row ranges in the hundreds, underflow and −∞ masks (worst 1.38 against 30).
 Fast-exp is admitted on the gate's N(0, 1) domain (17.2), but the law rejects it on rows that
 underflow or carry −∞ masks: its argument floor leaves 1.18e-38 where softmax underflows.
+E2's layernorm half adds the other completing law as `rows_have_affine_tie` (feature 0015):
+[`2026-11-02-e2-affine-tie-law-prereg.md`](./measurements/2026-11-02-e2-affine-tie-law-prereg.md). The
+completed gate rejects −LN, reversed columns, sorted rows and rolled rows. It raises no new false
+positive on the 26 loop candidates, the 27 recorded device groups, or 580 CPU cases across nine
+decades of scale and offsets up to 1e6 (worst 0.853 against 30). The gate's default is still the
+current bundle.
 Records: [`2026-10-01-softmax-temperature-blind-spot.md`](./measurements/2026-10-01-softmax-temperature-blind-spot.md),
 [`2026-10-01-softmax-bundle-mechanized.md`](./measurements/2026-10-01-softmax-bundle-mechanized.md) ·
 proof: [`proofs/softmax-bundle/`](../proofs/softmax-bundle/).
@@ -233,7 +239,8 @@ spec: [`specs/features/0009-formal-core/`](../specs/features/0009-formal-core/).
   which is the translation setting.
   [`2026-08-18-arm-differentiation-null-result.md`](./measurements/2026-08-18-arm-differentiation-null-result.md)
 - **The drafted law bundles are incomplete** (result 4). On those families the declarative arm
-  misses what the reference catches, and until E2 lands the gate admits them. A **fast-exp
+  misses what the reference catches, and until the gate's default moves to the completed bundles it
+  admits them. A **fast-exp
   softmax**, with 40× the exact kernel's relative error, passed every arm. It was stopped by being
   slower, not by the gate.
 - **Zero in-loop rejections measures compliance, not gate strength.** The loop's instructions name

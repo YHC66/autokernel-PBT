@@ -17,8 +17,9 @@ Reports every arm separately rather than an aggregate, because *which* arm fires
 the measurement this experiment exists to produce.
 
 The declarative arm is built from one of two *bundles*: ``current``, the contract every
-recorded number was measured under and the default, and ``completed``, which adds softmax's
-log-ratio law (feature 0014, E2). The loop gates on the default.
+recorded number was measured under and the default, and ``completed``, which adds each task's
+completing law (E2): softmax's log-ratio law (feature 0014) and layernorm's affine-tie law
+(feature 0015). The loop gates on the default.
 """
 
 from __future__ import annotations
@@ -63,9 +64,8 @@ TASKS = {
     "layernorm": (LAYERNORM, layernorm_reference, "layernorm"),
 }
 
-#: The contract file each bundle's declarative arm is built from. Layernorm has no completed
-#: bundle yet -- its affine-tie law is not built -- so asking for one is refused, never answered
-#: with the current bundle under the completed bundle's name.
+#: The contract file each bundle's declarative arm is built from. A task with no such file is
+#: refused, never answered with the current bundle under the completed bundle's name.
 BUNDLES = {"current": CONTRACT_FILENAME, "completed": COMPLETED_CONTRACT_FILENAME}
 DEFAULT_BUNDLE = "current"
 
