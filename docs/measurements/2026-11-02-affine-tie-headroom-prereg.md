@@ -119,3 +119,81 @@ that differs from the reference's and is accepted. Then this float form is wrong
 - If a kernel cannot be loaded or run, it is reported as such, not replaced.
 
 ---
+
+## Results (appended 2026-11-02, after the registration above was committed)
+
+**Run:** `cd experiments/generation/affine-tie-headroom && ../../../.venv/bin/python tie_headroom.py`,
+in the registered environment (Apple M4 Pro, Python 3.12.2, NumPy 1.26.4). The script prints every
+case; the numbers below are its summary. Nothing above the line was edited.
+
+| kernels | cases | worst ratio | where |
+|---|---|---|---|
+| correct, CPU: the reference, the float32 stock kernel, the `rsqrt` analogue, `best/train.py`, and the 25 files in `candidates/` (29 kernels) | 522 | **0.673** | stock form, (5, 33) |
+| correct, devices: Triton on the A10, Triton and its CUDA port on the A6000 | 54 | **0.708** | Triton on the A6000, (16, 32), shift partner |
+| wrong, weakest case that the ratio rejects | — | **6.28e6** | columns reversed, (3, 7), shift partner |
+| −LN(x) (rejected by its slope alone) | 14 differing | 0.381 | every slope at most −0.1486 |
+| distributed division (reported) | 18 | 4.72 | (16, 32) |
+| undivided (reported) | 18 | 0.523 | every slope within 2.52e-8 of 1 |
+| zeroed (reported) | 18 | 0 | every slope 0 |
+
+By device run, the worst ratios are 0.693 (`gpu-layernorm`), 0.708 (`te1-triton-layernorm`) and
+0.633 (`te1-cuda-layernorm`). The 23 candidate files with the in-place form, the 2 with the fresh
+quotient, `best/train.py` and the stock kernel reach the same 0.673, so the 29 CPU kernels show only
+three distinct worst cases: 0.381, 0.626 and 0.673.
+
+### Predictions
+
+- **P1 holds.** The largest correct CPU ratio is 0.673, under the registered 1.5.
+- **P2 holds.** The largest device ratio is 0.708, under 3. The devices sit at the CPU's level, not
+  at twice it.
+- **P3 holds, one part narrowly.** Over 42 multi-column device executions, r(ratio, log2 n) = 0.460,
+  under the registered 0.5, and r(ratio, offset) = −0.257. Row lengths reach only 129.
+- **P4 holds.** Every correct case is accepted. Of the 54 wrong cases that differ from the
+  reference's, none is accepted. −LN's 14 are rejected by the slope alone, and the other 40 by the
+  ratio.
+- **P5 holds.** The weakest ratio is 6.28e6, above the registered 10⁶. The margin over the largest
+  correct ratio is 8.87e6, above the registered 10⁵.
+- **P6 holds.** −LN: worst ratio 0.381, and every slope at most −0.1486. Undivided: worst ratio
+  0.523, and every slope within 2.52e-8 of 1. Zeroed: ratio 0, and slope 0 on every multi-column
+  row, which rejects it on all 14 of its multi-column cases.
+- **P7 holds.** Distributed division's worst ratio is 4.72, above the stock kernel's 0.673 and below
+  30, and r(ratio, offset) = 0.963.
+- **The falsifier does not fire.**
+
+### What it says for E2
+
+1. **One threshold and one sign check work on everything recorded.** The worst correct case is 42×
+   below 30, and the weakest ratio rejection is 2.1e5× above it.
+2. **The bound needs no range term.** Unlike softmax's law, a correct kernel's ratio does not rise
+   with the input's offset. The rounding that remains is relative to each output, so max |y| is
+   the scale. This is measured on rows up to 129 wide and offsets up to about 12.5. E2 should
+   test it far past both.
+3. **The ratio and the slope are separate checks, and neither is redundant.** −LN has a ratio of
+   0.381, indistinguishable from a correct kernel, so only the slope rejects it. A zeroed output
+   has no residual, so again only the slope rejects it. Sorted rows have a positive slope on every
+   row in 4 of their 14 differing cases, so the slope alone would miss those.
+4. **The undivided kernel stays the unit-variance law's.** Its tie is exact. The two laws are
+   complements, as Proposition 1(c)'s proof uses them.
+5. **Distributed division is admitted on the gate's domain, and its ratio climbs with the offset.**
+   A linear fit gives 0.43 per unit of offset, which reaches 30 near an offset of 71.
+   *Hypothesis, untested:* the budget would reject it there, on a kernel that is correct over the
+   reals. This is the same kind of question as fast-exp's, and E2 should report it.
+
+### Deviations
+
+- **The P6 readout was corrected after the first run.** The first run read only each case's
+  smallest slope, which cannot show that every slope is negative. The script now reads the largest
+  as well. One line of its output changed, from −0.1758 to −0.1486, and no registered statistic or
+  verdict moved.
+- **Three numbers come from an ad hoc check, not the script:** the 4 of 14 sorted cases, the largest
+  offset of 12.5 over every row, and distributed division's linear fit.
+
+### Threats to validity
+
+- **Narrow inputs.** Rows reach 129 wide, and offsets reach about 12.5, on U(−10, 10) with one
+  shift per row.
+- **Two device models, one kernel form.** The A10 and the A6000 are both sm_86, and the Triton and
+  CUDA kernels share one arithmetic form. The correct Triton `rsqrt` rewrite is measured only as a
+  NumPy analogue.
+- **Author-chosen wrong families,** as in the companion records.
+- **Few distinct correct behaviours** on the CPU: three distinct worst cases from 29 kernels.
