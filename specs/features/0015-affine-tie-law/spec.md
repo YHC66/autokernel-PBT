@@ -84,8 +84,10 @@ this law and stays the unit-variance law's to reject.
 
 - **The budget admits distributed division on the gate's domain.** x / σ̂ − μ̂ / σ̂ is correct over the
   reals, and its rounding is relative to |x| / σ̂, not |y|. Its ratio is 4.72 on the gate's cases and
-  climbs with the offset. E2 reports where it crosses c. Admitting it is the stated budget's answer,
-  not a separate decision made here.
+  climbs with the offset. E2 found that it crosses c between row offsets of 100 and 1e3, where the
+  reference arm rejects it too on all but one input
+  (`docs/measurements/2026-11-02-e2-affine-tie-law-prereg.md`, P9). So the law adds no stricter accuracy
+  budget of its own.
 - **A device that flushes subnormal differences to zero** can output a flat row for a varying input
   whose range is around 1e-35 or below, and the slope check would FAIL that. No domain draws such a
   row, and the law takes no extra case for it.

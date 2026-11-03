@@ -120,3 +120,98 @@ completed gate admits on a group where the family's output differs from the refe
   P2–P3, the record says so; the rows are never edited to match a prediction.
 
 ---
+
+## Results (appended 2026-11-02, after the registration above was committed)
+
+**Run:** `cd experiments/generation/e2-affine-tie-law && ../../../.venv/bin/python e2_layernorm.py`, in
+the registered environment (Apple M4 Pro, Python 3.12.2, NumPy 1.26.4), about 1 s. The law is the one
+feature 0015 specifies, as implemented in `props/properties.py` on this branch. The script prints
+every table. The numbers below are its output, and nothing above the line was edited.
+
+| set | kernels × cases | result |
+|---|---|---|
+| A. saboteur matrix | 6 × 18 gate cases, both bundles | The completed gate **rejects** −LN, columns reversed and each row sorted at declarative 7/9 and hybrid 7/9, and rows rolled at 6/9 and 6/9, all through `rows_have_affine_tie`. It admits the reference. The undivided positive control is unchanged: 7/9 through `rows_have_unit_variance`, rejected. Every current-bundle cell reproduces |
+| B. loop candidates | 26 × 18, both bundles | All 26 **admitted**, declarative 0/9 each, no other arm moved. The law's worst ratio is 0.673 on every one |
+| C. device runs | 54 executions, 27 groups | 0 groups failed under either bundle; the law abstained on 0 executions. Worst ratio **0.708** (`te1-triton-layernorm`; `gpu-layernorm` 0.693, `te1-cuda-layernorm` 0.633). 6 groups are INCONCLUSIVE under both bundles, g00006 and g00008 of each run, through the unit-variance law |
+| D. scaled, offset, constant rows | 29 correct × 20 inputs = 580 cases | **580/580 pass**, worst ratio **0.853** (the `rsqrt` analogue, σ = 1e6 at (16, 4096)). Every constant row is exactly flat |
+| D, wrong | 4 × 20 = 80 | 80 FAIL: −LN's 20 by the slope, and the other 60 by the tie, at ratios of at least 8.39e6 |
+| D, distributed division | 1 × 20 | 14 PASS and **6 FAIL**; see P9 |
+
+In the gate tables, −LN's "law: worst ratio" reads 0. That cell reads only ratios the law reports,
+and a slope FAIL reports none, so what remains are its one-column cases.
+
+The completed gate's verdicts on the saboteur matrix are pinned by `test_gate_saboteurs.py`.
+`saboteurs.LAYERNORM_COMPLETED` was written from P2 before the law existed. The measured matrix differs
+from it in no cell, so no row needed re-recording beyond what P2 had predicted.
+
+### Predictions
+
+- **P0 holds, with one number read differently.** Correct CPU kernels reach at most 0.673 over 522
+  gate cases, the devices 0.708, the weakest ratio rejection 6.28e6, and distributed division 4.72, all
+  as known. The law reports no ratio on a slope FAIL, so −LN's 0.381 cannot be read from it as
+  registered. The law reports 0.381 on the reference, of which −LN is the exact negation.
+- **P1 holds.** Every current-bundle cell of sets A–C reproduces the known verdicts.
+- **P2 holds** in every cell.
+- **P3 holds.** The completed gate contradicts the current record in exactly 12 places: the
+  declarative cell, the hybrid cell and the admission of each of the four families. Nothing else in set
+  A moves.
+- **P4 holds.** The only non-PASS declarative results on the reference are the four known abstentions
+  of `rows_have_unit_variance`. The law PASSes on those rungs.
+- **P5 holds.** All 26 loop candidates are admitted, with the declarative arm 0/9 and no other arm
+  changed.
+- **P6 holds.** No device group fails under the completed bundle, the law is never INCONCLUSIVE, and the
+  same 6 groups stay INCONCLUSIVE under both bundles.
+- **P7 holds.** All correct kernels pass every input. The worst ratio is 0.853, under the registered
+  1.5. There is no upward trend: the worst ratio per input runs 0.518 to 0.853 on the scaled rows and
+  0.428 to 0.499 on the offset rows, the largest μ included. Constant rows are exactly flat.
+- **P8 holds.** Every wrong kernel fails every input: −LN by the slope alone, and the others by the tie.
+- **P9 holds.** Distributed division passes on every scaled input and at μ = 10, and fails at μ ≥ 1e3 by
+  the ratio. At μ = 100, reported and not predicted, it passes, at 14.5 and 9.47.
+- **E2's falsifier does not fire.** No correct kernel failed the law on any case: 18 reference gate
+  cases, the 26 candidates' 468, 54 device executions, and 580 scaled, offset and constant cases. No
+  family the current gate admits passed the completed gate on a group where its output differs.
+
+### What it says for E2
+
+1. **For layernorm, the completed bundle meets E2's criterion on everything we hold.** Every family
+   Proposition 1(c) names and the current gate admits is rejected by the completed gate: −LN, reversed
+   columns, sorted rows and rolled rows. The correct kernel and the positive control are unchanged. No
+   new false positive appears on the 26 loop candidates or on the 27 recorded device groups. With
+   softmax's half, the completed gate rejects every family in the paper's Table 4 that the current gate
+   admits, except fast-exp, which the stated budget admits on the gate's domain.
+2. **The bound holds far past every recorded input.** Across nine decades of scale and offsets of up
+   to 1e6, where the float32 spacing is 0.0625, correct kernels reach 0.853 against a budget of 30, a 35×
+   margin. Unlike softmax's law, this one needed no range term, and P3 of the headroom record and P7 here
+   agree on why.
+3. **The budget's verdict on distributed division nearly matches the reference arm's.** It is correct over
+   the reals, and it loses accuracy as the offset grows. The law rejects it on 6 of the 10 offset inputs,
+   and the reference arm on 5. They disagree on one input, μ = 1e3 at (16, 4096), where the reference
+   arm's ratio is 16.5 and the law's is 73.1, because the reference arm's bound is divided by
+   log2 n = 12. So on the inputs the law rejects it, this kernel is already at or near the reference
+   arm's limit, and the law does not add a stricter accuracy budget of its own. On the gate's own domain
+   every arm but allclose admits it.
+4. **E2 is not finished.** Two pieces remain from the paper's wording: the formal half, and masked or
+   wide inputs in the gate's own domain. So does the accuracy budget for fast-exp, which is the team's
+   call. The 54 device groups are still only partly answered: the `exp2`, reciprocal-multiply and
+   `rsqrt` Triton runs are not versioned.
+
+### Deviations
+
+- **P0's 0.381 is read from the reference, not from −LN,** as above.
+- **Distributed division's gate row is printed but was not registered.** It reads 6/9 on allclose, 0/9 on
+  every other arm, and admitted, under both bundles. No registered statistic or verdict depends on it.
+
+### Threats to validity
+
+- **Scaled, offset and constant rows are CPU only.** The device rows reach a width of 129 and an offset of
+  about 12.5. Set D shows the bound's headroom on NumPy kernels, and the device's behaviour there is
+  inferred from its matching the CPU on the rows it has.
+- **Two sm_86 devices, one arithmetic form.** The Triton kernel and its CUDA port share one form, and the
+  correct Triton `rsqrt` rewrite is measured only as a NumPy analogue.
+- **The law was designed knowing the wrong families.** Its threshold was fixed before its numbers existed
+  (it is `DEFAULT_THRESH`), but its slope check and its constant-row reading were written with them in
+  view. Set D's inputs and wrong-kernel list were registered before the run.
+- **Few distinct correct behaviours:** the 29 CPU kernels show three distinct worst cases on the gate, and
+  the loop candidates all reach the stock kernel's ratio.
+- **Three significant figures:** the law reports its ratio at that precision, so P0 is checked at that
+  precision.
