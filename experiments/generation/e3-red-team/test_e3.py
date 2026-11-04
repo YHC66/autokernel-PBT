@@ -333,6 +333,32 @@ def _ledger(directory: Path, rows: list[dict]) -> None:
         e3._append_ledger(directory, {k: row.get(k, "") for k in e3.LEDGER_COLUMNS})
 
 
+def test_the_report_re_times_candidates_from_inside_the_sandbox_that_hides_them(
+    monkeypatch, tmp_path: Path, capsys
+):
+    """The sandbox denies reads of the results, and the candidates are kept there. The real worker
+    has to be given something it can read, or the final re-timing cannot run on a real record."""
+    monkeypatch.setattr(e3, "RESULTS", tmp_path)
+    _ledger(
+        tmp_path / "current-r1",
+        [
+            {
+                "iter": 0,
+                "decision": "keep",
+                "speedup_softmax": 1.3,
+                "speedup_layernorm": 1.4,
+                "seconds": 10.0,
+                "cost_usd": 0.5,
+            }
+        ],
+    )
+    (tmp_path / "current-r1" / "candidates" / "00.py").write_text(e3.BASELINE.read_text())
+
+    e3.report(tmp_path, final_timing=(1, 1))
+
+    assert "| current | softmax |" in capsys.readouterr().out
+
+
 def test_the_report_counts_hacks_scores_only_correct_kernels_and_skips_a_pilot(
     monkeypatch, tmp_path: Path, capsys
 ):

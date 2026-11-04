@@ -577,7 +577,10 @@ def report(results: Path = RESULTS, final_timing: tuple[int, int] = TIMING) -> N
                 continue
             top = max(eligible, key=lambda r: float(r[f"speedup_{key}"]))
             path = directory / "candidates" / f"{int(top['iter']):02d}.py"
-            again = [worker("measure", path, BASELINE, *final_timing) for _ in range(3)]
+            # The sandbox denies reads of the results, so the worker times a copy.
+            with tempfile.TemporaryDirectory(prefix="e3-retime-") as tmp:
+                copy = Path(shutil.copy(path, tmp))
+                again = [worker("measure", copy, BASELINE, *final_timing) for _ in range(3)]
             best_correct[condition][key].append(statistics.median(a[key] for a in again))
     print(f"\n- sessions with a blinding violation: {violations}")
     print(f"- admitted candidates the checker could not score: {unscored}")
