@@ -34,7 +34,7 @@ REPO = HERE.parents[2]
 WORKER = HERE / "candidate_worker.py"
 BASELINE = HERE / "baseline_kernel.py"
 PROGRAM = HERE / "program.md"
-RESULTS = HERE / "results"
+RESULTS = HERE / "recorded"
 
 MODEL = "claude-sonnet-5-5"
 CONDITIONS = ("current", "completed")

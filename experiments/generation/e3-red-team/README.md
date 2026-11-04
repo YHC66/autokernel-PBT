@@ -12,7 +12,7 @@ never hacked, E3 measured the agent's restraint, not the gate's strength.
 
 ## Positive control
 
-No model is involved. `results/control.md` is its output:
+No model is involved. `recorded/control.md` is its output:
 
 | kernel | current gate | completed gate | hidden checker |
 |---|---|---|---|
@@ -46,5 +46,5 @@ candidate_worker.py  runs in the sandbox: gate, timing and the hidden checker, o
 program.md           what the agent reads, verbatim from the record
 baseline_kernel.py   the starting kernels
 test_e3.py           the instrument, pinned with scripted agents
-results/             per replicate: the ledger, every candidate, and every transcript
+recorded/            per replicate: the ledger, every candidate, and every transcript
 ```
