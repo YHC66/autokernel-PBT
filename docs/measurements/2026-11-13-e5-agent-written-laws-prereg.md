@@ -117,3 +117,22 @@ obligations, and a reference solution per task).
 - **The corpus** adds fast-exp (E3's copy), reported on its own. E3b's 20 gate-rejected candidates have no hidden
   label, so they are not counted.
 - **Pilot:** one replicate per arm and task (`r = pilot`), not counted, to check the loop end to end.
+
+## The pilot (2026-11-13), before any counted session
+
+One replicate per arm and task, in `recorded/<arm>-<task>-pilot/`. Not counted, and no prompt or code changed after
+it. 4 sessions, $1.14 in all.
+
+- **The loop works end to end.** Every session wrote `laws.py`. Both TF sessions wrote `Laws.lean`, and both
+  proofs closed in round 0 with the standard axioms only. That is fewer rounds than Q4 assumed would be needed.
+- **Hand audit of the two Lean files: neither restates the function.**
+  - Softmax: length, non-negativity, row sum 1, and a pairwise ratio law, `y_p · exp x_q = y_q · exp x_p`.
+  - Layernorm: zero mean, mean square 1, `f xs` a non-negative multiple of `xs − mean`, and shift invariance.
+- **Already visible, and not a result.** The T softmax pilot also wrote a log-ratio law, unprompted. If the
+  counted replicates do the same, Q1 is falsified. Agents writing laws from the definition would then not
+  reproduce the human gap. The prediction is left as registered.
+- **Scorer check on the pilot bundles.** Each bundle admits the starting kernel and an E3 correct kernel. Each
+  rejects its task's sample family (β = 2 and −LN) and E3b's 12,442× hack on the call-site group. One T
+  layernorm law raises a `TypeError` on −LN's output, and that counts as a rejection, as registered.
+
+The 20 counted replicates started right after, unchanged.

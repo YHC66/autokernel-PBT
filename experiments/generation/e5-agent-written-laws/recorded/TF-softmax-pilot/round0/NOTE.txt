@@ -1,0 +1,1 @@
+Laws: well_formed, nonneg_bounded, sums_to_one, ratio_law (y_i/y_j = exp(x_i-x_j) in log space); no shift laws.

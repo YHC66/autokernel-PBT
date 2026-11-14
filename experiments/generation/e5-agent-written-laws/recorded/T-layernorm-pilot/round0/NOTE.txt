@@ -1,0 +1,1 @@
+laws.py: shape/dtype/finite, row mean zero, row affine-in-x, row scale (slope = 1/sqrt(var+1e-5)), row mean(y^2)=v/(v+eps), and shift invariance; tolerances scale with eps32, row range/sqrt(var+eps) and row length.

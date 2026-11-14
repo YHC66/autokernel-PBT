@@ -1,0 +1,2 @@
+round	laws_py	laws_lean	closed	axioms	lean_exit	seconds	cost_usd	usage	outside_attempts	outside_successes	note
+0	True	True	True	propext,Classical.choice,Quot.sound	0	166.8	0.34321240000000003	"{""input_tokens"":8,""cache_creation_input_tokens"":26063,""cache_read_input_tokens"":33377,""output_tokens"":23127}"	0	0	Laws: well_formed, nonneg_bounded, sums_to_one, ratio_law (y_i/y_j = exp(x_i-x_j) in log space); no shift laws.

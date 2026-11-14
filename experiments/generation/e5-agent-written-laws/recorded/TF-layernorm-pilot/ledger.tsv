@@ -1,0 +1,2 @@
+round	laws_py	laws_lean	closed	axioms	lean_exit	seconds	cost_usd	usage	outside_attempts	outside_successes	note
+0	True	True	True	propext,Classical.choice,Quot.sound	0	226.1	0.4535732	"{""input_tokens"":8,""cache_creation_input_tokens"":33929,""cache_read_input_tokens"":33361,""output_tokens"":31017}"	0	0	Laws: shape/dtype/finite, mean(y)=0, mean(y^2)=v/(v+1e-5), y is a non-negative multiple of x-mean, shift invariance; tolerances scale with n and value range.

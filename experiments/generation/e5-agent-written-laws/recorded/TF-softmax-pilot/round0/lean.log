@@ -1,0 +1,33 @@
+Check.lean:37:0: warning: automatically included section variable(s) unused in theorem `E5.key_aux`:
+  [ExpLaws F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [ExpLaws F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Check.lean:56:0: warning: automatically included section variable(s) unused in theorem `E5.eq_map`:
+  [Field F]
+  [LE F]
+  [LT F]
+  [LawfulOrderLT F]
+  [IsLinearOrder F]
+  [OrderedRing F]
+  [HasExp F]
+  [ExpLaws F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Field F] [LE F] [LT F] [LawfulOrderLT F] [IsLinearOrder F] [OrderedRing F] [HasExp F] [ExpLaws F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Check.lean:71:0: warning: automatically included section variable(s) unused in theorem `E5.exists_pair`:
+  [Field F]
+  [LE F]
+  [LT F]
+  [LawfulOrderLT F]
+  [IsLinearOrder F]
+  [OrderedRing F]
+  [HasExp F]
+  [ExpLaws F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Field F] [LE F] [LT F] [LawfulOrderLT F] [IsLinearOrder F] [OrderedRing F] [HasExp F] [ExpLaws F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+'e5_obligation' depends on axioms: [propext, Classical.choice, Quot.sound]

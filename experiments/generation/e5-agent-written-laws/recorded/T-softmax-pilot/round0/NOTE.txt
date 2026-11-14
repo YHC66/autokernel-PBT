@@ -1,0 +1,1 @@
+Laws: shape/dtype/finite, range in [0,1], row sums to 1, log(y)-x constant per row, order preserved, no early underflow, shift invariance.

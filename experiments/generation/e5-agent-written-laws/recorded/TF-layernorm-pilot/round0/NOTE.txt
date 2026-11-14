@@ -1,0 +1,1 @@
+Laws: shape/dtype/finite, mean(y)=0, mean(y^2)=v/(v+1e-5), y is a non-negative multiple of x-mean, shift invariance; tolerances scale with n and value range.

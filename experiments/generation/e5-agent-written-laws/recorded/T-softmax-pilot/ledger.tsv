@@ -1,0 +1,2 @@
+round	laws_py	laws_lean	closed	axioms	lean_exit	seconds	cost_usd	usage	outside_attempts	outside_successes	note
+0	True	False				56.9	0.13816720000000002	"{""input_tokens"":6,""cache_creation_input_tokens"":15358,""cache_read_input_tokens"":15371,""output_tokens"":7265}"	0	0	Laws: shape/dtype/finite, range in [0,1], row sums to 1, log(y)-x constant per row, order preserved, no early underflow, shift invariance.
