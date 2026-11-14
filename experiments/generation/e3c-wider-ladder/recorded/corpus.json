@@ -1,0 +1,4091 @@
+[
+ {
+  "id": "e3b/A-r1/00",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r1/candidates/00.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": false,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/A-r1/01",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r1/candidates/01.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": false
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/A-r1/02",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r1/candidates/02.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/A-r1/03",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r1/candidates/03.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": false
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/A-r1/04",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r1/candidates/04.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/A-r1/05",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r1/candidates/05.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r1/06",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r1/candidates/06.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r1/07",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r1/candidates/07.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "family",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r1/08",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r1/candidates/08.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r1/09",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r1/candidates/09.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": false
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/A-r1/10",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r1/candidates/10.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r1/11",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r1/candidates/11.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r1/12",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r1/candidates/12.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": false,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/A-r1/13",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r1/candidates/13.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r1/14",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r1/candidates/14.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r1/15",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r1/candidates/15.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r1/16",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r1/candidates/16.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r1/17",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r1/candidates/17.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r1/18",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r1/candidates/18.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r1/19",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r1/candidates/19.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r2/00",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r2/candidates/00.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r2/01",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r2/candidates/01.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/A-r2/02",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r2/candidates/02.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": false
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/A-r2/03",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r2/candidates/03.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/A-r2/04",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r2/candidates/04.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r2/05",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r2/candidates/05.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r2/06",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r2/candidates/06.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r2/07",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r2/candidates/07.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r2/08",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r2/candidates/08.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": false
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/A-r2/09",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r2/candidates/09.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": false
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/A-r2/10",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r2/candidates/10.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": false
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/A-r2/11",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r2/candidates/11.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r2/12",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r2/candidates/12.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "family",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r2/13",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r2/candidates/13.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": false
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/A-r2/14",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r2/candidates/14.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "family",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r2/15",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r2/candidates/15.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "family",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r2/16",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r2/candidates/16.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "family",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r2/17",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r2/candidates/17.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "family",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r2/18",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r2/candidates/18.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "family",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r2/19",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r2/candidates/19.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "family",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r3/00",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r3/candidates/00.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r3/01",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r3/candidates/01.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/A-r3/02",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r3/candidates/02.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/A-r3/03",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r3/candidates/03.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "mask",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/A-r3/04",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r3/candidates/04.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r3/05",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r3/candidates/05.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r3/06",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r3/candidates/06.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r3/07",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r3/candidates/07.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r3/08",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r3/candidates/08.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r3/09",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r3/candidates/09.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r3/10",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r3/candidates/10.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r3/11",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r3/candidates/11.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r3/12",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r3/candidates/12.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r3/13",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r3/candidates/13.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r3/14",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r3/candidates/14.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r3/15",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r3/candidates/15.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r3/16",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r3/candidates/16.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r3/17",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r3/candidates/17.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": false
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/A-r3/18",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r3/candidates/18.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/A-r3/19",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/A-r3/candidates/19.py",
+  "corpus": "e3b",
+  "arm_bundle": "current",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r1/00",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r1/candidates/00.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r1/01",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r1/candidates/01.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r1/02",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r1/candidates/02.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": false,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/B-r1/03",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r1/candidates/03.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r1/04",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r1/candidates/04.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r1/05",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r1/candidates/05.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": false
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/B-r1/06",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r1/candidates/06.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r1/07",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r1/candidates/07.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r1/08",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r1/candidates/08.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r1/09",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r1/candidates/09.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r1/10",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r1/candidates/10.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r1/11",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r1/candidates/11.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r1/12",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r1/candidates/12.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r1/13",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r1/candidates/13.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r1/14",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r1/candidates/14.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r1/15",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r1/candidates/15.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r1/16",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r1/candidates/16.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r1/17",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r1/candidates/17.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r1/18",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r1/candidates/18.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r1/19",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r1/candidates/19.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r2/00",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r2/candidates/00.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r2/01",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r2/candidates/01.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": false,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/B-r2/02",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r2/candidates/02.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r2/03",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r2/candidates/03.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r2/04",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r2/candidates/04.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": false
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/B-r2/05",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r2/candidates/05.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r2/06",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r2/candidates/06.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": false
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/B-r2/07",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r2/candidates/07.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r2/08",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r2/candidates/08.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r2/09",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r2/candidates/09.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": false
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/B-r2/10",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r2/candidates/10.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r2/11",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r2/candidates/11.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r2/12",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r2/candidates/12.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r2/13",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r2/candidates/13.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r2/14",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r2/candidates/14.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": false,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/B-r2/15",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r2/candidates/15.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r2/16",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r2/candidates/16.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r2/17",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r2/candidates/17.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": false
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/B-r2/18",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r2/candidates/18.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r2/19",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r2/candidates/19.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r3/00",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r3/candidates/00.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r3/01",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r3/candidates/01.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r3/02",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r3/candidates/02.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r3/03",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r3/candidates/03.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r3/04",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r3/candidates/04.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r3/05",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r3/candidates/05.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r3/06",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r3/candidates/06.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r3/07",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r3/candidates/07.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r3/08",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r3/candidates/08.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r3/09",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r3/candidates/09.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r3/10",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r3/candidates/10.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r3/11",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r3/candidates/11.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r3/12",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r3/candidates/12.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r3/13",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r3/candidates/13.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r3/14",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r3/candidates/14.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r3/15",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r3/candidates/15.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r3/16",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r3/candidates/16.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r3/17",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r3/candidates/17.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r3/18",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r3/candidates/18.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/B-r3/19",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/B-r3/candidates/19.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r1/00",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r1/candidates/00.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/C-r1/01",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r1/candidates/01.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r1/02",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r1/candidates/02.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r1/03",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r1/candidates/03.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r1/04",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r1/candidates/04.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/C-r1/05",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r1/candidates/05.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r1/06",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r1/candidates/06.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r1/07",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r1/candidates/07.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r1/08",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r1/candidates/08.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r1/09",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r1/candidates/09.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r1/10",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r1/candidates/10.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": false,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/C-r1/11",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r1/candidates/11.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r1/12",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r1/candidates/12.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r1/13",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r1/candidates/13.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r1/14",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r1/candidates/14.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r1/15",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r1/candidates/15.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r1/16",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r1/candidates/16.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r1/17",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r1/candidates/17.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r1/18",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r1/candidates/18.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r1/19",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r1/candidates/19.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r2/00",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r2/candidates/00.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r2/01",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r2/candidates/01.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/C-r2/02",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r2/candidates/02.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r2/03",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r2/candidates/03.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r2/04",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r2/candidates/04.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r2/05",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r2/candidates/05.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r2/06",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r2/candidates/06.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r2/07",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r2/candidates/07.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r2/08",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r2/candidates/08.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r2/09",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r2/candidates/09.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r2/10",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r2/candidates/10.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r2/11",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r2/candidates/11.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/C-r2/12",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r2/candidates/12.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r2/13",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r2/candidates/13.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r2/14",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r2/candidates/14.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r2/15",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r2/candidates/15.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r2/16",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r2/candidates/16.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r2/17",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r2/candidates/17.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r2/18",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r2/candidates/18.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r2/19",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r2/candidates/19.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r3/00",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r3/candidates/00.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3b/C-r3/01",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r3/candidates/01.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r3/02",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r3/candidates/02.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r3/03",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r3/candidates/03.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r3/04",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r3/candidates/04.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r3/05",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r3/candidates/05.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r3/06",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r3/candidates/06.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r3/07",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r3/candidates/07.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r3/08",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r3/candidates/08.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r3/09",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r3/candidates/09.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r3/10",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r3/candidates/10.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r3/11",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r3/candidates/11.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r3/12",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r3/candidates/12.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r3/13",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r3/candidates/13.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r3/14",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r3/candidates/14.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r3/15",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r3/candidates/15.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r3/16",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r3/candidates/16.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r3/17",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r3/candidates/17.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r3/18",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r3/candidates/18.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3b/C-r3/19",
+  "path": "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/recorded/C-r3/candidates/19.py",
+  "corpus": "e3b",
+  "arm_bundle": "completed",
+  "e3b_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "coverage",
+   "layernorm": "coverage"
+  }
+ },
+ {
+  "id": "e3/completed-r1/00",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r1/candidates/00.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r1/01",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r1/candidates/01.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r1/02",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r1/candidates/02.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r1/03",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r1/candidates/03.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r1/04",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r1/candidates/04.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r1/05",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r1/candidates/05.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r1/06",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r1/candidates/06.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r1/07",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r1/candidates/07.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r1/08",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r1/candidates/08.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r1/09",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r1/candidates/09.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r1/10",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r1/candidates/10.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r1/11",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r1/candidates/11.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r1/12",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r1/candidates/12.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r1/13",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r1/candidates/13.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r1/14",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r1/candidates/14.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r1/15",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r1/candidates/15.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r1/16",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r1/candidates/16.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r1/17",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r1/candidates/17.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r1/18",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r1/candidates/18.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r1/19",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r1/candidates/19.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r2/00",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r2/candidates/00.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r2/01",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r2/candidates/01.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r2/02",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r2/candidates/02.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r2/03",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r2/candidates/03.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r2/04",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r2/candidates/04.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r2/05",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r2/candidates/05.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r2/06",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r2/candidates/06.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r2/07",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r2/candidates/07.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r2/08",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r2/candidates/08.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r2/09",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r2/candidates/09.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r2/10",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r2/candidates/10.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r2/11",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r2/candidates/11.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r2/12",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r2/candidates/12.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r2/13",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r2/candidates/13.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r2/14",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r2/candidates/14.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r2/15",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r2/candidates/15.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r2/16",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r2/candidates/16.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r2/17",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r2/candidates/17.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r2/18",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r2/candidates/18.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r2/19",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r2/candidates/19.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r3/00",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r3/candidates/00.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r3/01",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r3/candidates/01.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r3/02",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r3/candidates/02.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r3/03",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r3/candidates/03.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r3/04",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r3/candidates/04.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r3/05",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r3/candidates/05.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r3/06",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r3/candidates/06.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r3/07",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r3/candidates/07.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r3/08",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r3/candidates/08.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r3/09",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r3/candidates/09.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r3/10",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r3/candidates/10.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r3/11",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r3/candidates/11.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r3/12",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r3/candidates/12.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r3/13",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r3/candidates/13.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r3/14",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r3/candidates/14.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r3/15",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r3/candidates/15.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r3/16",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r3/candidates/16.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r3/17",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r3/candidates/17.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r3/18",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r3/candidates/18.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/completed-r3/19",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/completed-r3/candidates/19.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r1/00",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r1/candidates/00.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r1/01",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r1/candidates/01.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r1/02",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r1/candidates/02.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r1/03",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r1/candidates/03.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r1/04",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r1/candidates/04.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r1/05",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r1/candidates/05.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r1/06",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r1/candidates/06.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r1/07",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r1/candidates/07.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r1/08",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r1/candidates/08.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r1/09",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r1/candidates/09.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r1/10",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r1/candidates/10.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r1/11",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r1/candidates/11.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r1/12",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r1/candidates/12.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r1/13",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r1/candidates/13.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r1/14",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r1/candidates/14.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r1/15",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r1/candidates/15.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r1/16",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r1/candidates/16.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r1/17",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r1/candidates/17.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r1/18",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r1/candidates/18.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r1/19",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r1/candidates/19.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r2/00",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r2/candidates/00.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r2/01",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r2/candidates/01.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r2/02",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r2/candidates/02.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r2/03",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r2/candidates/03.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r2/04",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r2/candidates/04.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r2/05",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r2/candidates/05.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r2/06",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r2/candidates/06.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r2/07",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r2/candidates/07.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r2/08",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r2/candidates/08.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r2/09",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r2/candidates/09.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r2/10",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r2/candidates/10.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r2/11",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r2/candidates/11.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r2/12",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r2/candidates/12.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r2/13",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r2/candidates/13.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r2/14",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r2/candidates/14.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r2/15",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r2/candidates/15.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r2/16",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r2/candidates/16.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r2/17",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r2/candidates/17.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r2/18",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r2/candidates/18.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r2/19",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r2/candidates/19.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r3/00",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r3/candidates/00.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r3/01",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r3/candidates/01.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r3/02",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r3/candidates/02.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r3/03",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r3/candidates/03.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r3/04",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r3/candidates/04.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r3/05",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r3/candidates/05.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r3/06",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r3/candidates/06.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r3/07",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r3/candidates/07.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r3/08",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r3/candidates/08.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r3/09",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r3/candidates/09.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r3/10",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r3/candidates/10.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r3/11",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r3/candidates/11.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r3/12",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r3/candidates/12.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r3/13",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r3/candidates/13.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r3/14",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r3/candidates/14.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r3/15",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r3/candidates/15.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r3/16",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r3/candidates/16.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r3/17",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r3/candidates/17.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r3/18",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r3/candidates/18.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/current-r3/19",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/recorded/current-r3/candidates/19.py",
+  "corpus": "e3",
+  "e3_admitted": {
+   "softmax": true,
+   "layernorm": true
+  },
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ },
+ {
+  "id": "e3/baseline",
+  "path": "/Users/cyh/pbt/experiments/generation/e3-red-team/baseline_kernel.py",
+  "corpus": "e3",
+  "hidden": {
+   "softmax": "",
+   "layernorm": ""
+  }
+ }
+]

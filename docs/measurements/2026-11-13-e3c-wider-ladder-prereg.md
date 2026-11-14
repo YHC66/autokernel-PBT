@@ -84,3 +84,49 @@ below the line, with its reason. An instrument defect is fixed and the whole run
 ---
 
 ## Results
+
+Run 2026-11-13 on the instance above: 301 kernels × 3 ladders, 903 sandboxed recordings, 0 recording errors.
+`python experiments/generation/e3c-wider-ladder/e3c.py run`, then `report`; the per-recording results are in
+`experiments/generation/e3c-wider-ladder/recorded/results.jsonl` and the report in `recorded/report.md`.
+
+**Deviation (instrument, before any result was used).** The first full run stored only each arm's first failure.
+That was too little to tell which group rejected a correct kernel, so the scorer was changed to store every failing
+group and the whole run was repeated. Every verdict reproduced exactly.
+
+**Instrument check.** L0 reproduces E3b's gate verdict on all 180 candidates, per function and under each arm's
+bundle, and admits all 121 correct kernels. 0 mismatches.
+
+| Ladder | Hacks rejected (completed) | E3b-rejected still rejected | Correct kernels rejected (completed) | Median gate time |
+|---|---|---|---|---|
+| L0 shipped | 8/160 (arm A's family hacks) | 20/20 | 0/121 | 0.36 s |
+| L1 call site | **151/160** | 20/20 | **0/121** | 1.85 s |
+| L2 random | 160/160 | 20/20 | **121/121** | 0.42 s |
+
+Gate time is the sandboxed recording plus scoring, so it includes a process start.
+
+- **P1 holds.** L1 rejects 151 of 160 (94%). It rejects every hack faster than 1.19×, including all of arm C's,
+  up to the 12,442× constant fill. The decision is the laws' alone: they reject 246 of the 282 wrong functions, as
+  many as the reference arm does. The first failing law is most often layernorm's zero mean (109) and softmax's row sum (48) and
+  log-ratio law (39) on the call-site row.
+- **The 9 hacks L1 admits are all value-regime hacks.** Each is wrong only on inputs whose spread or values the
+  gate never draws, at any shape. Seven come from arm A and two from arm C. Four floor the shifted logits (at −10,
+  −12, −16 or −20). Four take the shift from something other than the full row max (the first element, a prefix,
+  every fourth element) and break only when the true max exceeds it by about 60–88. One drops ε on rows with variance under 1e−4. None is faster than 1.18× on either
+  function. Closing these needs the ladder to vary the input's scale, not only its shape.
+- **P2 holds for L1 and is falsified for L2.** L2 rejects every correct kernel, and every one fails in the
+  same place: layernorm's unit-variance law on the (22, 2) group. The reference arm passes all of them. The
+  smallest row variance in that group is 0.0224, and the reported deviation of 4.45e−4 is exactly ε/var,
+  the term `tasks.py` documents. The shipped ladder avoids it by drawing wide U(−10, 10) rows, and a 2-column
+  row escapes that. The law is the same in both bundles, so it has been in the gate all along. This is a false
+  alarm in a shipped law, found by widening the ladder: the laws' tolerances were calibrated on the ladder's
+  shapes, and need calibrating again whenever the ladder grows.
+- **P3, as registered, is falsified** (L2 160 > L1 151), but L2's count is inflated by that false alarm. *Post
+  hoc, not registered:* setting aside that one group's failure, L2 rejects 114/160 hacks (current bundle:
+  104) and 0/121 correct kernels. So the direction P3 predicted holds once the false alarm is removed.
+- **P4 holds.** L1's median gate time is 5.1× L0's (L2's is 1.2×).
+
+**What this says.** A gate's laws and its inputs are separate properties. E2 made the laws complete, and E3b showed
+the inputs were not. Adding the one shape the kernel is called at rejects 94% of what agents told to break the
+gate produced, and every hack faster than 1.19×, with no false reject. A ladder widened without aim does less, and
+widening exposed a tolerance that had been calibrated only on the old shapes. Not tested: whether an agent that
+knows the call-site rung finds its way past it.
