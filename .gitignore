@@ -54,3 +54,4 @@ proofs/**/*.vos
 proofs/**/*.glob
 proofs/**/.*.aux
 proofs/**/.lia.cache
+!experiments/generation/e5-agent-written-laws/recorded/**/ledger.tsv

@@ -79,3 +79,41 @@ affected replicates are re-run in full.
 ---
 
 ## Results
+
+## The instrument as built (2026-11-13), before any session
+
+`experiments/generation/e5-agent-written-laws/`: `e5.py` (the loop, the Lean check, the scorer), `law_runner.py` (runs
+one `laws.py`, sandboxed), `program.md` and `formal.md` (what the agent reads), and `lean/` (the fixed preambles and
+obligations, and a reference solution per task).
+
+- **The Lean model.**
+  - **Softmax:** `softmaxRow` over an abstract ordered field with an opaque `exp` and the `ExpLaws` of
+    `SoftmaxBundle.lean`.
+  - **Layernorm:** `lnRow xs = (x − mean)/sqrt(var)` with an opaque `sqrt`, where `sqrt` is positive on positives
+    and squares back. The real-number function has no ε, and the obligation is over rows with `0 < var xs`. The
+    row length enters as a sum of ones, since core's `Field` gives no `Nat` coercion.
+  - **The obligation:** `∀ xs, (xs ≠ [] | 0 < var xs) → f xs = target xs`, for any `f` with `Laws f`. Here `f` is
+    the kernel on one row, so shift laws can be stated.
+- **The Lean check.** It compiles the preamble, the agent's file and the obligation with the pinned toolchain,
+  under `sandbox-exec`: no network, no writes outside a temporary directory, and no reads in the home
+  directory except the toolchain (metadata reads allowed, which Lean needs to find itself). A probe confirmed
+  that a file reading or writing in the home directory fails. *Closed* means exit 0, no error, and `#print
+  axioms e5_obligation` listing only `propext`, `Classical.choice` and `Quot.sound`.
+- **Controls (`python e5.py control`), all as expected:**
+  - Closes: the reference solution, for each task. So does a `Laws` that restates the function; catching that
+    is the hand audit's job, not Lean's.
+  - Does not close: a `sorry`, an extra axiom, a file that fails to compile, or a file that stops early with
+    `#exit`.
+- **The scorer.**
+  - Each kernel is recorded once on L1, in E3b's sandboxed recorder.
+  - The shipped bundles are scored as in E3c. Each agent `laws.py` runs in its own sandboxed process, which gets
+    copies of the cases and never sees the repository.
+  - L0 is L1's first 9 groups, which are the same cases called in the same order.
+  - A kernel that produced no output on some case is refused under every bundle, as the shipped gate refuses it.
+- **Scorer control.** Two scripted softmax bundles were scored: one of the current kind (range, row sums, shift
+  invariance) and one with a log-ratio law added. The first admits all 6 softmax families and the second rejects
+  all 6. Both admit the starting kernel, an E3 correct kernel and fast-exp. Both reject E3b's 12,442× hack on
+  the call-site group.
+- **The corpus** adds fast-exp (E3's copy), reported on its own. E3b's 20 gate-rejected candidates have no hidden
+  label, so they are not counted.
+- **Pilot:** one replicate per arm and task (`r = pilot`), not counted, to check the loop end to end.
