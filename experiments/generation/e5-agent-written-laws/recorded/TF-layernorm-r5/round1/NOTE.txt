@@ -1,0 +1,1 @@
+Laws: shape/dtype/finite, zero row mean, row variance v/(v+eps), y affine in x, positive slope, shift invariance (tolerances scale with n, row range, and variance).

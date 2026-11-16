@@ -1,0 +1,2 @@
+round	laws_py	laws_lean	closed	axioms	lean_exit	seconds	cost_usd	usage	outside_attempts	outside_successes	note
+0	True	False				114.1	0.23615860000000002	"{""input_tokens"":6,""cache_creation_input_tokens"":22393,""cache_read_input_tokens"":15456,""output_tokens"":14403}"	0	0	Laws: well_formed (shape/dtype/finite), zero_row_mean, second_moment (mean y^2 = v/(v+1e-5)), affine_in_x, order_preserving (monotone/ties), shift_invariance; tolerances scale with row length, magnitude and 1/sqrt(v+1e-5).

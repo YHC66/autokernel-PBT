@@ -1,0 +1,2 @@
+round	laws_py	laws_lean	closed	axioms	lean_exit	seconds	cost_usd	usage	outside_attempts	outside_successes	note
+0	True	True	True	propext,Classical.choice,Quot.sound	0	140.7	0.289195	"{""input_tokens"":8,""cache_creation_input_tokens"":21952,""cache_read_input_tokens"":32960,""output_tokens"":19378}"	0	0	Laws: structure (shape/dtype/finite), range [0,1], rows sum to 1, log-ratio y_i/y_argmax = exp(x_i - x_argmax), and shift invariance (log y1 - log y0 - (x1 - x0) constant per row).

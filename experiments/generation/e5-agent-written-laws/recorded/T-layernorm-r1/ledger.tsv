@@ -1,0 +1,2 @@
+round	laws_py	laws_lean	closed	axioms	lean_exit	seconds	cost_usd	usage	outside_attempts	outside_successes	note
+0	True	False				85.6	0.1644016	"{""input_tokens"":6,""cache_creation_input_tokens"":12168,""cache_read_input_tokens"":22293,""output_tokens"":11026}"	0	0	Laws: well_formed, zero_mean, unit_scale (mean y^2 = v/(v+1e-5)), affine_in_x (affine, non-negative slope), shift_invariance; tolerances scale with sqrt(cols)*max|x|/sqrt(v+1e-5).

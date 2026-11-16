@@ -1,0 +1,29 @@
+T-softmax-r1 round 0: closed= axioms= $0.174531
+TF-softmax-r1 round 0: closed=True axioms=propext,Classical.choice,Quot.sound $0.289195
+T-layernorm-r1 round 0: closed= axioms= $0.1644016
+TF-layernorm-r1 round 0: closed=True axioms=propext,Classical.choice,Quot.sound $0.5727508
+T-softmax-r2 round 0: closed= axioms= $0.1211758
+TF-softmax-r2 round 0: closed=False axioms=propext,sorryAx,Classical.choice,Quot.sound $0.32341139999999996
+TF-softmax-r2 round 1: closed=True axioms=propext,Classical.choice,Quot.sound $0.06879640000000001
+T-layernorm-r2 round 0: closed= axioms= $0.218436
+TF-layernorm-r2 round 0: closed=True axioms=propext,Classical.choice,Quot.sound $0.5421904000000001
+T-softmax-r3 round 0: closed= axioms= $0.1257862
+TF-softmax-r3 round 0: closed=False axioms=sorryAx $0.3344958
+TF-softmax-r3 round 1: closed=True axioms=propext,Classical.choice,Quot.sound $0.12231339999999999
+T-layernorm-r3 round 0: closed= axioms= $0.2208676
+TF-layernorm-r3 round 0: closed=True axioms=propext,Classical.choice,Quot.sound $0.8136064
+T-softmax-r4 round 0: closed= axioms= $0.1612712
+TF-softmax-r4 round 0: closed=True axioms=propext,Classical.choice,Quot.sound $0.3113468
+Traceback (most recent call last):
+  File "/Users/cyh/pbt/experiments/generation/e5-agent-written-laws/e5.py", line 583, in <module>
+    main()
+  File "/Users/cyh/pbt/experiments/generation/e5-agent-written-laws/e5.py", line 575, in main
+    run_all()
+  File "/Users/cyh/pbt/experiments/generation/e5-agent-written-laws/e5.py", line 553, in run_all
+    run_replicate(arm, task, rep)
+  File "/Users/cyh/pbt/experiments/generation/e5-agent-written-laws/e5.py", line 262, in run_replicate
+    session = agent(workspace, out / "transcript.jsonl")
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/cyh/pbt/experiments/generation/e3b-instructed-red-team/e3b.py", line 638, in claude_agent
+    raise AgentFailed(msg)
+e3b.AgentFailed: session failed: You've hit your session limit · resets 12:40am (America/Los_Angeles)

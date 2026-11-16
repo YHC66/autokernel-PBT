@@ -1,0 +1,1 @@
+Laws: structure (shape/dtype/finite/[0,1]), row_sum (=1), log_slope (log y - x constant per row), order (monotone in x), shift_invariance (shift law, tolerant of float32 rounding of x+c).

@@ -1,0 +1,65 @@
+Check.lean:44:0: warning: automatically included section variable(s) unused in theorem `E5.count_nil`:
+  [LE F]
+  [LT F]
+  [LawfulOrderLT F]
+  [IsLinearOrder F]
+  [OrderedRing F]
+  [HasSqrt F]
+  [SqrtLaws F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [LE F] [LT F] [LawfulOrderLT F] [IsLinearOrder F] [OrderedRing F] [HasSqrt F] [SqrtLaws F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Check.lean:47:0: warning: automatically included section variable(s) unused in theorem `E5.count_cons`:
+  [LE F]
+  [LT F]
+  [LawfulOrderLT F]
+  [IsLinearOrder F]
+  [OrderedRing F]
+  [HasSqrt F]
+  [SqrtLaws F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [LE F] [LT F] [LawfulOrderLT F] [IsLinearOrder F] [OrderedRing F] [HasSqrt F] [SqrtLaws F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Check.lean:61:0: warning: automatically included section variable(s) unused in theorem `E5.mean_eq`:
+  [LE F]
+  [LT F]
+  [LawfulOrderLT F]
+  [IsLinearOrder F]
+  [OrderedRing F]
+  [HasSqrt F]
+  [SqrtLaws F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [LE F] [LT F] [LawfulOrderLT F] [IsLinearOrder F] [OrderedRing F] [HasSqrt F] [SqrtLaws F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Check.lean:73:0: warning: automatically included section variable(s) unused in theorem `E5.sum_scale`:
+  [HasSqrt F]
+  [SqrtLaws F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [HasSqrt F] [SqrtLaws F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Check.lean:82:0: warning: automatically included section variable(s) unused in theorem `E5.div_mul_cancel_of_ne`:
+  [HasSqrt F]
+  [SqrtLaws F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [HasSqrt F] [SqrtLaws F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Check.lean:89:0: warning: automatically included section variable(s) unused in theorem `E5.cancel_left`:
+  [HasSqrt F]
+  [SqrtLaws F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [HasSqrt F] [SqrtLaws F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+Check.lean:97:0: warning: automatically included section variable(s) unused in theorem `E5.div_eq_of_mul`:
+  [HasSqrt F]
+  [SqrtLaws F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [HasSqrt F] [SqrtLaws F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+'e5_obligation' depends on axioms: [propext, Classical.choice, Quot.sound]

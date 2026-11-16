@@ -1,0 +1,1 @@
+Laws: shape/dtype/finite, zero row mean, output affine in x with positive slope, and unit RMS (v/(v+1e-5) in float); no shift laws.

@@ -1,0 +1,2 @@
+round	laws_py	laws_lean	closed	axioms	lean_exit	seconds	cost_usd	usage	outside_attempts	outside_successes	note
+0	True	False				61.2	0.1211758	"{""input_tokens"":6,""cache_creation_input_tokens"":9041,""cache_read_input_tokens"":22204,""output_tokens"":7956}"	0	0	Laws: shape_dtype_finite, in_unit_interval, rows_sum_to_one, order_preserved, log_ratio_matches_input (case); shift_invariance (shift); tolerances scale with row range and sqrt(cols).

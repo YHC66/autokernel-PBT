@@ -505,7 +505,7 @@ def report() -> str:
     for ladder in ("L1", "L0"):
         lines += [f"## Ladder {ladder}", "",
                   "| bundle | task | families rejected | wrong functions rejected (E3b) | correct rejected | fast-exp | "
-                  "proof closed | laws |", "|---|---|---|---|---|---|---|---|"]
+                  "proof closed |", "|---|---|---|---|---|---|---|"]
         for name, btask in names:
             for task in (TASKS if btask is None else (btask,)):
                 fam = fam_n = wrong = wrong_n = corr = corr_n = 0
@@ -531,13 +531,11 @@ def report() -> str:
                         corr += rej
                     elif k["kind"] == "fastexp" and task == "softmax":
                         fast = "rejected" if rej else "admitted"
-                closed, laws = "", ""
+                closed = ""
                 if not name.startswith("shipped:"):
                     rows = read_ledger(RESULTS / name)
                     closed = rows[-1]["closed"] if rows else ""
-                    laws = ", ".join(next((t["agent"][name].get("laws", []) for s in scores.values() if "tasks" in s
-                                           for t in [s["tasks"][task]] if name in t["agent"]), []))[:80]
-                lines.append(f"| {name} | {task} | {fam}/{fam_n} | {wrong}/{wrong_n} | {corr}/{corr_n} | {fast} | {closed} | {laws} |")
+                lines.append(f"| {name} | {task} | {fam}/{fam_n} | {wrong}/{wrong_n} | {corr}/{corr_n} | {fast} | {closed} |")
         lines.append("")
     text = "\n".join(lines) + "\n"
     (RESULTS / "report.md").write_text(text)

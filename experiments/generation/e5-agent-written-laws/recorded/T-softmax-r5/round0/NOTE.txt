@@ -1,0 +1,1 @@
+Laws: well_formed, value_range, row_sums_one, uniform_rows, order_preserving, exp_envelope, log_ratio_constant (case); shift_invariance (shift).

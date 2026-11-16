@@ -1,0 +1,16 @@
+Check.lean:117:3: error: unknown tactic
+Check.lean:116:69: error: unsolved goals
+F : Type
+inst✝⁷ : Field F
+inst✝⁶ : LE F
+inst✝⁵ : LT F
+inst✝⁴ : LawfulOrderLT F
+inst✝³ : IsLinearOrder F
+inst✝² : OrderedRing F
+inst✝¹ : HasSqrt F
+inst✝ : SqrtLaws F
+t : F
+hpos : 0 < t
+h : t * t = 1
+⊢ t = 1
+'e5_obligation' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

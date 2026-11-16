@@ -1,0 +1,2 @@
+round	laws_py	laws_lean	closed	axioms	lean_exit	seconds	cost_usd	usage	outside_attempts	outside_successes	note
+0	True	True	True	propext,Classical.choice,Quot.sound	0	150.7	0.3113468	"{""input_tokens"":8,""cache_creation_input_tokens"":23721,""cache_read_input_tokens"":33389,""output_tokens"":20877}"	0	0	Laws: shape/dtype/finite, nonneg and <=1, rows sum to 1, y_j/y_argmax = exp(x_j - x_max) (pairwise ratio law), shift invariance via pivot ratios.

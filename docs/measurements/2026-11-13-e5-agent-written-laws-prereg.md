@@ -136,3 +136,56 @@ it. 4 sessions, $1.14 in all.
   layernorm law raises a `TypeError` on −LN's output, and that counts as a rejection, as registered.
 
 The 20 counted replicates started right after, unchanged.
+
+## Results (2026-11-16)
+
+All 20 counted replicates ran: 23 sessions in all (3 TF replicates took two rounds), costing $6.98.
+
+**Infrastructure.** On 2026-11-13 the account's session limit stopped the run during `T-layernorm-r4`'s first
+session. As registered for E3b, a failed session costs no iteration. The run was resumed on 2026-11-16 with nothing
+changed, and that session was re-run from the start. The interrupted log is in `recorded/infrastructure-2026-11-13.log`.
+
+**Hand audit.** No final `laws.py` computes the function and compares with it, and no `Laws.lean` restates it. Every
+softmax bundle, in both arms, has a law that fixes the temperature: a log-ratio law, or a pairwise or pivot ratio
+`y_i·e^{x_j} = y_j·e^{x_i}`. Every layernorm bundle has a law that ties `y` to `x` with a sign:
+- an affine law with a positive slope,
+- `y` a non-negative multiple of `x − mean`,
+- a monotonicity law, or
+- the covariance of `y` and `x` equal to the row's standard deviation.
+
+L1, from `recorded/report.md`. Every agent bundle of a task scores the same on families and on correct kernels.
+
+| Bundles | Families rejected | Correct kernels rejected | E3b wrong functions rejected | Proofs closed |
+|---|---|---|---|---|
+| T softmax (5) | 6/6, each | 0/121, each | 98–99/134 | n/a |
+| TF softmax (5) | 6/6, each | 0/121, each | 98/134 | 5/5 |
+| T layernorm (5) | 4/4, each | 0/121, each | 133/148 | n/a |
+| TF layernorm (5) | 4/4, each | 0/121, each | 133/148 | 5/5 |
+| shipped current | 0/6, 0/4 | 0/121 | 62/134, 145/148 | |
+| shipped completed | 6/6, 4/4 | 0/121 | 99/134, 147/148 | |
+
+On L0 every agent bundle also rejects all of its task's families and no correct kernel. Fast-exp is admitted by
+every bundle, agent and shipped.
+
+- **Q1 is falsified.** All 5 T softmax bundles reject all 6 families; the prediction was at most 2. Agents writing
+  laws from the definition did not reproduce the human gap of Proposition 1, not once in 10 softmax bundles.
+- **Q2 is falsified.** TF does no better than T on either task: both arms are at the ceiling. By the falsifier as
+  registered, these runs give no evidence that the proof obligation makes agent-written laws more complete.
+- **Q3 is falsified.** No T bundle rejects a correct kernel.
+- **Q4 holds.** All 10 TF proofs closed, 7 in round 0 and 3 in round 1, with standard axioms only.
+- **Where agent laws are weaker: float tolerance.** All 10 agent layernorm bundles admit the same 14 E3b
+  layernorm functions that the shipped completed bundle rejects. All 14 are numerically inaccurate rather than
+  structurally wrong, for example a one-pass variance or a floored variance. The shipped bundle rejects each one
+  only through shift invariance on the call-site group, at a ratio of 33–82 against its threshold of 30; the
+  reference arm rejects them too. The agents' tolerances are looser. The Lean proofs are about exact arithmetic,
+  so by construction they say nothing about this.
+
+**What this says.** On these two tasks, the agent writes laws that are complete in exact arithmetic from the
+definition alone, and proves them complete when asked. The gap Proposition 1 describes was in the laws people
+wrote, and the agent did not repeat it. Two things are not shown:
+- **That the proof obligation helps.** The arms tie at the ceiling.
+- **That the result carries to tasks less familiar than softmax and layernorm.** The model may simply know their
+  characterizations.
+
+The measured weakness of agent-written laws is their float tolerance. That half of the check is not covered by
+a proof.

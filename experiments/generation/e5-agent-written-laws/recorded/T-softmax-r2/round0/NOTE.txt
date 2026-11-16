@@ -1,0 +1,1 @@
+Laws: shape_dtype_finite, in_unit_interval, rows_sum_to_one, order_preserved, log_ratio_matches_input (case); shift_invariance (shift); tolerances scale with row range and sqrt(cols).

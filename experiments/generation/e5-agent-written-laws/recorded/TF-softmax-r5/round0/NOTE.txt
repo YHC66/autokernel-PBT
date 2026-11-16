@@ -1,0 +1,1 @@
+Laws: shape/dtype/finite, rows sum to 1, outputs in [0,1], pairwise ratio y_i/y_max = exp(x_i - x_max), and shift invariance (Lean: length, sum = 1, all-pairs ratio, shift invariance).

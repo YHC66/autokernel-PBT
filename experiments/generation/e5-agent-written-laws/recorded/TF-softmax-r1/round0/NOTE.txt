@@ -1,0 +1,1 @@
+Laws: structure (shape/dtype/finite), range [0,1], rows sum to 1, log-ratio y_i/y_argmax = exp(x_i - x_argmax), and shift invariance (log y1 - log y0 - (x1 - x0) constant per row).

@@ -1,0 +1,2 @@
+round	laws_py	laws_lean	closed	axioms	lean_exit	seconds	cost_usd	usage	outside_attempts	outside_successes	note
+0	True	True	True	propext,Classical.choice,Quot.sound	0	298.1	0.5888088	"{""input_tokens"":8,""cache_creation_input_tokens"":43829,""cache_read_input_tokens"":33778,""output_tokens"":40910}"	0	0	Laws: shape/dtype/finite, mean(y)=0, y proportional to x-mean with k>=0, mean(y^2)=v/(v+1e-5) (=1 over the reals), shift invariance; Lean proves uniqueness from the proportional and mean-square laws.

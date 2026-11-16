@@ -1,0 +1,1 @@
+Case laws: valid_output, value_range, row_sums_one, row_max_lower_bound, monotone_in_x, log_ratio_matches_gap, adjacent_log_ratio; shift law: shift_invariance (per-row constant log-ratio, using the actual float32 shift).

@@ -1,0 +1,1 @@
+Laws: output well-formed (shape/dtype/finite), zero row mean, y proportional to x - mean(x), and cov(y, x) = var(x)/sqrt(var(x)+1e-5); no shift laws.

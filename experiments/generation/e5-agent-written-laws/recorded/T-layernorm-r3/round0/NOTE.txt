@@ -1,0 +1,1 @@
+Laws: shape_dtype_finite, zero_mean, second_moment (mean y^2 = v/(v+1e-5)), order_preserving, row_affine, and shift_invariance (shift law); tolerances scale with row length and magnitude/normalizer.

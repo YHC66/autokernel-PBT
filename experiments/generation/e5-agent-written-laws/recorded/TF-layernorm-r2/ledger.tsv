@@ -1,0 +1,2 @@
+round	laws_py	laws_lean	closed	axioms	lean_exit	seconds	cost_usd	usage	outside_attempts	outside_successes	note
+0	True	True	True	propext,Classical.choice,Quot.sound	0	265.7	0.5421904000000001	"{""input_tokens"":8,""cache_creation_input_tokens"":40375,""cache_read_input_tokens"":33802,""output_tokens"":37292}"	0	0	Laws: shape/dtype/finite, zero row mean, unit mean-square (v/(v+1e-5)), output affine in x, positive slope, shift invariance (Lean proof not yet compiled).

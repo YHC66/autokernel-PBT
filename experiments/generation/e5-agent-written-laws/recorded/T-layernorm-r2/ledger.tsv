@@ -1,0 +1,2 @@
+round	laws_py	laws_lean	closed	axioms	lean_exit	seconds	cost_usd	usage	outside_attempts	outside_successes	note
+0	True	False				117.7	0.218436	"{""input_tokens"":6,""cache_creation_input_tokens"":16007,""cache_read_input_tokens"":22285,""output_tokens"":14896}"	0	0	Laws: shape_dtype_finite, zero_mean, unit_second_moment (mean y^2 = v/(v+1e-5)), affine_in_x, monotone, plus shift_invariance; tolerances scale with row length, offset and variance.

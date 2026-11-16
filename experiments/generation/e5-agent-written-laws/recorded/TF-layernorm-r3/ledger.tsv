@@ -1,0 +1,2 @@
+round	laws_py	laws_lean	closed	axioms	lean_exit	seconds	cost_usd	usage	outside_attempts	outside_successes	note
+0	True	True	True	propext,Classical.choice,Quot.sound	0	425.9	0.8136064	"{""input_tokens"":8,""cache_creation_input_tokens"":59574,""cache_read_input_tokens"":33377,""output_tokens"":56762}"	0	0	Laws: output well-formed (shape/dtype/finite), zero row mean, y proportional to x - mean(x), and cov(y, x) = var(x)/sqrt(var(x)+1e-5); no shift laws.

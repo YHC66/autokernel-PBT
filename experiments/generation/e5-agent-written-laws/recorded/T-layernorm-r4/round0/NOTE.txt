@@ -1,0 +1,1 @@
+Laws: well_formed (shape/dtype/finite), zero_row_mean, second_moment (mean y^2 = v/(v+1e-5)), affine_in_x, order_preserving (monotone/ties), shift_invariance; tolerances scale with row length, magnitude and 1/sqrt(v+1e-5).

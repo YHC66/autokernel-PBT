@@ -1,0 +1,1 @@
+Laws: shape/dtype/finite, nonneg and <=1, rows sum to 1, y_j/y_argmax = exp(x_j - x_max) (pairwise ratio law), shift invariance via pivot ratios.

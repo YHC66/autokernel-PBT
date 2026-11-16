@@ -1,0 +1,2 @@
+round	laws_py	laws_lean	closed	axioms	lean_exit	seconds	cost_usd	usage	outside_attempts	outside_successes	note
+0	True	True	True	propext,Classical.choice,Quot.sound	0	155.6	0.3075772	"{""input_tokens"":8,""cache_creation_input_tokens"":23576,""cache_read_input_tokens"":33182,""output_tokens"":20894}"	0	0	Laws: shape/dtype/finite, rows sum to 1, outputs in [0,1], pairwise ratio y_i/y_max = exp(x_i - x_max), and shift invariance (Lean: length, sum = 1, all-pairs ratio, shift invariance).

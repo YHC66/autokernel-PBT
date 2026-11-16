@@ -1,0 +1,1 @@
+Laws: well_formed, zero_mean, unit_scale (mean y^2 = v/(v+1e-5)), affine_in_x (affine, non-negative slope), shift_invariance; tolerances scale with sqrt(cols)*max|x|/sqrt(v+1e-5).

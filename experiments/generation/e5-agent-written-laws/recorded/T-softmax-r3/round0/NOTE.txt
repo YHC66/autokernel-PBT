@@ -1,0 +1,1 @@
+Laws: well_formed, in_unit_interval, rows_sum_to_one, order_preserved, log_output_tracks_input (log y - x constant per row), plus shift_invariant (shift law).

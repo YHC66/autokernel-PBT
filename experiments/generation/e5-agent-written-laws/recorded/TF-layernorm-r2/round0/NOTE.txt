@@ -1,0 +1,1 @@
+Laws: shape/dtype/finite, zero row mean, unit mean-square (v/(v+1e-5)), output affine in x, positive slope, shift invariance (Lean proof not yet compiled).

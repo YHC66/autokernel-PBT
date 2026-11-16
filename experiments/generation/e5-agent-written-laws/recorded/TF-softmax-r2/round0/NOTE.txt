@@ -1,0 +1,1 @@
+Laws: structure (shape/dtype/finite/0<=y<=1), row sums to 1, and pairwise log-ratio law (log y_j - x_j constant in a row); no shift laws.

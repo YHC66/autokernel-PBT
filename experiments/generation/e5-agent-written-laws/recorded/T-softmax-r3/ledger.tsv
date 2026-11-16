@@ -1,0 +1,2 @@
+round	laws_py	laws_lean	closed	axioms	lean_exit	seconds	cost_usd	usage	outside_attempts	outside_successes	note
+0	True	False				71.7	0.1257862	"{""input_tokens"":10,""cache_creation_input_tokens"":9138,""cache_read_input_tokens"":38926,""output_tokens"":8043}"	0	0	Laws: well_formed, in_unit_interval, rows_sum_to_one, order_preserved, log_output_tracks_input (log y - x constant per row), plus shift_invariant (shift law).

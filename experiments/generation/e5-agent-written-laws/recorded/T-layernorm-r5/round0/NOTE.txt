@@ -1,0 +1,1 @@
+Laws: shape/dtype/finite, row mean ~0, row mean(y^2)=v/(v+1e-5), row-affine-in-x, row monotone, shift invariance; tolerances scale with row range/variance/length.

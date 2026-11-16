@@ -1,0 +1,2 @@
+round	laws_py	laws_lean	closed	axioms	lean_exit	seconds	cost_usd	usage	outside_attempts	outside_successes	note
+0	True	False				86.4	0.1612712	"{""input_tokens"":6,""cache_creation_input_tokens"":11924,""cache_read_input_tokens"":22196,""output_tokens"":10813}"	0	0	Laws: structure (shape/dtype/finite/[0,1]), row_sum (=1), log_slope (log y - x constant per row), order (monotone in x), shift_invariance (shift law, tolerant of float32 rounding of x+c).
